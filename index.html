@@ -1,0 +1,3080 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Una práctica guiada para entender Bitcoin Lightning y usar tu primera wallet."
+    />
+    <meta name="theme-color" content="#101311" />
+    <title>Wallets Lightning</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #101311;
+        --panel: #181c19;
+        --paper: #f1f0e8;
+        --muted: #a6aaa1;
+        --line: #343a34;
+        --orange: #ff762e;
+        --lime: #d2f278;
+        --header-height: 76px;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--ink);
+        scroll-behavior: smooth;
+        scroll-snap-type: y mandatory;
+        scrollbar-color: #51564e var(--ink);
+      }
+
+      body {
+        margin: 0;
+        color: var(--paper);
+        background: var(--ink);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .site-header {
+        position: fixed;
+        z-index: 10;
+        inset: 0 0 auto;
+        height: var(--header-height);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 clamp(22px, 5vw, 76px);
+        border-bottom: 1px solid rgb(255 255 255 / 8%);
+        background: rgb(16 19 17 / 86%);
+        backdrop-filter: blur(16px);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--paper);
+        font-size: 12px;
+        font-weight: 760;
+        letter-spacing: .12em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 9px;
+        color: var(--ink);
+        background: var(--orange);
+      }
+
+      .brand-mark svg {
+        width: 16px;
+        height: 19px;
+      }
+
+      .header-nav {
+        display: flex;
+        align-items: center;
+        gap: clamp(18px, 3vw, 42px);
+      }
+
+      .header-nav a {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color .2s ease;
+      }
+
+      .header-nav a:hover,
+      .header-nav a:focus-visible {
+        color: var(--paper);
+      }
+
+      .header-nav .nav-cta {
+        padding: 10px 15px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--paper);
+      }
+
+      .header-nav .nav-cta:hover,
+      .header-nav .nav-cta:focus-visible {
+        border-color: var(--orange);
+        color: var(--orange);
+      }
+
+      .chapter-nav {
+        position: fixed;
+        z-index: 9;
+        top: 50%;
+        right: clamp(20px, 4vw, 58px);
+        display: grid;
+        gap: 12px;
+        transform: translateY(-50%);
+      }
+
+      .chapter-nav a {
+        display: grid;
+        width: 11px;
+        height: 11px;
+        place-items: center;
+        border: 1px solid #70766c;
+        border-radius: 50%;
+        background: var(--ink);
+        transition: transform .2s ease, background .2s ease, border-color .2s ease;
+      }
+
+      .chapter-nav a[aria-current="location"] {
+        transform: scale(1.25);
+        border-color: var(--orange);
+        background: var(--orange);
+      }
+
+      .chapter-nav span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+      }
+
+      .chapter {
+        position: relative;
+        min-height: 100svh;
+        display: grid;
+        align-items: center;
+        overflow: hidden;
+        padding: calc(var(--header-height) + 48px) clamp(24px, 10vw, 150px) 72px;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        isolation: isolate;
+      }
+
+      .chapter-inner {
+        width: min(100%, 1120px);
+        margin-inline: auto;
+      }
+
+      .eyebrow,
+      .micro-label {
+        color: var(--orange);
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .15em;
+        line-height: 1.5;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      p {
+        margin-top: 0;
+      }
+
+      h1,
+      h2 {
+        letter-spacing: -.065em;
+        text-wrap: balance;
+      }
+
+      h1 {
+        max-width: 800px;
+        margin-bottom: 24px;
+        font-size: clamp(54px, 8vw, 112px);
+        font-weight: 650;
+        line-height: .94;
+      }
+
+      h1 em {
+        color: var(--orange);
+        font-style: normal;
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        font-size: clamp(42px, 6.2vw, 82px);
+        font-weight: 620;
+        line-height: .98;
+      }
+
+      .lead {
+        max-width: 560px;
+        margin-bottom: 34px;
+        color: #c0c3bb;
+        font-size: clamp(16px, 1.7vw, 19px);
+        line-height: 1.65;
+      }
+
+      .hero {
+        background:
+          radial-gradient(ellipse at 77% 50%, rgb(255 118 46 / 9%), transparent 34%),
+          var(--ink);
+      }
+
+      .hero::after {
+        position: absolute;
+        z-index: -1;
+        top: 50%;
+        right: 6%;
+        width: min(39vw, 560px);
+        aspect-ratio: 1;
+        border: 1px solid rgb(255 118 46 / 18%);
+        border-radius: 50%;
+        content: "";
+        transform: translateY(-48%);
+        box-shadow: 0 0 0 44px rgb(255 118 46 / 3%), 0 0 0 95px rgb(255 118 46 / 2%);
+      }
+
+      .hero-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(250px, .8fr);
+        align-items: center;
+        gap: clamp(36px, 7vw, 100px);
+      }
+
+      .hero-copy {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-copy .eyebrow {
+        margin-bottom: 27px;
+      }
+
+      .hero-copy h1 {
+        font-size: clamp(58px, 7.3vw, 104px);
+      }
+
+      .hero-copy .lead {
+        max-width: 500px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .button {
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 11px;
+        padding: 0 19px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: var(--ink);
+        background: var(--orange);
+        font-size: 13px;
+        font-weight: 750;
+        text-decoration: none;
+        transition: transform .2s ease, background .2s ease;
+      }
+
+      .button:hover {
+        transform: translateY(-2px);
+        background: #ff8d51;
+      }
+
+      .button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .button-secondary {
+        border-color: var(--line);
+        color: var(--paper);
+        background: transparent;
+      }
+
+      .button-secondary:hover {
+        background: var(--panel);
+      }
+
+      .wallet-showcase {
+        position: relative;
+        justify-self: center;
+        width: min(100%, 410px);
+        padding: 18px;
+        border: 1px solid #454b43;
+        border-radius: 20px;
+        background: linear-gradient(145deg, #202520, #141815 75%);
+        box-shadow: 0 28px 70px rgb(0 0 0 / 34%);
+        transform: rotate(2deg);
+      }
+
+      .wallet-showcase::before {
+        position: absolute;
+        z-index: -1;
+        inset: 13px -13px -13px 13px;
+        border: 1px solid rgb(255 118 46 / 38%);
+        border-radius: inherit;
+        content: "";
+      }
+
+      .wallet-showcase-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .wallet-showcase-head .micro-label {
+        color: var(--muted);
+        font-size: 9px;
+      }
+
+      .wallet-count {
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 9px;
+      }
+
+      .drum-stage {
+        --n: 13;
+        --r: 172px;
+        --cw: 84px;
+        --ch: 102px;
+        --icon: 46px;
+        --tilt: -10deg;
+        --dy: -18px;
+        position: relative;
+        height: 214px;
+        overflow: hidden;
+        perspective: 820px;
+        perspective-origin: 50% 30%;
+        display: grid;
+        place-items: center;
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+      }
+
+      .drum-tilt {
+        transform: translateY(var(--dy, 0px)) rotateX(var(--tilt, -10deg));
+        transform-style: preserve-3d;
+      }
+
+      .drum-ring {
+        position: relative;
+        width: var(--cw);
+        height: var(--ch);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        transform: rotateY(var(--rot, 0deg));
+        transform-style: preserve-3d;
+      }
+
+      .drum-card {
+        --f: 1;
+        position: absolute;
+        inset: 0;
+        transform: rotateY(calc(var(--i) * (360deg / var(--n)))) translateZ(var(--r));
+        transform-style: preserve-3d;
+      }
+
+      .drum-plate,
+      .drum-face {
+        position: absolute;
+        inset: 0;
+        border-radius: 13px;
+      }
+
+      .drum-plate {
+        border: 1px solid #343a34;
+        background: rgb(13 16 14 / 88%);
+        opacity: calc(.35 + .65 * var(--f));
+      }
+
+      .drum-face {
+        display: grid;
+        align-content: center;
+        justify-items: center;
+        gap: 7px;
+        padding: 8px 5px;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        opacity: calc(.2 + .8 * var(--f));
+      }
+
+      .drum-icon {
+        display: block;
+        width: var(--icon);
+        height: var(--icon);
+        border-radius: 23%;
+      }
+
+      .drum-name {
+        max-width: 100%;
+        overflow: hidden;
+        display: -webkit-box;
+        color: var(--paper);
+        font-size: 10px;
+        font-weight: 650;
+        letter-spacing: -.01em;
+        line-height: 1.15;
+        text-align: center;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .wallet-showcase-foot {
+        margin: 13px 0 0;
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .scroll-cue {
+        position: absolute;
+        bottom: 30px;
+        left: clamp(24px, 10vw, 150px);
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 10px;
+        letter-spacing: .12em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .scroll-cue span {
+        display: grid;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        color: var(--orange);
+      }
+
+      .chapter-index {
+        margin-bottom: 22px;
+        color: var(--orange);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 12px;
+        letter-spacing: .16em;
+      }
+
+      .chapter-index span {
+        margin-left: 12px;
+        color: var(--muted);
+      }
+
+      /* Título de sección fijo bajo el header (JS: no CSS sticky por overflow/snap) */
+      .section-sticky {
+        position: fixed;
+        z-index: 8;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 8px clamp(24px, 10vw, 150px) 14px;
+        pointer-events: none;
+        background: linear-gradient(
+          to bottom,
+          rgb(16 19 17 / 94%) 0%,
+          rgb(16 19 17 / 72%) 62%,
+          transparent 100%
+        );
+      }
+
+      .section-sticky[hidden] {
+        display: none;
+      }
+
+      .section-sticky .chapter-index {
+        margin: 0;
+        font-size: 11px;
+        letter-spacing: .14em;
+      }
+
+      .concepts {
+        background: #171b18;
+      }
+
+      .concepts-layout {
+        display: grid;
+        grid-template-columns: minmax(230px, .78fr) minmax(0, 1.22fr);
+        align-items: center;
+        gap: clamp(40px, 8vw, 120px);
+      }
+
+      .concepts-copy .lead {
+        margin-bottom: 0;
+      }
+
+      .mito {
+        background:
+          radial-gradient(ellipse at 82% 76%, rgb(255 118 46 / 8%), transparent 36%),
+          #171b18;
+      }
+
+      .mito-layout {
+        display: grid;
+        grid-template-columns: minmax(260px, .9fr) minmax(0, 1.1fr);
+        align-items: center;
+        gap: clamp(38px, 7vw, 100px);
+      }
+
+      .mito-copy .lead {
+        margin-bottom: 0;
+      }
+
+      .mito-header h2 em {
+        color: var(--orange);
+        font-style: normal;
+      }
+
+      .mito-claims {
+        display: grid;
+        gap: 13px;
+      }
+
+      .claim {
+        padding: clamp(17px, 2.5vw, 24px);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #121613;
+      }
+
+      .claim-mark {
+        display: inline-block;
+        margin-bottom: 11px;
+        color: var(--orange);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 11px;
+        letter-spacing: .14em;
+      }
+
+      .claim h3 {
+        margin: 0 0 7px;
+        font-size: clamp(18px, 2.2vw, 23px);
+        letter-spacing: -.03em;
+      }
+
+      .claim p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .wallets {
+        background:
+          radial-gradient(ellipse at 15% 20%, rgb(210 242 120 / 6%), transparent 34%),
+          var(--ink);
+      }
+
+      .wallets-layout {
+        display: grid;
+        grid-template-columns: minmax(240px, .8fr) minmax(0, 1.2fr);
+        align-items: start;
+        gap: clamp(38px, 7vw, 100px);
+      }
+
+      .wallets-copy .lead {
+        margin-bottom: 0;
+      }
+
+      .wallets-copy h2 em {
+        color: var(--orange);
+        font-style: normal;
+      }
+
+      /* Tabla Pro|Contra: scroll en la página, celdas sin ellipsis/clip */
+      #wallets-tabla.page {
+        align-items: start;
+        max-height: 100svh;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      #wallets-tabla .wallets-layout {
+        grid-template-columns: 1fr;
+        gap: clamp(18px, 3vw, 28px);
+        align-items: start;
+      }
+
+      #wallets-tabla .wallets-copy {
+        max-width: 40rem;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        overflow-y: visible;
+        -webkit-overflow-scrolling: touch;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #121613;
+      }
+
+      .wallets-table {
+        width: 100%;
+        min-width: 920px;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 11px;
+      }
+
+      .wallets-table th,
+      .wallets-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .wallets-table th {
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+      }
+
+      .wallets-table col.col-wallet { width: 12%; }
+      .wallets-table col.col-custodia { width: 24%; }
+      .wallets-table col.col-pro { width: 32%; }
+      .wallets-table col.col-contra { width: 32%; }
+
+      .wallets-table td:first-child,
+      .wallets-table th:first-child {
+        color: var(--paper);
+        font-weight: 650;
+        white-space: nowrap;
+        overflow: visible;
+        word-break: normal;
+        overflow-wrap: normal;
+      }
+
+      .wallets-table th:first-child {
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .wallets-table td:not(:first-child) {
+        color: #c0c3bb;
+        line-height: 1.5;
+      }
+
+      .wallets-table tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .table-note {
+        margin: 0;
+        padding: 13px 15px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .workshop {
+        background:
+          radial-gradient(ellipse at 12% 83%, rgb(210 242 120 / 6%), transparent 34%),
+          var(--ink);
+      }
+
+      .workshop-layout {
+        display: grid;
+        grid-template-columns: minmax(0, .88fr) minmax(350px, 1.12fr);
+        align-items: center;
+        gap: clamp(38px, 8vw, 110px);
+      }
+
+      .workshop-copy .lead {
+        max-width: 450px;
+      }
+
+      .safety-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        max-width: 440px;
+        padding: 15px 16px;
+        border: 1px solid rgb(210 242 120 / 25%);
+        border-radius: 12px;
+        color: #d5dbcc;
+        background: rgb(210 242 120 / 5%);
+        font-size: 12px;
+        line-height: 1.55;
+      }
+
+      .safety-note svg {
+        flex: 0 0 17px;
+        width: 17px;
+        height: 17px;
+        margin-top: 1px;
+        color: var(--lime);
+      }
+
+      .steps {
+        counter-reset: steps;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .steps li {
+        counter-increment: steps;
+        display: grid;
+        grid-template-columns: 45px 1fr;
+        gap: 16px;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .steps li:first-child {
+        border-top: 1px solid var(--line);
+      }
+
+      .steps li::before {
+        content: "0" counter(steps);
+        padding-top: 2px;
+        color: var(--orange);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 12px;
+      }
+
+      .steps h3 {
+        margin: 0 0 5px;
+        font-size: 16px;
+        font-weight: 630;
+      }
+
+      .steps p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.55;
+      }
+
+      .speaker {
+        background:
+          radial-gradient(ellipse at 83% 22%, rgb(255 118 46 / 7%), transparent 32%),
+          #171b18;
+      }
+
+      .speaker-layout {
+        display: grid;
+        grid-template-columns: minmax(230px, .75fr) minmax(0, 1.25fr);
+        align-items: center;
+        gap: clamp(42px, 8vw, 112px);
+      }
+
+      .speaker-portrait-wrap {
+        position: relative;
+        width: min(100%, 340px);
+        justify-self: center;
+        padding: 12px;
+        border: 1px solid #454b43;
+        border-radius: 22px;
+        background: #121613;
+        transform: rotate(-2deg);
+      }
+
+      .speaker-portrait-wrap img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 14px;
+        object-fit: cover;
+        filter: saturate(.78);
+      }
+
+      .speaker-copy .eyebrow {
+        margin-bottom: 16px;
+      }
+
+      .speaker-copy h2 {
+        margin-bottom: 19px;
+      }
+
+      .speaker-copy h2 em {
+        color: var(--orange);
+        font-style: normal;
+      }
+
+      .speaker-copy .lead {
+        max-width: 610px;
+        margin-bottom: 16px;
+      }
+
+      .speaker-values {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 25px;
+      }
+
+      .speaker-values span {
+        padding: 8px 11px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: #c0c3bb;
+        font-size: 10px;
+      }
+
+      .speaker-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        color: var(--lime);
+        font-size: 12px;
+        font-weight: 650;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+      }
+
+      /* ---------- Capítulos de varias páginas ---------- */
+      .chapter.paged {
+        display: block;
+        min-height: 0;
+        padding: 0;
+        overflow: clip;
+      }
+
+      .page {
+        position: relative;
+        min-height: 100svh;
+        display: grid;
+        align-items: center;
+        padding: calc(var(--header-height) + 48px) clamp(24px, 10vw, 150px) 72px;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
+      .punch {
+        margin: 28px 0 0;
+        color: var(--orange);
+        font-size: clamp(20px, 2.6vw, 30px);
+        font-weight: 700;
+        letter-spacing: -.02em;
+        line-height: 1.2;
+        text-wrap: balance;
+      }
+
+      /* ---------- Sobre mí ---------- */
+      .speaker-lines {
+        max-width: 610px;
+        margin: 0 0 22px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .speaker-lines li {
+        padding: 11px 0 11px 16px;
+        border-left: 2px solid var(--line);
+        color: #c0c3bb;
+        font-size: clamp(15px, 1.5vw, 17px);
+        line-height: 1.5;
+      }
+
+      .speaker-lines li:first-child {
+        border-left-color: var(--orange);
+      }
+
+      .speaker-values-line {
+        margin: 0 0 22px;
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 11px;
+        letter-spacing: .12em;
+        line-height: 1.7;
+        text-transform: uppercase;
+      }
+
+      /* ---------- La Crypta ---------- */
+      .lacrypta {
+        background:
+          radial-gradient(ellipse at 18% 78%, rgb(255 118 46 / 8%), transparent 34%),
+          var(--ink);
+      }
+
+      .lc-layout {
+        display: grid;
+        grid-template-columns: minmax(250px, .82fr) minmax(0, 1.18fr);
+        align-items: center;
+        gap: clamp(36px, 6vw, 84px);
+      }
+
+      .lc-copy h2 {
+        margin-bottom: 18px;
+      }
+
+      .lc-copy .lead {
+        margin-bottom: 14px;
+      }
+
+      .lc-facts {
+        margin: 20px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .lc-facts li {
+        padding: 11px 0;
+        border-top: 1px solid var(--line);
+        color: var(--paper);
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -.01em;
+        line-height: 1.45;
+      }
+
+      .lc-facts li:last-child {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .lc-gallery {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+      }
+
+      .lc-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .lc-photo {
+        flex: var(--ar) 1 0;
+        min-width: 0;
+        aspect-ratio: var(--ar);
+        margin: 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #121613;
+      }
+
+      .lc-photo img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(.9);
+      }
+
+      /* ---------- Mito ---------- */
+      .mito-answer {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr);
+        align-items: center;
+        gap: clamp(36px, 6vw, 90px);
+      }
+
+      .mito-answer h3 {
+        margin: 0 0 22px;
+        font-size: clamp(34px, 4.8vw, 60px);
+        font-weight: 680;
+        letter-spacing: -.045em;
+        line-height: 1.02;
+        text-wrap: balance;
+      }
+
+      .mito-answer .lead {
+        margin-bottom: 12px;
+      }
+
+      .layer-card {
+        padding: clamp(22px, 3vw, 32px);
+        border: 1px solid rgb(255 118 46 / 45%);
+        border-radius: 18px;
+        background: linear-gradient(150deg, rgb(255 118 46 / 10%), #121613 62%);
+      }
+
+      .layer-card p {
+        margin: 0;
+        color: var(--orange);
+        font-size: clamp(24px, 2.8vw, 34px);
+        font-weight: 700;
+        letter-spacing: -.03em;
+        line-height: 1.15;
+        text-wrap: balance;
+      }
+
+      /* ---------- Lightning (animación) ---------- */
+      .ln-chapter {
+        --ln-fail: #ff5a4f;
+        background:
+          radial-gradient(ellipse at 20% 80%, rgb(255 118 46 / 6%), transparent 40%),
+          radial-gradient(ellipse at 80% 10%, rgb(150 190 255 / 5%), transparent 40%),
+          var(--ink);
+      }
+
+      .ln-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .ln-head h2 {
+        margin-bottom: 22px;
+      }
+
+      .ln-head h2 em {
+        color: var(--orange);
+        font-style: normal;
+      }
+
+      .ln-panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(14px, 2vw, 24px);
+      }
+
+      .ln-panel {
+        position: relative;
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        height: clamp(380px, calc(100svh - var(--header-height) - 290px), 600px);
+        margin: 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #121613;
+      }
+
+      .ln-panel svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+      }
+
+      .ln-stage {
+        position: relative;
+        min-height: 0;
+      }
+
+      .ln-stage > * {
+        position: absolute;
+        inset: 0;
+      }
+
+      .ln-panel video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 50% 42%;
+        background: #0b0d0c;
+      }
+
+      .ln-caption {
+        display: grid;
+        gap: 4px;
+        min-height: 112px;
+        align-content: start;
+        padding: 12px 16px 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .ln-label {
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+      }
+
+      .ln-label::before {
+        content: "● ";
+        color: var(--orange);
+      }
+
+      .ln-panel-rayo .ln-label::before {
+        color: #a9c8ff;
+      }
+
+      .ln-text {
+        color: #d3d6cd;
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .ln-credit {
+        margin-top: 4px;
+        color: #7d8278;
+        font-size: 10px;
+        line-height: 1.4;
+      }
+
+      .ln-credit a {
+        color: inherit;
+        text-underline-offset: 2px;
+      }
+
+      .ln-edge {
+        stroke: var(--line);
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
+
+      .ln-edge-fail {
+        stroke: var(--ln-fail);
+        stroke-width: 4;
+        stroke-linecap: round;
+        filter: url(#ln-glow);
+        opacity: 0;
+      }
+
+      .ln-node-dot {
+        fill: #0e110f;
+        stroke: #4c5349;
+        stroke-width: 2;
+      }
+
+      .ln-node-end {
+        fill: #0e110f;
+        stroke: var(--orange);
+        stroke-width: 2;
+      }
+
+      .ln-balance {
+        fill: var(--paper);
+        font: 600 17px "SFMono-Regular", Consolas, monospace;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+
+      .ln-node-label {
+        fill: var(--muted);
+        font: 12px "SFMono-Regular", Consolas, monospace;
+        text-anchor: middle;
+      }
+
+      /* ---------- Wallets: llaves, Strike, ZEUS ---------- */
+      .keys-layout {
+        display: grid;
+        grid-template-columns: minmax(240px, .85fr) minmax(0, 1.15fr);
+        align-items: center;
+        gap: clamp(38px, 7vw, 100px);
+      }
+
+      .keys-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 13px;
+      }
+
+      .keys-cards .claim p {
+        font-size: 14px;
+      }
+
+      .claim-tag {
+        display: inline-block;
+        margin-bottom: 12px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 10px;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+      }
+
+      .claim-tag.is-self {
+        border-color: rgb(210 242 120 / 45%);
+        color: var(--lime);
+      }
+
+      .claim-tag.is-custody {
+        border-color: rgb(255 118 46 / 45%);
+        color: var(--orange);
+      }
+
+      /* Autocustodia progresiva: borde que va de naranja (custodial) a lima (autocustodial). */
+      .claim-tag.is-progressive {
+        position: relative;
+        border-color: transparent;
+        background: linear-gradient(90deg, rgb(255 118 46 / 8%), rgb(210 242 120 / 8%));
+        color: var(--lime);
+      }
+
+      .claim-tag.is-progressive::before {
+        position: absolute;
+        inset: -1px;
+        padding: 1px;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgb(255 118 46 / 75%), rgb(210 242 120 / 75%));
+        content: "";
+        pointer-events: none;
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+      }
+
+      .app-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(220px, .75fr);
+        align-items: center;
+        gap: clamp(36px, 7vw, 100px);
+      }
+
+      .app-logo {
+        display: block;
+        width: auto;
+        height: clamp(32px, 3.6vw, 46px);
+        margin-bottom: 22px;
+      }
+
+      .app-lines {
+        max-width: 560px;
+        margin: 18px 0 24px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .app-lines li {
+        position: relative;
+        padding: 9px 0 9px 22px;
+        color: #d3d6cd;
+        font-size: clamp(15px, 1.5vw, 18px);
+        line-height: 1.5;
+      }
+
+      .app-lines li::before {
+        position: absolute;
+        top: 19px;
+        left: 0;
+        width: 8px;
+        height: 2px;
+        background: var(--orange);
+        content: "";
+      }
+
+      .pros-cons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        max-width: 600px;
+      }
+
+      .pros-cons > div {
+        padding: 15px 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #121613;
+      }
+
+      .pros-cons .pc-label {
+        display: block;
+        margin-bottom: 7px;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+      }
+
+      .pros-cons .is-pro .pc-label {
+        color: var(--lime);
+      }
+
+      .pros-cons .is-con .pc-label {
+        color: #ff8a7a;
+      }
+
+      .pros-cons p {
+        margin: 0;
+        color: #c0c3bb;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .app-shot {
+        justify-self: center;
+        width: min(100%, 300px);
+        margin: 0;
+        padding: 9px;
+        border: 1px solid #454b43;
+        border-radius: 34px;
+        background: #0b0d0c;
+        box-shadow: 0 28px 70px rgb(0 0 0 / 40%);
+      }
+
+      .app-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: calc(100svh - var(--header-height) - 150px);
+        object-fit: cover;
+        object-position: top center;
+        border-radius: 26px;
+      }
+
+      /* LaWallet: wallet destacada con captura apaisada (web), un poco más grande que Strike/ZEUS. */
+      .app-layout.is-landscape {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      }
+
+      .app-copy > .punch:first-of-type {
+        margin-top: 0;
+      }
+
+      .app-logo.is-featured {
+        height: clamp(38px, 4.4vw, 54px);
+        margin-bottom: 24px;
+      }
+
+      .app-shot.is-landscape {
+        width: min(100%, 540px);
+        padding: 7px;
+        border-color: rgb(210 242 120 / 28%);
+        border-radius: 20px;
+        box-shadow:
+          0 28px 70px rgb(0 0 0 / 40%),
+          0 0 64px rgb(210 242 120 / 7%);
+      }
+
+      .app-shot.is-landscape img {
+        aspect-ratio: 560 / 350;
+        max-height: none;
+        object-position: center;
+        border-radius: 14px;
+      }
+
+      @media (max-width: 850px) {
+        :root {
+          --header-height: 66px;
+        }
+
+        .header-nav {
+          gap: 16px;
+        }
+
+        .header-nav a {
+          font-size: 11px;
+        }
+
+        .chapter {
+          padding-right: clamp(30px, 7vw, 70px);
+          padding-left: clamp(30px, 7vw, 70px);
+        }
+
+        .hero-layout {
+          grid-template-columns: minmax(0, 1fr) minmax(210px, .72fr);
+          gap: 28px;
+        }
+
+        .hero-copy h1 {
+          font-size: clamp(56px, 8.5vw, 76px);
+        }
+
+        .concepts-layout,
+        .workshop-layout,
+        .mito-layout,
+        .wallets-layout,
+        .speaker-layout {
+          gap: 38px;
+        }
+
+        .scroll-cue {
+          left: clamp(30px, 7vw, 70px);
+        }
+      }
+
+      @media (max-width: 620px) {
+        :root {
+          --header-height: 62px;
+        }
+
+        .site-header {
+          padding-inline: 20px;
+        }
+
+        .brand {
+          gap: 8px;
+          font-size: 10px;
+        }
+
+        .brand-mark {
+          width: 27px;
+          height: 27px;
+        }
+
+        .header-nav a:not(.nav-cta) {
+          display: none;
+        }
+
+        .header-nav .nav-cta {
+          padding: 9px 12px;
+          font-size: 10px;
+        }
+
+        .chapter {
+          min-height: 100svh;
+          align-items: center;
+          padding: calc(var(--header-height) + 45px) 24px 78px;
+        }
+
+        h2 {
+          font-size: clamp(42px, 12vw, 62px);
+        }
+
+        .hero {
+          align-items: start;
+          padding-top: calc(var(--header-height) + 40px);
+        }
+
+        .hero-layout {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .hero-copy .eyebrow {
+          margin-bottom: 21px;
+        }
+
+        .hero-copy h1 {
+          max-width: 480px;
+          margin-bottom: 17px;
+          font-size: clamp(54px, 15vw, 78px);
+        }
+
+        .hero-copy .lead {
+          max-width: 450px;
+          margin-bottom: 22px;
+          font-size: 15px;
+        }
+
+        .button {
+          min-height: 45px;
+          padding-inline: 15px;
+          font-size: 12px;
+        }
+
+        .wallet-showcase {
+          width: min(100%, 360px);
+          justify-self: end;
+          padding: 11px 12px;
+          transform: none;
+        }
+
+        .wallet-showcase-head {
+          margin-bottom: 6px;
+        }
+
+        .wallet-showcase-foot {
+          margin-top: 6px;
+        }
+
+        .drum-stage {
+          --r: 146px;
+          --cw: 70px;
+          --ch: 88px;
+          --icon: 38px;
+          --tilt: -8deg;
+          --dy: -12px;
+          height: 154px;
+        }
+
+        .drum-name {
+          font-size: 9.5px;
+        }
+
+
+        .scroll-cue {
+          bottom: 22px;
+          left: 24px;
+          font-size: 9px;
+        }
+
+        .chapter-nav {
+          top: auto;
+          right: 20px;
+          bottom: 28px;
+          display: flex;
+          gap: 9px;
+          padding: 9px 12px;
+          transform: none;
+          border: 1px solid var(--line);
+          border-radius: 999px;
+          background: rgb(17 19 18 / .88);
+          backdrop-filter: blur(6px);
+        }
+
+        .chapter-nav a {
+          width: 9px;
+          height: 9px;
+        }
+
+        .concepts-layout,
+        .workshop-layout,
+        .mito-layout,
+        .wallets-layout {
+          grid-template-columns: 1fr;
+          gap: 29px;
+        }
+
+        .speaker-layout {
+          grid-template-columns: 1fr;
+          gap: 23px;
+        }
+
+        .speaker-portrait-wrap {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 70px 1fr;
+          align-items: center;
+          gap: 14px;
+          justify-self: stretch;
+          padding: 10px;
+          border-radius: 16px;
+          transform: none;
+        }
+
+        .speaker-portrait-wrap img {
+          width: 70px;
+          height: 70px;
+          border-radius: 11px;
+        }
+
+        .speaker-copy .chapter-index {
+          margin-bottom: 11px;
+        }
+
+        .speaker-copy .eyebrow {
+          margin-bottom: 10px;
+          font-size: 9px;
+        }
+
+        .speaker-copy h2 {
+          margin-bottom: 13px;
+        }
+
+        .speaker-copy .lead {
+          margin-bottom: 12px;
+          font-size: 14px;
+        }
+
+        .speaker-values {
+          gap: 6px;
+          margin-bottom: 17px;
+        }
+
+        .speaker-values span {
+          padding: 7px 9px;
+          font-size: 9px;
+        }
+
+        .chapter-index {
+          margin-bottom: 15px;
+        }
+
+        .section-sticky {
+          padding-inline: 24px;
+          min-height: 30px;
+          padding-top: 6px;
+          padding-bottom: 12px;
+        }
+
+        .concepts-copy .lead,
+        .workshop-copy .lead {
+          margin-bottom: 0;
+          font-size: 15px;
+        }
+
+        .workshop-layout {
+          gap: 24px;
+        }
+
+        .safety-note {
+          margin-top: 17px;
+          padding: 12px;
+          font-size: 11px;
+        }
+
+        .steps li {
+          grid-template-columns: 34px 1fr;
+          gap: 10px;
+          padding: 13px 0;
+        }
+
+        .steps h3 {
+          font-size: 14px;
+        }
+
+        .steps p {
+          font-size: 11px;
+        }
+
+      }
+
+      @media (max-width: 370px) {
+        .chapter {
+          padding-right: 19px;
+          padding-left: 19px;
+        }
+
+        .hero-copy h1 {
+          font-size: 51px;
+        }
+
+        .hero-layout {
+          gap: 16px;
+        }
+
+        .actions {
+          gap: 8px;
+        }
+
+        .button {
+          padding-inline: 12px;
+          font-size: 11px;
+        }
+
+        .wallet-showcase {
+          width: 100%;
+        }
+
+        .drum-stage {
+          --r: 134px;
+          --cw: 64px;
+          --ch: 84px;
+          --icon: 34px;
+          --dy: -10px;
+          height: 134px;
+        }
+
+        .drum-name {
+          font-size: 9px;
+        }
+      }
+
+      @media (max-width: 850px) {
+        .page {
+          padding-right: clamp(30px, 7vw, 70px);
+          padding-left: clamp(30px, 7vw, 70px);
+        }
+
+        .lc-layout,
+        .mito-answer,
+        .keys-layout,
+        .app-layout {
+          gap: 32px;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .page {
+          align-items: center;
+          padding: calc(var(--header-height) + 40px) 24px 84px;
+        }
+
+        .speaker-portrait-wrap {
+          width: 76px;
+          display: block;
+          justify-self: start;
+          padding: 5px;
+        }
+
+        .speaker-portrait-wrap img {
+          width: 64px;
+          height: 64px;
+        }
+
+        .speaker-lines {
+          margin-bottom: 16px;
+        }
+
+        .speaker-lines li {
+          padding: 8px 0 8px 13px;
+          font-size: 14px;
+        }
+
+        .speaker-values-line {
+          margin-bottom: 16px;
+          font-size: 10px;
+        }
+
+        .lc-layout,
+        .mito-answer,
+        .keys-layout,
+        .app-layout {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .lc-copy .lead {
+          margin-bottom: 8px;
+          font-size: 15px;
+        }
+
+        .lc-facts {
+          margin-top: 12px;
+        }
+
+        .lc-facts li {
+          padding: 8px 0;
+          font-size: 13px;
+        }
+
+        .punch {
+          margin-top: 18px;
+          font-size: 20px;
+        }
+
+        .lc-gallery {
+          display: flex;
+          gap: 8px;
+          margin-inline: -24px;
+          padding: 0 24px 6px;
+          overflow-x: auto;
+          scroll-snap-type: x mandatory;
+          scroll-padding-inline: 24px;
+          scrollbar-width: none;
+        }
+
+        .lc-gallery::-webkit-scrollbar {
+          display: none;
+        }
+
+        .lc-row {
+          display: contents;
+        }
+
+        .lc-photo {
+          flex: 0 0 auto;
+          height: 190px;
+          scroll-snap-align: start;
+        }
+
+        .mito-answer h3 {
+          margin-bottom: 16px;
+          font-size: clamp(32px, 9vw, 42px);
+        }
+
+        .mito-answer .lead {
+          font-size: 15px;
+        }
+
+        .layer-card p {
+          font-size: 22px;
+        }
+
+        .mito .claim p {
+          font-size: 13px;
+        }
+
+        .ln-head h2 {
+          margin-bottom: 16px;
+        }
+
+        .ln-panels {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .ln-panel {
+          height: auto;
+        }
+
+        .ln-chapter {
+          padding-top: calc(var(--header-height) + 18px);
+          padding-bottom: 66px;
+        }
+
+        .ln-chapter .chapter-index {
+          margin-bottom: 8px;
+        }
+
+        .ln-panel-net .ln-stage {
+          aspect-ratio: 600 / 320;
+        }
+
+        .ln-panel-rayo .ln-stage {
+          aspect-ratio: 16 / 9;
+        }
+
+        .ln-caption {
+          display: block;
+          min-height: 0;
+          padding: 8px 12px 9px;
+        }
+
+        .ln-label {
+          margin: 0 6px 0 0;
+          font-size: 9px;
+        }
+
+        .ln-text {
+          font-size: 12px;
+          line-height: 1.4;
+        }
+
+        .ln-credit {
+          display: block;
+          margin-top: 3px;
+          font-size: 9px;
+        }
+
+        .keys-cards {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+
+        .keys-cards .claim p {
+          font-size: 13px;
+        }
+
+        .app-layout {
+          gap: 20px;
+        }
+
+        .app-shot {
+          order: -1;
+          width: min(46%, 160px);
+          justify-self: start;
+          padding: 5px;
+          border-radius: 22px;
+        }
+
+        .app-shot img {
+          max-height: 27svh;
+          border-radius: 17px;
+        }
+
+        .app-logo {
+          height: 28px;
+          margin-bottom: 14px;
+        }
+
+        .app-layout.is-landscape {
+          grid-template-columns: 1fr;
+        }
+
+        .app-logo.is-featured {
+          height: 32px;
+        }
+
+        .app-shot.is-landscape {
+          width: min(100%, 290px);
+          padding: 5px;
+          border-radius: 14px;
+        }
+
+        .app-shot.is-landscape img {
+          max-height: none;
+          border-radius: 10px;
+        }
+
+        .app-lines {
+          margin: 12px 0 16px;
+        }
+
+        .app-lines li {
+          padding: 6px 0 6px 18px;
+          font-size: 14px;
+        }
+
+        .app-lines li::before {
+          top: 16px;
+        }
+
+        .pros-cons {
+          gap: 8px;
+        }
+
+        .pros-cons > div {
+          padding: 11px 12px;
+        }
+
+        .pros-cons p {
+          font-size: 12px;
+        }
+      }
+
+      @media (max-width: 370px) {
+        .page {
+          padding-right: 19px;
+          padding-left: 19px;
+        }
+
+        .lc-gallery {
+          margin-inline: -19px;
+          padding-inline: 19px;
+        }
+
+        .pros-cons p {
+          font-size: 11px;
+        }
+      }
+
+
+      /* ---------- Lightbox ---------- */
+      .lb-trigger {
+        cursor: pointer;
+      }
+
+      .lb-trigger:focus {
+        outline: none;
+      }
+
+      .lb-trigger:focus-visible {
+        outline: 2px solid var(--lime);
+        outline-offset: 3px;
+      }
+
+      .lc-photo .lb-trigger:focus-visible,
+      .app-shot .lb-trigger:focus-visible,
+      .speaker-portrait-wrap .lb-trigger:focus-visible {
+        outline-offset: 2px;
+      }
+
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        place-items: center;
+        padding: clamp(12px, 3vw, 28px);
+        background: rgb(0 0 0 / 82%);
+      }
+
+      .lightbox.is-open {
+        display: grid;
+      }
+
+      .lightbox-img {
+        position: relative;
+        z-index: 1;
+        display: block;
+        max-width: 95vw;
+        max-height: 95vh;
+        width: auto;
+        height: auto;
+        min-width: min(280px, 70vw);
+        margin: 0;
+        object-fit: contain;
+        border-radius: 10px;
+        box-shadow: 0 24px 80px rgb(0 0 0 / 55%);
+        cursor: zoom-out;
+        background: rgb(16 19 17 / 40%);
+      }
+
+      .lightbox-img:focus {
+        outline: none;
+      }
+
+      .lightbox-img:focus-visible {
+        outline: 2px solid var(--lime);
+        outline-offset: 4px;
+      }
+
+      .lightbox-close {
+        position: absolute;
+        top: max(12px, env(safe-area-inset-top, 0px));
+        right: max(12px, env(safe-area-inset-right, 0px));
+        z-index: 2;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-radius: 999px;
+        color: var(--paper);
+        background: rgb(16 19 17 / 78%);
+        font-size: 28px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .lightbox-close:hover,
+      .lightbox-close:focus-visible {
+        border-color: var(--lime);
+        color: var(--lime);
+        outline: none;
+      }
+
+      html.lb-open,
+      body.lb-open {
+        overflow: hidden;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          transition-duration: .01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#inicio" aria-label="Wallets Lightning, ir al inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 18 22" fill="none"><path d="M10.9 1.5 3.4 12h4.8l-1 8.5L14.6 10h-4.8l1.1-8.5Z" fill="currentColor" /></svg>
+        </span>
+        wallets / lightning
+      </a>
+      <nav class="header-nav" aria-label="Navegación principal">
+        <a href="#speaker">Sobre mí</a>
+        <a href="#lacrypta">La Crypta</a>
+        <a href="#mito">El mito</a>
+        <a href="#lightning">Lightning</a>
+        <a href="#wallets">Wallets</a>
+        <a href="#workshop">El taller</a>
+        <a class="nav-cta" href="#workshop">Ir al taller <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <nav class="chapter-nav" aria-label="Ir a una página">
+      <a href="#inicio" aria-label="Inicio" aria-current="location"><span>Inicio</span></a>
+      <a href="#speaker" aria-label="Sobre mí"><span>Sobre mí</span></a>
+      <a href="#lacrypta" aria-label="La Crypta"><span>La Crypta</span></a>
+      <a href="#mito-queja" aria-label="El mito de Bitcoin"><span>El mito</span></a>
+      <a href="#mito-capas" aria-label="¿Son ciertas?"><span>¿Son ciertas?</span></a>
+      <a href="#lightning" aria-label="Lightning"><span>Lightning</span></a>
+      <a href="#wallets-llaves" aria-label="¿Quién tiene las llaves?"><span>Las llaves</span></a>
+      <a href="#wallets-strike" aria-label="Strike"><span>Strike</span></a>
+      <a href="#wallets-zeus" aria-label="ZEUS"><span>ZEUS</span></a>
+      <a href="#wallets-lawallet" aria-label="LaWallet"><span>LaWallet</span></a>
+      <a href="#wallets-lawallet-map" aria-label="LaWallet Connection Map"><span>LaWallet map</span></a>
+      <a href="#wallets-tabla" aria-label="Tabla de wallets"><span>Tabla de wallets</span></a>
+      <a href="#workshop" aria-label="Taller"><span>Taller</span></a>
+    </nav>
+
+    <div class="section-sticky" id="section-sticky" hidden aria-hidden="true">
+      <p class="chapter-index"></p>
+    </div>
+
+    <main>
+      <section class="chapter hero" id="inicio" aria-labelledby="hero-title">
+        <div class="chapter-inner hero-layout">
+          <div class="hero-copy">
+            <p class="eyebrow">Bitcoin / Lightning</p>
+            <h1 id="hero-title">Bitcoin se entiende mejor <em>cuando lo usás.</em></h1>
+            <p class="lead">Una introducción clara a Lightning y una práctica guiada para crear, cuidar y usar tu primera wallet.</p>
+            <div class="actions">
+              <a class="button" href="#speaker">Empezar el recorrido <span aria-hidden="true">↓</span></a>
+              <a class="button button-secondary" href="#workshop">Ver el taller</a>
+            </div>
+          </div>
+
+          <aside class="wallet-showcase" aria-label="Wallets Bitcoin y Lightning para conocer">
+            <div class="wallet-showcase-head">
+              <span class="micro-label">Wallets con Lightning</span>
+              <span class="wallet-count">01 — 13</span>
+            </div>
+            <!-- Íconos oficiales: ver assets/SOURCES.md -->
+            <div class="drum-stage">
+              <div class="drum-tilt">
+                <ul class="drum-ring" id="drum-ring">
+                <li class="drum-card" style="--i: 0">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-lawallet.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">LaWallet</strong>
+                    <span class="drum-name" aria-hidden="true">LaWallet</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 1">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-wos.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Wallet of Satoshi</strong>
+                    <span class="drum-name" aria-hidden="true">Wallet of Satoshi</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 2">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-tether.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Tether Wallet</strong>
+                    <span class="drum-name" aria-hidden="true">Tether Wallet</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 3">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-cashapp.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Cash App</strong>
+                    <span class="drum-name" aria-hidden="true">Cash App</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 4">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-strike.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Strike</strong>
+                    <span class="drum-name" aria-hidden="true">Strike</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 5">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-blink.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Blink</strong>
+                    <span class="drum-name" aria-hidden="true">Blink</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 6">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-phoenix.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Phoenix</strong>
+                    <span class="drum-name" aria-hidden="true">Phoenix</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 7">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-muun.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Muun</strong>
+                    <span class="drum-name" aria-hidden="true">Muun</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 8">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-bitkit.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Bitkit</strong>
+                    <span class="drum-name" aria-hidden="true">Bitkit</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 9">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-blixt.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Blixt</strong>
+                    <span class="drum-name" aria-hidden="true">Blixt</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 10">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-bluewallet.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">BlueWallet</strong>
+                    <span class="drum-name" aria-hidden="true">BlueWallet</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 11">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-zeus.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">ZEUS</strong>
+                    <span class="drum-name" aria-hidden="true">ZEUS</span>
+                  </span>
+                </li>
+                <li class="drum-card" style="--i: 12">
+                  <span class="drum-plate" aria-hidden="true"></span>
+                  <span class="drum-face">
+                    <img class="drum-icon lb-trigger" src="./assets/icono-aqua.webp" alt="" width="128" height="128" />
+                    <strong class="visually-hidden">Aqua Wallet</strong>
+                    <span class="drum-name" aria-hidden="true">Aqua Wallet</span>
+                  </span>
+                </li>
+                </ul>
+              </div>
+            </div>
+            <p class="wallet-showcase-foot">Trece opciones para llevar Lightning en el teléfono.</p>
+          </aside>
+        </div>
+        <a class="scroll-cue" href="#speaker"><span aria-hidden="true">↓</span> Deslizá para descubrir</a>
+      </section>
+
+      <section class="chapter speaker" id="speaker" aria-labelledby="speaker-title">
+        <div class="chapter-inner speaker-layout">
+          <div class="speaker-portrait-wrap">
+            <img
+              class="lb-trigger"
+              src="https://avatars.githubusercontent.com/u/31271916?v=4"
+              alt="Retrato de Fierillo"
+              loading="lazy"
+              width="320"
+              height="320"
+            />
+          </div>
+
+          <div class="speaker-copy">
+            <p class="chapter-index">01 <span>Sobre mí</span></p>
+            <p class="eyebrow">Community Manager de La Crypta · Programador en mis ratos libres</p>
+            <h2 id="speaker-title">Soy <em>Fierillo</em>, el oso de La Crypta.</h2>
+            <ul class="speaker-lines">
+              <li>Estudié ingeniería y aprendí a programar por mi cuenta.</li>
+              <li>Más de 20 proyectos, casi todos de código abierto.</li>
+              <li>Bitcoin, Lightning, Nostr y herramientas para la comunidad.</li>
+            </ul>
+            <p class="speaker-values-line">Honestidad · Minimalismo · Humildad · Curiosidad</p>
+            <a class="speaker-link" href="https://fierillolandia.vercel.app" target="_blank" rel="noreferrer">Más sobre mí en Fierillolandia <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter lacrypta" id="lacrypta" aria-labelledby="lacrypta-title">
+        <div class="chapter-inner lc-layout">
+          <div class="lc-copy">
+            <p class="chapter-index">02 <span>Comunidad</span></p>
+            <h2 id="lacrypta-title">La Crypta</h2>
+            <p class="lead">Comunidad de Bitcoin en Villanueva 1367, Belgrano.</p>
+            <p class="lead">Aprendemos Bitcoin haciendo: en La Crypta se come lo que se cocina.</p>
+            <ul class="lc-facts">
+              <li>6 hackatones en lo que va del año · Networking · Community Call</li>
+              <li>Eventos que se pagan en sats.</li>
+            </ul>
+            <p class="punch">Que Bitcoin sea una experiencia, no una promesa.</p>
+          </div>
+
+          <div class="lc-gallery" aria-label="Fotos de La Crypta">
+            <div class="lc-row">
+              <figure class="lc-photo" style="--ar: 1">
+                <img class="lb-trigger" src="./assets/lacrypta-fachada.jpg" alt="Fachada de La Crypta en Belgrano: casona de piedra con hiedra y portón de madera" width="1080" height="1080" loading="lazy" />
+              </figure>
+              <figure class="lc-photo" style="--ar: 1">
+                <img class="lb-trigger" src="./assets/lacrypta-patio.jpg" alt="Exposición en el patio de La Crypta: público sentado frente a una pantalla" width="1195" height="1200" loading="lazy" />
+              </figure>
+              <figure class="lc-photo" style="--ar: .75">
+                <img class="lb-trigger" src="./assets/lacrypta-mesa-de-trabajo.jpg" alt="Mesa de trabajo con laptops bajo el banner de La Crypta" width="900" height="1200" loading="lazy" />
+              </figure>
+            </div>
+            <div class="lc-row">
+              <figure class="lc-photo" style="--ar: .75">
+                <img class="lb-trigger" src="./assets/lacrypta-almuerzo.jpg" alt="Almuerzo de la comunidad: selfie grupal en una mesa larga" width="900" height="1200" loading="lazy" />
+              </figure>
+              <figure class="lc-photo" style="--ar: 1.695">
+                <img class="lb-trigger" src="./assets/lacrypta-veintiuno.jpg" alt="Foto grupal de la comunidad en el stand de Veintiuno.lat" width="1200" height="708" loading="lazy" />
+              </figure>
+              <figure class="lc-photo" style="--ar: .75">
+                <img class="lb-trigger" src="./assets/lacrypta-neon-bitcoin.jpg" alt="Símbolo de Bitcoin en neón naranja sobre la chimenea de La Crypta" width="900" height="1200" loading="lazy" />
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter paged mito" id="mito" aria-labelledby="mito-title">
+        <div class="page" id="mito-queja">
+          <div class="chapter-inner mito-layout">
+            <div class="mito-copy">
+              <p class="chapter-index">03 <span>El mito</span></p>
+              <h2 id="mito-title">“Bitcoin es <em>caro</em> y <em>lento</em>.”</h2>
+              <p class="lead">La queja más escuchada. Veamos qué hay detrás antes de responder.</p>
+            </div>
+
+            <div class="mito-claims" aria-label="Las dos afirmaciones">
+              <article class="claim">
+                <span class="claim-mark" aria-hidden="true">01</span>
+                <h3>Es caro</h3>
+                <p>Las comisiones suben cuando hay mucha demanda. En horarios pico, una transferencia puede costar varios dólares.</p>
+              </article>
+              <article class="claim">
+                <span class="claim-mark" aria-hidden="true">02</span>
+                <h3>Es lento</h3>
+                <p>Un bloque sale cada ~10 minutos en promedio. Para pagar un café, eso es eterno.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="mito-capas">
+          <div class="chapter-inner mito-answer">
+            <div>
+              <p class="eyebrow">¿Son ciertas?</p>
+              <h3>Sí, pero en la capa 1.</h3>
+              <p class="lead">La capa 1 se compara con la liquidación de un banco central: lenta, cara y definitiva.</p>
+              <p class="lead">Para pagar rápido y barato, el sistema tradicional usa una capa 2: Visa, Mastercard.</p>
+            </div>
+            <div class="layer-card">
+              <p>Bitcoin también tiene su capa 2: se llama Lightning.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter ln-chapter" id="lightning" aria-labelledby="lightning-title">
+        <div class="chapter-inner">
+          <p class="chapter-index">04 <span>Cómo funciona</span></p>
+          <div class="ln-head">
+            <h2 id="lightning-title"><em>Lightning</em></h2>
+          </div>
+          <div class="ln-panels">
+            <figure class="ln-panel ln-panel-net">
+              <div class="ln-stage" role="img" aria-label="Un pago busca caminos por la red de canales, descarta dos y llega al café: vos pasás de 50 a 40 y el café de 50 a 60.">
+                <svg id="ln-net" viewBox="0 0 600 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                  <defs>
+                    <filter id="ln-glow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="4" result="b" />
+                      <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+                    </filter>
+                    <filter id="ln-glow-strong" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="9" result="b" />
+                      <feMerge><feMergeNode in="b" /><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+                    </filter>
+                  </defs>
+                  <g id="ln-edges"></g>
+                  <path id="ln-route" fill="none" stroke="#ff762e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#ln-glow)" opacity="0" />
+                  <path id="ln-trail" fill="none" stroke="#ffb184" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#ln-glow)" opacity="0" />
+                  <path id="ln-flash" fill="none" stroke="#fff6e8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#ln-glow-strong)" opacity="0" />
+                  <g id="ln-fails"></g>
+                  <g id="ln-nodes"></g>
+                  <circle id="ln-pulse" r="6" fill="#ffd2b8" filter="url(#ln-glow)" opacity="0" />
+                  <circle id="ln-chip" r="8" fill="#d2f278" filter="url(#ln-glow-strong)" opacity="0" />
+                </svg>
+              </div>
+              <figcaption class="ln-caption">
+                <span class="ln-label">Red Lightning</span>
+                <span class="ln-text">Tu pago prueba rutas por la red. Si un canal no tiene saldo, vuelve y prueba otra.</span>
+                <span class="ln-text">Cuando encuentra una que llega, el pago pasa entero, en un instante.</span>
+              </figcaption>
+            </figure>
+            <!-- Video: "Lightning strikes in slow motion (240fps) in Muurame, Finland", MrNousia, CC BY 3.0,
+                 https://commons.wikimedia.org/wiki/File:Lightning_strikes_in_slow_motion_(240fps)_in_Muurame,_Finland.webm
+                 Recortado, ralentizado y reencuadrado: ver assets/SOURCES.md -->
+            <figure class="ln-panel ln-panel-rayo">
+              <div class="ln-stage" role="img" aria-label="Rayo real en cámara lenta: las ramas tantean hacia abajo, una toca el suelo y ese camino se ilumina de golpe.">
+                <video id="ln-video" autoplay muted loop playsinline preload="auto" disablepictureinpicture poster="./assets/rayo-camara-lenta-poster.jpg" width="560" height="700" aria-hidden="true">
+                  <source src="./assets/rayo-camara-lenta.webm" type="video/webm" />
+                  <source src="./assets/rayo-camara-lenta.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <figcaption class="ln-caption">
+                <span class="ln-label">Un rayo</span>
+                <span class="ln-text">Un rayo hace lo mismo: tantea caminos hacia el suelo y descarga solo por el que conecta.</span>
+                <small class="ln-credit">Video: <a href="https://commons.wikimedia.org/wiki/File:Lightning_strikes_in_slow_motion_(240fps)_in_Muurame,_Finland.webm" target="_blank" rel="noreferrer">MrNousia</a>, <a href="https://creativecommons.org/licenses/by/3.0/deed.es" target="_blank" rel="noreferrer">CC BY 3.0</a>, vía Wikimedia Commons · editado</small>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter paged wallets" id="wallets" aria-labelledby="keys-title">
+        <div class="page" id="wallets-llaves">
+          <div class="chapter-inner keys-layout">
+            <div>
+              <p class="chapter-index">05 <span>Wallets</span></p>
+              <h2 id="keys-title">¿Quién tiene las llaves?</h2>
+            </div>
+            <div>
+              <div class="keys-cards">
+                <article class="claim">
+                  <span class="claim-tag is-custody">Custodial</span>
+                  <p>Alguien guarda las llaves por vos. Fácil para empezar, pero tus sats dependen de un tercero.</p>
+                </article>
+                <article class="claim">
+                  <span class="claim-tag is-self">Autocustodial</span>
+                  <p>Las llaves son tuyas. Más responsabilidad, nadie te puede congelar los fondos.</p>
+                </article>
+              </div>
+              <p class="punch">Para probar con poco, cualquiera. Para guardar, autocustodial.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strike: logo del header de https://strike.me/ ; captura oficial del listado de App Store (AR):
+             https://apps.apple.com/ar/app/strike-buy-hold-bitcoin/id1488724463 (captura 01, recortada sin el texto de marketing) -->
+        <div class="page" id="wallets-strike">
+          <div class="chapter-inner app-layout">
+            <div class="app-copy">
+              <h3 class="visually-hidden">Strike</h3>
+              <img class="app-logo lb-trigger" src="./assets/strike-logo.svg" alt="Strike" width="190" height="42" />
+              <span class="claim-tag is-custody">Custodial</span>
+              <ul class="app-lines">
+                <li>Te registrás, verificás tu identidad y ya podés mandar y recibir por Lightning.</li>
+                <li>Sin frase de recuperación: tu cuenta es tu acceso.</li>
+                <li>Los sats los guarda la empresa por vos.</li>
+              </ul>
+              <div class="pros-cons">
+                <div class="is-pro"><span class="pc-label">A favor</span><p>Muy fácil · Ideal para empezar con poco</p></div>
+                <div class="is-con"><span class="pc-label">En contra</span><p>Te piden tus datos · Si la empresa te bloquea, no tenés tus sats</p></div>
+              </div>
+            </div>
+            <figure class="app-shot">
+              <img class="lb-trigger" src="./assets/strike-app-inicio.jpg" alt="Pantalla de inicio de la app de Strike: saldo en bitcoin, botones para comprar y vender, y accesos para recibir y enviar" width="560" height="958" loading="lazy" />
+            </figure>
+          </div>
+        </div>
+
+        <!-- ZEUS: logo assets/images/SVG/wordmark-black.svg de https://github.com/ZeusLN/zeus (recoloreado a blanco);
+             captura oficial del listado de App Store: https://apps.apple.com/us/app/zeus-wallet/id1456038895 (pantalla de canales) -->
+        <div class="page" id="wallets-zeus">
+          <div class="chapter-inner app-layout">
+            <div class="app-copy">
+              <h3 class="visually-hidden">ZEUS</h3>
+              <img class="app-logo lb-trigger" src="./assets/zeus-logo.svg" alt="ZEUS" width="108" height="42" />
+              <span class="claim-tag is-self">Autocustodial</span>
+              <ul class="app-lines">
+                <li>Tus llaves, tu nodo, tus canales.</li>
+                <li>Para recibir necesitás liquidez de entrada. Para pagar, canales con saldo.</li>
+                <li>Frase de recuperación + respaldo de canales.</li>
+              </ul>
+              <div class="pros-cons">
+                <div class="is-pro"><span class="pc-label">A favor</span><p>Control total · Nadie te puede bloquear</p></div>
+                <div class="is-con"><span class="pc-label">En contra</span><p>Curva de aprendizaje alta · Si te equivocás, lo resolvés vos</p></div>
+              </div>
+            </div>
+            <figure class="app-shot">
+              <img class="lb-trigger" src="./assets/zeus-canales.jpg" alt="Pantalla de canales de ZEUS: capacidad de envío y de recepción, y la lista de canales con su saldo" width="560" height="1216" loading="lazy" />
+            </figure>
+          </div>
+        </div>
+
+        <!-- LaWallet: logo oficial lawallet-nwc; captura de app (balance/address) provista por Fierillo 2026-10-05.
+             Segunda página #wallets-lawallet-map usa el Connection Map. -->
+        <div class="page" id="wallets-lawallet">
+          <div class="chapter-inner app-layout">
+            <div class="app-copy">
+              <h3 class="visually-hidden">LaWallet</h3>
+              <img class="app-logo is-featured lb-trigger" src="./assets/lawallet-logo.svg" alt="LaWallet" width="234" height="42" />
+              <span class="claim-tag is-progressive">Autocustodia progresiva</span>
+              <ul class="app-lines">
+                <li>Empezás con poca fricción: alias a una address que ya tengas, o una NWC de cortesía vía LNcurl.</li>
+                <li>Cuando estás listo, conectás tu propia NWC (Alby, Primal u otra compatible).</li>
+                <li>Lightning Address en el dominio de la comunidad. Código abierto.</li>
+              </ul>
+              <div class="pros-cons">
+                <div class="is-pro"><span class="pc-label">A favor</span><p>Escalá a tu ritmo · Dirección Lightning de la comunidad</p></div>
+                <div class="is-con"><span class="pc-label">En contra</span><p>Al inicio podés depender de una wallet de cortesía · Pasar a tu NWC es un paso más</p></div>
+              </div>
+            </div>
+            <figure class="app-shot">
+              <img class="lb-trigger" src="./assets/lawallet-app-inicio.jpg" alt="Pantalla de inicio de LaWallet: saldo en sats, botones para recibir y enviar, y la address fierillo@lawallet.io" width="560" height="743" loading="lazy" />
+            </figure>
+          </div>
+        </div>
+
+        <!-- LaWallet p2: Connection Map (Fierillo 2026-10-05). Varias Lightning Address; cada una LNcurl o NWC. -->
+        <div class="page" id="wallets-lawallet-map">
+          <div class="chapter-inner app-layout is-landscape">
+            <div class="app-copy">
+              <h3 class="visually-hidden">LaWallet: varias Lightning Address</h3>
+              <p class="eyebrow">LaWallet</p>
+              <p class="punch">Varias Lightning Address.</p>
+              <ul class="app-lines">
+                <li>Podés configurar más de una address en la misma cuenta.</li>
+                <li>En cada una elegís LNcurl (cortesía) o conectar tu propia NWC.</li>
+                <li>El mapa muestra cómo se enlazan addresses y wallets.</li>
+              </ul>
+            </div>
+            <figure class="app-shot is-landscape">
+              <img class="lb-trigger" src="./assets/lawallet-connection-map.jpg" alt="Connection Map de LaWallet: varias Lightning Address enlazadas a wallets NWC y a cards" width="900" height="426" loading="lazy" />
+            </figure>
+          </div>
+        </div>
+
+        <div class="page" id="wallets-tabla">
+          <div class="chapter-inner wallets-layout">
+            <div class="wallets-copy">
+              <p class="eyebrow">Para elegir la tuya</p>
+              <h2 id="wallets-title">Wallets con <em>Lightning</em>.</h2>
+              <p class="lead">Todas usan Lightning y funcionan en el teléfono. Lo que cambia es quién cuida las claves: hay custodial (otros las guardan) y autocustodial (las guardás vos).</p>
+            </div>
+
+          <div class="table-wrap">
+            <table class="wallets-table">
+              <colgroup>
+                <col class="col-wallet" />
+                <col class="col-custodia" />
+                <col class="col-pro" />
+                <col class="col-contra" />
+              </colgroup>
+              <thead>
+                <tr><th>Wallet</th><th>Custodia</th><th>Pro</th><th>Contra</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>LaWallet</td><td>Custodial temporal (LNcurl) o NWC (custodia = la de la wallet conectada)</td><td>Lightning Address sin armar nodo</td><td>NWC requiere configuración adicional</td></tr>
+                <tr><td>Wallet of Satoshi</td><td>Autocustodial (Spark) global; custodial solo en algunas regiones</td><td>Muy simple; Lightning y on-chain</td><td>Spark: federación, sin canales LN propios</td></tr>
+                <tr><td>Tether Wallet</td><td>Autocustodial (12 palabras; backup nube opcional)</td><td>BTC on-chain + Lightning; USDT/XAUT</td><td>Lightning vía Spark. Backup nube ata a email+nube. USDT/XAUT congelables. App cerrada</td></tr>
+                <tr><td>Cash App</td><td>Custodial</td><td>Lightning y on-chain, simple</td><td>Solo EE.UU.; si te bloquean, no tenés sats. KYC</td></tr>
+                <tr><td>Strike</td><td>Custodial</td><td>Fácil; Lightning y on-chain; ~98 países (incl. Argentina)</td><td>KYC; sin frase; si te bloquean no tenés sats</td></tr>
+                <tr><td>Blink</td><td>Custodial o autocustodial (Spark); en algunas regiones solo auto</td><td>Elegís el modo; Lightning y on-chain</td><td>Autocustodial vía Spark. Regiones del modo custodial: aviso in-app</td></tr>
+                <tr><td>Phoenix</td><td>Autocustodial</td><td>Canal LN automático; on-chain por splicing</td><td>Depende del LSP de ACINQ. No es nodo a mano</td></tr>
+                <tr><td>Muun</td><td>Autocustodial</td><td>On-chain + Lightning; simple</td><td>Lightning vía swaps (sin canales LN en el teléfono)</td></tr>
+                <tr><td>Bitkit</td><td>Autocustodial</td><td>Lightning y on-chain (LDK; LSP Blocktank sin custodia)</td><td>LSP para liquidez de entrada; no es nodo remoto propio</td></tr>
+                <tr><td>Blixt</td><td>Autocustodial</td><td>Nodo LND embebido; canales automáticos</td><td>Más control, más curva/recursos que una wallet simple</td></tr>
+                <tr><td>BlueWallet</td><td>Autocustodial on-chain</td><td>On-chain sólido</td><td>LN: tu LNDHub o Arkade (Ark+swaps, no LN nativo). lndhub.io ya no existe</td></tr>
+                <tr><td>ZEUS</td><td>Cashu (custodial mint) → nodo embebido (LDK+Olympus) → nodo remoto</td><td>Control total en modos nodo; frase + respaldo de canales</td><td>Cashu no es autocustodial. Curva media/alta. Swaps ZEUS suspendidos. Sin Spark</td></tr>
+                <tr><td>Aqua Wallet</td><td>Autocustodial L-BTC en Liquid (sin canales LN)</td><td>L-BTC + pagar BOLT11 / retirar vía LN (Indra)</td><td>No es LN nativo; sacar por LN sí, no depositar por LN; depende del swap</td></tr>
+              </tbody>
+</table>
+            <p class="table-note">No es un ranking: nadie publica uso comparable entre wallets. Elegí según quién querés que cuide tus claves.</p>
+          </div>
+        </div>
+        </div>
+      </section>
+
+      <section class="chapter workshop" id="workshop" aria-labelledby="workshop-title">
+        <div class="chapter-inner workshop-layout">
+          <div class="workshop-copy">
+            <p class="chapter-index">06 <span>Probar</span></p>
+            <h2 id="workshop-title">De la teoría a tu primera wallet.</h2>
+            <p class="lead">En el taller practicás cada paso en tu propio teléfono.</p>
+            <div class="safety-note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 20 6v5.5c0 4.7-3.2 7.8-8 9.5-4.8-1.7-8-4.8-8-9.5V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+              <span>Tu frase de recuperación es privada. Nunca la compartas ni la fotografíes.</span>
+            </div>
+          </div>
+
+          <ol class="steps">
+            <li><div><h3>Elegir una wallet</h3><p>Qué mirar para elegir una opción a tu medida.</p></div></li>
+            <li><div><h3>Prepararla con cuidado</h3><p>Crearla y entender la recuperación.</p></div></li>
+            <li><div><h3>Recibir sats</h3><p>Leer el comprobante de pago y reconocer los datos importantes.</p></div></li>
+            <li><div><h3>Hacer un pago</h3><p>Enviar un pago de prueba y ver qué pasó.</p></div></li>
+          </ol>
+        </div>
+      </section>
+
+    </main>
+
+
+    <div
+      id="lightbox"
+      class="lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Imagen ampliada"
+      hidden
+    >
+      <button type="button" class="lightbox-close" aria-label="Cerrar imagen">&times;</button>
+      <img class="lightbox-img" alt="" />
+    </div>
+
+    <script>
+      // Tambor de wallets en la portada: gira solo con la portada a la vista.
+      (() => {
+        const ring = document.getElementById("drum-ring");
+        if (!ring) return;
+        const cards = [...ring.querySelectorAll(".drum-card")];
+        const step = 360 / cards.length;
+        const SPEED = 30; // grados por segundo: una vuelta cada 12 s
+        const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+        let rot = 0, last = 0, rafId = 0, running = false, visible = true;
+
+        function paint() {
+          ring.style.setProperty("--rot", rot + "deg");
+          cards.forEach((card, i) => {
+            const facing = Math.cos(((i * step + rot) * Math.PI) / 180);
+            card.style.setProperty("--f", Math.max(0, facing).toFixed(3));
+          });
+        }
+        function tick(now) {
+          if (!running) return;
+          if (last) rot = (rot - ((now - last) / 1000) * SPEED) % 360;
+          last = now;
+          paint();
+          rafId = requestAnimationFrame(tick);
+        }
+        function start() {
+          if (running || reduce.matches || !visible) return;
+          running = true;
+          last = 0;
+          rafId = requestAnimationFrame(tick);
+        }
+        function stop() {
+          running = false;
+          cancelAnimationFrame(rafId);
+        }
+        function freeze() {
+          // Movimiento reducido: tambor quieto con la primera wallet de frente.
+          stop();
+          rot = 0;
+          paint();
+        }
+        paint();
+        if (reduce.matches) freeze();
+        else start();
+        reduce.addEventListener("change", () => (reduce.matches ? freeze() : start()));
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting && entry.intersectionRatio > 0.02;
+            if (visible) start();
+            else stop();
+          }, { threshold: [0, 0.05, 0.25] }).observe(document.getElementById("inicio"));
+        }
+      })();
+    </script>
+
+    <script>
+      (() => {
+        const dotLinks = [...document.querySelectorAll(".chapter-nav a")];
+        const targets = dotLinks.map((link) => document.querySelector(link.hash));
+        let queued = false;
+
+        function syncNav() {
+          queued = false;
+          const line = window.scrollY + window.innerHeight * 0.4;
+          let current = 0;
+          targets.forEach((target, i) => {
+            if (target && target.getBoundingClientRect().top + window.scrollY <= line) current = i;
+          });
+          dotLinks.forEach((link, i) => {
+            if (i === current) link.setAttribute("aria-current", "location");
+            else link.removeAttribute("aria-current");
+          });
+        }
+
+        addEventListener(
+          "scroll",
+          () => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(syncNav);
+          },
+          { passive: true },
+        );
+        addEventListener("resize", syncNav);
+        syncNav();
+      })();
+    </script>
+
+    <script>
+      (() => {
+        const sticky = document.getElementById("section-sticky");
+        const label = sticky && sticky.querySelector(".chapter-index");
+        if (!sticky || !label) return;
+
+        const chapters = [...document.querySelectorAll("main > .chapter")].map((el) => {
+          const idx = el.querySelector(".chapter-index");
+          return {
+            el,
+            id: el.id,
+            html: idx ? idx.innerHTML.trim() : "",
+            indexEl: idx || null,
+          };
+        });
+
+        let queued = false;
+        let currentId = null;
+
+        function headerBand() {
+          const raw = getComputedStyle(document.documentElement)
+            .getPropertyValue("--header-height")
+            .trim();
+          const n = parseFloat(raw);
+          return Number.isFinite(n) ? n : 76;
+        }
+
+        function inflowIndexVisible(indexEl) {
+          if (!indexEl) return false;
+          const rect = indexEl.getBoundingClientRect();
+          // Visible = still overlaps the content area below the site header.
+          return rect.bottom > headerBand() && rect.top < window.innerHeight;
+        }
+
+        function hideSticky() {
+          sticky.hidden = true;
+          sticky.setAttribute("aria-hidden", "true");
+        }
+
+        function syncSticky() {
+          queued = false;
+          const line = window.scrollY + window.innerHeight * 0.35;
+          let active = null;
+          for (const ch of chapters) {
+            const top = ch.el.getBoundingClientRect().top + window.scrollY;
+            if (top <= line) active = ch;
+          }
+
+          if (!active || !active.html || active.id === "inicio") {
+            currentId = null;
+            hideSticky();
+            return;
+          }
+
+          if (currentId !== active.id) {
+            currentId = active.id;
+            label.innerHTML = active.html;
+            label.dataset.chapter = active.id;
+          }
+
+          // No duplicar: solo mostrar la barra fija cuando el chapter-index
+          // in-flow del capítulo activo ya salió por arriba del header.
+          if (inflowIndexVisible(active.indexEl)) {
+            hideSticky();
+            return;
+          }
+
+          sticky.hidden = false;
+          sticky.setAttribute("aria-hidden", "true");
+        }
+
+        addEventListener(
+          "scroll",
+          () => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(syncSticky);
+          },
+          { passive: true },
+        );
+        addEventListener("resize", syncSticky);
+        syncSticky();
+      })();
+    </script>
+
+    <script>
+      (() => {
+        "use strict";
+        // ---------- Shared timeline ----------
+        const NODES = {
+          vos: [62, 230], A: [178, 104], B: [172, 350], C: [300, 228], D: [312, 396],
+          E: [318, 66], F: [436, 138], G: [444, 326], cafe: [540, 230],
+        };
+        const EDGES = [
+          ["vos", "A"], ["vos", "B"], ["A", "E"], ["A", "C"], ["B", "C"], ["B", "D"], ["E", "C"],
+          ["E", "F"], ["C", "F"], ["C", "G"], ["D", "C"], ["D", "G"], ["F", "cafe"], ["G", "cafe"],
+        ];
+        const ATTEMPTS = [
+          { path: ["vos", "A", "E", "F"], fail: true },
+          { path: ["vos", "B", "D", "G", "cafe"], fail: true },
+          { path: ["vos", "B", "C", "F", "cafe"], fail: false },
+        ];
+        const HOP = 0.36, PARTIAL = 0.42, HOLD = 0.5, RETRACT = 0.42, GAP = 0.22;
+        let t0 = 0.45;
+        const phases = ATTEMPTS.map((a) => {
+          const hops = a.fail ? a.path.length - 2 : a.path.length - 1;
+          const maxP = hops + (a.fail ? PARTIAL : 0);
+          const ph = { ...a, start: t0, maxP, reach: t0 + maxP * HOP };
+          if (a.fail) {
+            ph.retractStart = ph.reach + HOLD;
+            ph.end = ph.retractStart + RETRACT;
+            t0 = ph.end + GAP;
+          } else {
+            ph.end = ph.reach;
+          }
+          return ph;
+        });
+        const LEADER_START = phases[0].start;
+        const GROUND = phases[phases.length - 1].reach; // route found / leader touches ground
+        const PAY = GROUND + 0.26;                       // payment = return stroke
+        const ZIP = 0.2;
+        const CYCLE = PAY + 3.1;
+        window.__lnTimeline = { phases, LEADER_START, GROUND, PAY, CYCLE };
+
+        const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+        const params = new URLSearchParams(location.search);
+        const frozen = params.has("lnt") ? parseFloat(params.get("lnt")) : null;
+
+        // ---------- Left: network (SVG) ----------
+        const NS = "http://www.w3.org/2000/svg";
+        const $ = (id) => document.getElementById("ln-" + id);
+        const edgesG = $("edges"), failsG = $("fails"), nodesG = $("nodes");
+        const el = (tag, attrs, parent) => {
+          const e = document.createElementNS(NS, tag);
+          for (const k in attrs) e.setAttribute(k, attrs[k]);
+          parent.appendChild(e);
+          return e;
+        };
+        for (const [a, b] of EDGES) {
+          el("line", { class: "ln-edge", x1: NODES[a][0], y1: NODES[a][1], x2: NODES[b][0], y2: NODES[b][1] }, edgesG);
+        }
+        const failLines = phases.filter((p) => p.fail).map((p) => {
+          const n = p.path.length;
+          const a = NODES[p.path[n - 2]], b = NODES[p.path[n - 1]];
+          return el("line", { class: "ln-edge-fail", x1: a[0], y1: a[1], x2: b[0], y2: b[1] }, failsG);
+        });
+        const nodeEls = {};
+        const balances = {};
+        for (const k in NODES) {
+          const [x, y] = NODES[k];
+          if (k === "vos" || k === "cafe") {
+            const g = el("g", {}, nodesG);
+            nodeEls[k] = el("circle", { class: "ln-node-end", cx: x, cy: y, r: 30 }, g);
+            balances[k] = el("text", { class: "ln-balance", x, y }, g);
+            balances[k].textContent = "50";
+            el("text", { class: "ln-node-label", x, y: y + 50 }, g).textContent = k === "vos" ? "vos" : "café";
+          } else {
+            nodeEls[k] = el("circle", { class: "ln-node-dot", cx: x, cy: y, r: 9 }, nodesG);
+          }
+        }
+        const pt = (path, p) => {
+          const i = Math.min(Math.floor(p), path.length - 2);
+          const f = Math.min(Math.max(p - i, 0), 1);
+          const a = NODES[path[i]], b = NODES[path[i + 1]];
+          return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+        };
+        const polyTo = (path, p) => {
+          let d = `M${NODES[path[0]][0]} ${NODES[path[0]][1]}`;
+          for (let i = 1; i <= Math.floor(p) && i < path.length; i++) d += ` L${NODES[path[i]][0]} ${NODES[path[i]][1]}`;
+          const [x, y] = pt(path, p);
+          return d + ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+        };
+        const success = phases[phases.length - 1];
+        const routeD = polyTo(success.path, success.path.length - 1);
+        $("route").setAttribute("d", routeD);
+        $("flash").setAttribute("d", routeD);
+        const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+
+        function drawNet(t) {
+          const trail = $("trail"), pulse = $("pulse"), chip = $("chip");
+          const fadeOut = clamp((CYCLE - t) / 0.45); // global fade at loop end
+          let trailOp = 0, pulseOp = 0, d = "", px = 0, py = 0;
+          const lit = new Set();
+          for (const ph of phases) {
+            if (t < ph.start || t > ph.end + 0.001) continue;
+            let p, op = 1;
+            if (t <= ph.reach) p = ((t - ph.start) / (ph.reach - ph.start)) * ph.maxP;
+            else if (!ph.fail) p = ph.maxP;
+            else if (t <= ph.retractStart) p = ph.maxP;
+            else { p = ph.maxP * (1 - (t - ph.retractStart) / RETRACT); op = 0.55; }
+            d = polyTo(ph.path, p);
+            [px, py] = pt(ph.path, p);
+            trailOp = op; pulseOp = 1;
+            for (let i = 0; i <= Math.floor(p) && i < ph.path.length; i++) lit.add(ph.path[i]);
+          }
+          if (t > success.reach) { trailOp = 0; pulseOp = 0; }
+          trail.setAttribute("d", d || "M0 0");
+          trail.setAttribute("opacity", trailOp * fadeOut);
+          pulse.setAttribute("cx", px); pulse.setAttribute("cy", py);
+          pulse.setAttribute("opacity", pulseOp * fadeOut);
+          // failed channels: red flash, then faint memory
+          phases.filter((p) => p.fail).forEach((ph, i) => {
+            let o = 0;
+            if (t >= ph.reach) {
+              const k = t - ph.reach;
+              o = k < HOLD ? 0.55 + 0.45 * Math.abs(Math.sin(k * 22)) : 0.22;
+            }
+            failLines[i].style.opacity = o * fadeOut;
+          });
+          // route found + payment
+          let routeOp = 0, flashOp = 0, chipOp = 0;
+          if (t >= GROUND) routeOp = clamp((t - GROUND) / 0.22);
+          if (t >= PAY) {
+            const k = t - PAY;
+            flashOp = k < ZIP ? 0.6 : Math.exp(-(k - ZIP) / 0.35);
+            if (k <= ZIP + 0.08) {
+              const [x, y] = pt(success.path, clamp(k / ZIP) * (success.path.length - 1));
+              chip.setAttribute("cx", x); chip.setAttribute("cy", y);
+              chipOp = 1;
+            }
+          }
+          $("route").setAttribute("opacity", routeOp * fadeOut);
+          $("flash").setAttribute("opacity", flashOp * fadeOut);
+          chip.setAttribute("opacity", chipOp);
+          if (t >= GROUND) success.path.forEach((n) => lit.add(n));
+          for (const k in nodeEls) {
+            if (k === "vos" || k === "cafe") continue;
+            nodeEls[k].style.stroke = lit.has(k) ? "#ff9a62" : "";
+          }
+          const sent = t >= PAY, got = t >= PAY + ZIP;
+          balances.vos.textContent = sent && fadeOut > 0.5 ? "40" : "50";
+          balances.cafe.textContent = got && fadeOut > 0.5 ? "60" : "50";
+          const ring = (k, on) => {
+            nodeEls[k].style.strokeWidth = on ? 4 : 2;
+            nodeEls[k].style.filter = on ? "url(#ln-glow)" : "";
+          };
+          ring("vos", sent && t < PAY + 0.5);
+          ring("cafe", got && t < PAY + ZIP + 0.6);
+        }
+
+        // ---------- Derecha: video real, la red sigue su reloj ----------
+        // Retorno del rayo (frame más brillante) en el clip: 4.633 s; duración 8.733 s.
+        const video = document.getElementById("ln-video");
+        const V_STROKE = 4.633, V_DUR = 8.733, V_POSTER = 7.3;
+        const vDur = () => (isFinite(video.duration) && video.duration > V_STROKE ? video.duration : V_DUR);
+        // video.currentTime -> tiempo de la red: el pago cae justo en el retorno del rayo
+        const toNet = (vt) => vt < V_STROKE
+          ? (vt / V_STROKE) * PAY
+          : PAY + ((vt - V_STROKE) / (vDur() - V_STROKE)) * (CYCLE - PAY);
+        const toVideo = (t) => t < PAY
+          ? (t / PAY) * V_STROKE
+          : V_STROKE + ((t - PAY) / (CYCLE - PAY)) * (vDur() - V_STROKE);
+        window.__lnTimeline.V_STROKE = V_STROKE;
+        window.__lnTimeline.toNet = toNet;
+
+        // ---------- Loop: arranca cuando la sección está a la vista ----------
+        const section = document.getElementById("lightning");
+        let running = false, visible = false, startMs = 0, rafId = 0;
+        const seek = (vt) => {
+          const go = () => { try { video.currentTime = vt; } catch (e) {} };
+          if (video.readyState >= 1) go(); else video.addEventListener("loadedmetadata", go, { once: true });
+        };
+        function renderIdle() {
+          if (frozen !== null) { drawNet(frozen); video.pause(); seek(toVideo(frozen)); }
+          else if (reduce.matches) { drawNet(PAY + 1.2); if (video.played.length) seek(V_POSTER); }
+          else drawNet(toNet(video.currentTime || 0));
+        }
+        function frame(now) {
+          if (!running) return;
+          const playing = !video.paused && video.readyState >= 2;
+          const vt = playing ? video.currentTime : ((now - startMs) / 1000) % vDur();
+          drawNet(toNet(vt));
+          rafId = requestAnimationFrame(frame);
+        }
+        function start() {
+          if (running || frozen !== null || reduce.matches) return;
+          running = true;
+          startMs = performance.now() - (video.currentTime || 0) * 1000;
+          const p = video.play();
+          if (p && p.catch) p.catch(() => {});
+          rafId = requestAnimationFrame(frame);
+        }
+        function stop() {
+          running = false;
+          cancelAnimationFrame(rafId);
+          video.pause();
+        }
+        // Nunca reproducir fuera de pantalla ni con movimiento reducido.
+        video.pause();
+        if (reduce.matches || frozen !== null) video.removeAttribute("autoplay");
+        renderIdle();
+        if ("IntersectionObserver" in window) {
+          new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            if (visible) start();
+            else { stop(); renderIdle(); }
+          }, { threshold: 0.35 }).observe(section);
+        } else {
+          visible = true;
+          start();
+        }
+        reduce.addEventListener("change", () => {
+          stop();
+          renderIdle();
+          if (visible) start();
+        });
+      })();
+    </script>
+
+    <script>
+      // Lightbox compartido: fotos, capturas, logos e íconos del tambor.
+      (() => {
+        const dialog = document.getElementById("lightbox");
+        if (!dialog) return;
+        const lbImg = dialog.querySelector(".lightbox-img");
+        const closeBtn = dialog.querySelector(".lightbox-close");
+        const triggers = [...document.querySelectorAll(".lb-trigger")];
+        let lastFocus = null;
+        let open = false;
+
+        function labelFor(img) {
+          const own = (img.getAttribute("alt") || "").trim();
+          if (own) return own;
+          const hidden = img.closest(".drum-face, .drum-card")?.querySelector(".visually-hidden");
+          const name = hidden ? hidden.textContent.trim() : "";
+          return name ? "Ícono de " + name : "Imagen";
+        }
+
+        function setOpen(isOpen) {
+          open = isOpen;
+          dialog.hidden = !isOpen;
+          dialog.classList.toggle("is-open", isOpen);
+          document.documentElement.classList.toggle("lb-open", isOpen);
+          document.body.classList.toggle("lb-open", isOpen);
+        }
+
+        function openLightbox(img) {
+          if (open) return;
+          lastFocus = document.activeElement;
+          lbImg.src = img.currentSrc || img.src;
+          lbImg.alt = labelFor(img);
+          setOpen(true);
+          (closeBtn || lbImg).focus();
+        }
+
+        function closeLightbox() {
+          if (!open) return;
+          setOpen(false);
+          lbImg.removeAttribute("src");
+          lbImg.alt = "";
+          if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+          lastFocus = null;
+        }
+
+        triggers.forEach((img) => {
+          img.setAttribute("role", "button");
+          img.setAttribute("tabindex", "0");
+          const hint = labelFor(img);
+          if (!img.getAttribute("aria-label")) {
+            img.setAttribute("aria-label", "Ampliar: " + hint);
+          }
+          img.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            openLightbox(img);
+          });
+          img.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              openLightbox(img);
+            }
+          });
+        });
+
+        dialog.addEventListener("click", (event) => {
+          if (event.target === dialog || event.target === lbImg) closeLightbox();
+        });
+        closeBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          closeLightbox();
+        });
+        addEventListener("keydown", (event) => {
+          if (!open) return;
+          if (event.key === "Escape") {
+            event.preventDefault();
+            closeLightbox();
+            return;
+          }
+          if (event.key !== "Tab") return;
+          // Trampa de foco: solo el botón cerrar (y la imagen no es tabulable).
+          const focusables = [closeBtn].filter(Boolean);
+          if (!focusables.length) return;
+          event.preventDefault();
+          focusables[0].focus();
+        });
+      })();
+    </script>
+
+  </body>
+</html>

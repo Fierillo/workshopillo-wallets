@@ -1,0 +1,84 @@
+# Fuentes de imágenes nuevas
+
+## Fotos de La Crypta (provistas por Fierillo)
+Redimensionadas a ≤1200 px de lado largo, JPEG progresivo, sin EXIF.
+- lacrypta-fachada.jpg — fachada (fuente original 1080 px, ya muy comprimida: queda en ~270 KB)
+- lacrypta-patio.jpg — exposición en el patio
+- lacrypta-mesa-de-trabajo.jpg — mesa de trabajo con el banner de La Crypta
+- lacrypta-almuerzo.jpg — almuerzo de la comunidad
+- lacrypta-veintiuno.jpg — foto grupal en el stand de Veintiuno.lat
+- lacrypta-neon-bitcoin.jpg — ₿ de neón sobre la chimenea
+
+## Strike
+- strike-logo.svg — logotipo SVG del header de https://strike.me/ (fill currentColor → #ffffff)
+- strike-app-inicio.jpg — captura oficial del listado de App Store (Argentina, en español),
+  https://apps.apple.com/ar/app/strike-buy-hold-bitcoin/id1488724463 , captura 01:
+  https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/84/f3/92/84f392e8-649d-86be-7158-9f45298e3388/01.png/1000x0w.png
+  Recortada para quitar el título de marketing; 560 px de ancho.
+
+## ZEUS
+- zeus-logo.svg — https://github.com/ZeusLN/zeus/blob/master/assets/images/SVG/wordmark-black.svg (recoloreado a blanco)
+- zeus-canales.jpg — captura oficial del listado de App Store,
+  https://apps.apple.com/us/app/zeus-wallet/id1456038895 (pantalla de canales):
+  https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/4d/f4/fd/4df4fdf2-eb94-94ce-b67f-7450a7dd9152/Simulator_Screenshot_-_iPhone_17_Pro_Max_-_2026-04-20_at_22.20.55.png/1000x0w.png
+  Redimensionada a 560 px de ancho.
+
+## Rayo real (página #lightning)
+- rayo-camara-lenta.mp4 (H.264, 560×700, 8.73 s, sin audio), rayo-camara-lenta.webm (VP9, misma edición),
+  rayo-camara-lenta-poster.jpg (frame de 7.3 s: el canal del rayo después del retorno).
+- Fuente: "Lightning strikes in slow motion (240fps) in Muurame, Finland" — autor: MrNousia
+  (YouTube: https://www.youtube.com/@MrNousia), 22-06-2021.
+  https://commons.wikimedia.org/wiki/File:Lightning_strikes_in_slow_motion_(240fps)_in_Muurame,_Finland.webm
+- Licencia: CC BY 3.0 — https://creativecommons.org/licenses/by/3.0/ (requiere atribución: crédito visible bajo el panel).
+- Modificaciones: recortado al tramo 1.65 s–4.60 s del original (líderes escalonados + retorno + apagado),
+  ralentizado ×3 con fundido de frames (minterpolate blend, 30 fps), reencuadrado (crop 900×1125 desde x=180, y=200:
+  saca el marco de la ventana), escalado a 560×700, fundido de entrada/salida para el loop, audio eliminado.
+- Retorno del rayo (frame más brillante, medido con ffmpeg): t = 4.633 s del clip editado. La animación de la red
+  usa ese instante como momento del pago.
+
+## Portada: íconos de wallets (tambor 3D)
+Todos convertidos a WebP 128×128 (lossy ~80) desde el PNG oficial. Ícono de App Store = artworkUrl512 del listado US (iTunes Lookup → `…/256x256bb.png`).
+
+- icono-lawallet.webp — repo oficial LaWallet: https://github.com/lawalletio/lawallet-web
+  `public/icons/icon-512x512.png` →
+  https://raw.githubusercontent.com/lawalletio/lawallet-web/main/public/icons/icon-512x512.png
+- icono-wos.webp — App Store: https://apps.apple.com/us/app/wallet-of-satoshi/id1438599608
+  https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/f3/37/45/f33745f8-1796-e8a5-9e3b-1a5e5969fc80/AppIcon-0-0-1x_U007emarketing-0-1-85-220.png/256x256bb.png
+- icono-tether.webp — App Store: https://apps.apple.com/us/app/tether-wallet-usdt-bitcoin/id6759002210
+  https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/1f/a6/7a/1fa67ad5-1e6c-8021-d2a3-a9ca98413ee8/AppIcon-0-0-1x_U007ephone-0-1-85-220.png/256x256bb.png
+- icono-cashapp.webp — App Store: https://apps.apple.com/us/app/cash-app/id711923939 (Block, Inc.)
+  https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/14/95/84/149584fa-47e1-a3a4-6bf1-bf3ed932ee95/AppIcon-0-0-1x_U007ephone-0-1-0-sRGB-85-220.png/256x256bb.png
+- icono-strike.webp — App Store: https://apps.apple.com/us/app/strike-buy-hold-bitcoin/id1488724463
+  https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/4a/e3/00/4ae30037-0d25-051b-d90f-1b0a9337de5f/GlassAppIcon-Live-0-0-1x_U007ephone-0-1-0-0-P3-85-220.png/256x256bb.png
+- icono-blink.webp — App Store: https://apps.apple.com/us/app/blink-bitcoin-wallet/id1531383905
+  https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/9a/fa/47/9afa4724-d8c1-6325-1f20-5f783532f1de/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/256x256bb.png
+- icono-phoenix.webp — App Store: https://apps.apple.com/us/app/phoenix-wallet/id1544097028 (ACINQ)
+  https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/ea/c9/97/eac997ee-90c8-f87b-cb56-d3adf4b930aa/AppIcon-Green-0-1x_U007emarketing-0-0-0-8-0-0-85-220-0.png/256x256bb.png
+- icono-muun.webp — App Store: https://apps.apple.com/us/app/muun-wallet/id1482037683
+  https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/21/1b/0b/211b0b71-92d2-b8a0-e3f9-6059490daa36/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/256x256bb.png
+- icono-bitkit.webp — App Store: https://apps.apple.com/us/app/bitkit-bitcoin-wallet/id6502440655 (Synonym)
+  https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/88/8e/98/888e989a-ac22-0d60-c278-21380501f97c/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/256x256bb.png
+- icono-blixt.webp — repo oficial Blixt (smolcars/blixt-wallet):
+  `ios/BlixtWallet/Images.xcassets/AppIcon.appiconset/blixt-wallet-70-1024.png` →
+  https://raw.githubusercontent.com/smolcars/blixt-wallet/master/ios/BlixtWallet/Images.xcassets/AppIcon.appiconset/blixt-wallet-70-1024.png
+  (sin listado en iOS App Store)
+- icono-bluewallet.webp — App Store: https://apps.apple.com/us/app/bluewallet-bitcoin-wallet/id1376878040
+  https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/9d/a2/be/9da2be33-53fd-c52d-8148-a2f8b80de938/AppIcon-0-0-1x_U007epad-0-1-85-220.png/256x256bb.png
+- icono-zeus.webp — App Store: https://apps.apple.com/us/app/zeus-wallet/id1456038895
+  https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/e9/23/72/e92372ff-d372-eb45-0903-9df4daac9f8d/AppIcon-0-0-1x_U007epad-0-1-85-220.png/256x256bb.png
+- icono-aqua.webp — App Store: https://apps.apple.com/us/app/aqua-wallet/id6468594241 (AQUA Wallet, io.aquawallet.ios)
+  https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/44/7c/8b/447c8bd9-4392-ca80-cdca-7844d0337ea7/AppIcon-0-0-1x_U007epad-0-1-sRGB-85-220.png/256x256bb.png
+
+## LaWallet (página #wallets-lawallet)
+- lawallet-logo.svg — logotipo vectorial oficial (wordmark blanco + isotipo de color, se lee bien sobre fondo oscuro),
+  repo https://github.com/lawalletio/lawallet-nwc , `apps/web/public/logos/lawallet.svg` →
+  https://raw.githubusercontent.com/lawalletio/lawallet-nwc/main/apps/web/public/logos/lawallet.svg
+  Sin modificar. Es el que usa la página (más nítido que la alternativa de abajo).
+- lawallet-logo-ar.svg — versión anterior ya presente en el proyecto (SVG con el logo embebido como imagen PNG,
+  wordmark gris claro); origen exacto no documentado. No se usa en la página; queda como alternativa.
+- lawallet-wallet-ui.jpg — captura oficial de la galería de LaWallet NWC en el app store de Umbrel,
+  https://github.com/lawalletio/umbrel-app-store (`lawallet-nwc/gallery/1-lightning-address.jpg`) →
+  https://raw.githubusercontent.com/lawalletio/umbrel-app-store/master/lawallet-nwc/gallery/1-lightning-address.jpg
+  Redimensionada a 560 px de ancho (560×350, apaisada). Muestra la portada web en inglés ("Get your Lightning Address").
+- Texto de la página basado en https://lawallet.io y https://docs.lawallet.io/docs/vision
+  (autocustodia progresiva: alias/redirect → NWC de cortesía vía lncurl → NWC propia → self-hosted; MIT).
