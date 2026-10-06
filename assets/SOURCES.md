@@ -50,6 +50,18 @@ Redimensionadas a ≤1200 px de lado largo, JPEG progresivo, sin EXIF.
   https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/4d/f4/fd/4df4fdf2-eb94-94ce-b67f-7450a7dd9152/Simulator_Screenshot_-_iPhone_17_Pro_Max_-_2026-04-20_at_22.20.55.png/1000x0w.png
   Redimensionada a 560 px de ancho.
 
+## Tether Wallet: página después de WoS
+- tether-wallet-logo.svg — logotipo oficial, sin modificar:
+  https://wallet.tether.io/images/logoText.svg
+- tether-recibir.webp — imagen oficial de recepción por tether.me, sin modificar:
+  https://wallet.tether.io/images/how-step2.webp
+  Incluye un alias y QR de demostración; no es una dirección de cobro del taller.
+- Funciones, activos, Bitcoin on-chain/Lightning y respaldos:
+  https://wallet.tether.io/ (consultado el 06-10-2026).
+- Claves locales, respaldo opcional y licencia propietaria de la app:
+  https://wallet.tether.io/application-terms/ (actualizado el 15-07-2026).
+  El código abierto de WDK no implica que el código de la app sea abierto.
+
 ## Rayo real (página #lightning)
 - rayo-camara-lenta.mp4 (H.264, 560×700, 8.73 s, sin audio), rayo-camara-lenta.webm (VP9, misma edición),
   rayo-camara-lenta-poster.jpg (frame de 7.3 s: el canal del rayo después del retorno).

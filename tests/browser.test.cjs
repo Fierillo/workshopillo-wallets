@@ -412,3 +412,24 @@ test('la guía visible de Cashu sigue el asistente de creación mostrado en la d
     assert(await route.locator('code').isVisible(), 'Conservar la URL de referencia de la mint');
   });
 });
+
+test('Tether Wallet tiene una página navegable después de WoS con badges, pros y contras e imagen ampliable', async () => {
+  await withPage(async page => {
+    const section = page.locator('#wallets-tether');
+    assert.equal(await section.count(), 1, 'Tether Wallet debe tener su propia página');
+    assert.equal(await section.evaluate(el => el.previousElementSibling.id), 'wallets-wos');
+    await page.locator('.chapter-nav').getByRole('link', { name: 'Tether Wallet', exact: true }).click();
+    await page.waitForFunction(() => document.querySelector('.chapter-nav a[aria-current]')?.hash === '#wallets-tether');
+    assert(await section.getByRole('heading', { name: 'Tether Wallet', exact: true }).count() === 1);
+    assert(await section.locator('.claim-tag.is-self').isVisible());
+    assert(await section.locator('.claim-tag.is-closed').isVisible());
+    assert.equal(await section.locator('.pros-cons > div').count(), 2);
+    const image = section.locator('.app-shot img');
+    await image.evaluate(el => el.decode());
+    assert(await image.isVisible());
+    await image.click();
+    assert(await page.locator('#lightbox').evaluate(el => el.open));
+    assert.equal(await page.locator('.lightbox-img').getAttribute('src'), await image.evaluate(el => el.currentSrc));
+    await page.keyboard.press('Escape');
+  });
+});
