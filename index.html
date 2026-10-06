@@ -19,6 +19,7 @@
         --line: #343a34;
         --orange: #ff762e;
         --lime: #d2f278;
+        --ln-fail: #ff5a4f;
         --header-height: 76px;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         font-synthesis: none;
@@ -1025,8 +1026,43 @@
       }
 
       /* ---------- Lightning (animación) ---------- */
+      .abacus {
+        margin: 24px 0 0;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #121613;
+      }
+
+      .abacus svg {
+        display: block;
+        width: 100%;
+        max-width: 880px;
+        margin-inline: auto;
+        height: auto;
+      }
+
+      .ab-channel path {
+        fill: none;
+        stroke: #51564e;
+        stroke-width: 5;
+        stroke-linecap: round;
+      }
+
+      .ab-channel.is-route path {
+        stroke: var(--orange);
+        stroke-width: 2;
+      }
+
+      #ab-send {
+        display: block;
+        margin-top: 16px;
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+
+
       .ln-chapter {
-        --ln-fail: #ff5a4f;
         background:
           radial-gradient(ellipse at 20% 80%, rgb(255 118 46 / 6%), transparent 40%),
           radial-gradient(ellipse at 80% 10%, rgb(150 190 255 / 5%), transparent 40%),
@@ -1067,7 +1103,8 @@
         background: #121613;
       }
 
-      .ln-panel svg {
+      .ln-panel svg,
+      .lightbox-media svg {
         display: block;
         width: 100%;
         height: 100%;
@@ -1084,7 +1121,8 @@
         inset: 0;
       }
 
-      .ln-panel video {
+      .ln-panel video,
+      .lightbox-media video {
         display: block;
         width: 100%;
         height: 100%;
@@ -1986,15 +2024,47 @@
       .lightbox {
         position: fixed;
         inset: 0;
-        z-index: 100;
+        width: 100vw;
+        height: 100dvh;
+        max-width: none;
+        max-height: none;
+        margin: 0;
+        border: 0;
         display: none;
         place-items: center;
         padding: clamp(12px, 3vw, 28px);
+        background: transparent;
+      }
+
+      .lightbox::backdrop {
         background: rgb(0 0 0 / 82%);
       }
 
-      .lightbox.is-open {
+      .lightbox[open] {
         display: grid;
+      }
+
+      .lightbox-img[hidden],
+      .lightbox-media[hidden] {
+        display: none;
+      }
+
+      .lightbox-media {
+        width: min(90vw, 1200px, calc(85dvh * var(--media-ratio)));
+        aspect-ratio: var(--media-ratio);
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #121613;
+      }
+
+      .lightbox-media .ln-stage {
+        height: 100%;
+        cursor: zoom-out;
+      }
+
+      .lightbox-media video {
+        object-fit: contain;
       }
 
       .lightbox-img {
@@ -2012,15 +2082,6 @@
         box-shadow: 0 24px 80px rgb(0 0 0 / 55%);
         cursor: zoom-out;
         background: rgb(16 19 17 / 40%);
-      }
-
-      .lightbox-img:focus {
-        outline: none;
-      }
-
-      .lightbox-img:focus-visible {
-        outline: 2px solid var(--lime);
-        outline-offset: 4px;
       }
 
       .lightbox-close {
@@ -2047,8 +2108,7 @@
         outline: none;
       }
 
-      html.lb-open,
-      body.lb-open {
+      html.lb-open {
         overflow: hidden;
       }
 
@@ -2090,7 +2150,8 @@
       <a href="#lacrypta" aria-label="La Crypta"><span>La Crypta</span></a>
       <a href="#mito-queja" aria-label="El mito de Bitcoin"><span>El mito</span></a>
       <a href="#mito-capas" aria-label="¿Son ciertas?"><span>¿Son ciertas?</span></a>
-      <a href="#lightning" aria-label="Lightning"><span>Lightning</span></a>
+      <a href="#lightning-abaco" aria-label="Lightning: el ábaco"><span>El ábaco</span></a>
+      <a href="#lightning-rutas" aria-label="Lightning: las rutas y el rayo"><span>Las rutas</span></a>
       <a href="#wallets-llaves" aria-label="¿Quién tiene las llaves?"><span>Las llaves</span></a>
       <a href="#wallets-strike" aria-label="Strike"><span>Strike</span></a>
       <a href="#wallets-zeus" aria-label="ZEUS"><span>ZEUS</span></a>
@@ -2347,15 +2408,45 @@
         </div>
       </section>
 
-      <section class="chapter ln-chapter" id="lightning" aria-labelledby="lightning-title">
+      <section class="chapter paged ln-chapter" id="lightning" aria-labelledby="lightning-title">
+        <div class="page" id="lightning-abaco">
+          <div class="chapter-inner">
+            <div>
+              <p class="chapter-index">04 <span>Hablemos un poco de Lightning</span></p>
+              <h2 id="lightning-title">Ábacos <em>conectados.</em></h2>
+              <p class="lead">Cada canal es un ábaco: sus pelotitas representan saldo. Pagás a Baba a través de Jaqui y Lalo, que reciben por un canal y envían por otro sin cambiar su total.</p>
+              <p class="comparison-note">El pago se completa en conjunto. Ejemplo sin comisiones.</p>
+            </div>
+            <figure class="abacus">
+              <svg id="ab-network" viewBox="0 0 1000 220" role="img" aria-label="Cuatro nodos en línea: vos, Jaqui, Lalo y Baba, el local. Cada canal tiene sus propias pelotitas de saldo; llegan al puerto de entrada sin atravesar el nodo y otra pelotita sale por el canal siguiente.">
+                <g>
+                  <g class="ab-channel"><path d="M114 110H326"/></g>
+                  <g class="ab-channel"><path d="M394 110H606"/></g>
+                  <g class="ab-channel"><path d="M674 110H886"/></g>
+                </g>
+                <g fill="#181c19" stroke="#a6aaa1" stroke-width="2">
+                  <circle cx="80" cy="110" r="22"/><circle cx="360" cy="110" r="22"/><circle cx="640" cy="110" r="22"/>
+                  <path d="M897 102V132H943V102 M894 102L900 86H940L946 102Z"/>
+                  <path d="M912 132V114H928V132 M907 86L904 102 M920 86V102 M933 86L936 102"/>
+                </g>
+                <g fill="#f1f0e8" font-family="sans-serif" font-size="23" text-anchor="middle">
+                  <text class="ab-balance" x="80" y="55">30 sats</text><text class="ab-balance" x="360" y="55">60 sats</text><text class="ab-balance" x="640" y="55">60 sats</text><text class="ab-balance" x="920" y="55">30 sats</text>
+                  <text x="80" y="185">Vos</text><text x="360" y="185">Jaqui</text><text x="640" y="185">Lalo</text><text x="920" y="185">Baba</text>
+                </g>
+              </svg>
+              <figcaption class="comparison-note" id="ab-status" aria-live="polite">Cada pelotita representa 10 sats. Cada canal tiene sus propias pelotitas.</figcaption>
+              <button class="button" type="button" id="ab-send">Enviar 10 sats</button>
+            </figure>
+          </div>
+        </div>
+        <div class="page ln-chapter" id="lightning-rutas">
         <div class="chapter-inner">
-          <p class="chapter-index">04 <span>Cómo funciona</span></p>
           <div class="ln-head">
-            <h2 id="lightning-title"><em>Lightning</em></h2>
+            <h3 class="punch">Los canales conectan. El pago busca una ruta.</h3>
           </div>
           <div class="ln-panels">
             <figure class="ln-panel ln-panel-net">
-              <div class="ln-stage" role="img" aria-label="Un pago busca caminos por la red de canales, descarta dos y llega al café: vos pasás de 50 a 40 y el café de 50 a 60.">
+              <div class="ln-stage lb-trigger" role="img" aria-label="Un pago busca caminos por la red de canales, descarta dos y llega al café: vos pasás de 50 a 40 y el café de 50 a 60.">
                 <svg id="ln-net" viewBox="0 0 600 460" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
                   <defs>
                     <filter id="ln-glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -2387,7 +2478,7 @@
                  https://commons.wikimedia.org/wiki/File:Lightning_strikes_in_slow_motion_(240fps)_in_Muurame,_Finland.webm
                  Recortado, ralentizado y reencuadrado: ver assets/SOURCES.md -->
             <figure class="ln-panel ln-panel-rayo">
-              <div class="ln-stage" role="img" aria-label="Rayo real en cámara lenta: las ramas tantean hacia abajo, una toca el suelo y ese camino se ilumina de golpe.">
+              <div class="ln-stage lb-trigger" role="img" aria-label="Rayo real en cámara lenta: las ramas tantean hacia abajo, una toca el suelo y ese camino se ilumina de golpe.">
                 <video id="ln-video" autoplay muted loop playsinline preload="auto" disablepictureinpicture poster="./assets/rayo-camara-lenta-poster.jpg" width="560" height="700" aria-hidden="true">
                   <source src="./assets/rayo-camara-lenta.webm" type="video/webm" />
                   <source src="./assets/rayo-camara-lenta.mp4" type="video/mp4" />
@@ -2400,6 +2491,7 @@
               </figcaption>
             </figure>
           </div>
+        </div>
         </div>
       </section>
 
@@ -2652,17 +2744,80 @@
     </main>
 
 
-    <div
+    <dialog
       id="lightbox"
       class="lightbox"
-      role="dialog"
-      aria-modal="true"
       aria-label="Imagen ampliada"
-      hidden
     >
-      <button type="button" class="lightbox-close" aria-label="Cerrar imagen">&times;</button>
+      <button type="button" class="lightbox-close" aria-label="Cerrar imagen" autofocus>&times;</button>
       <img class="lightbox-img" alt="" />
-    </div>
+      <div class="lightbox-media" hidden></div>
+    </dialog>
+
+    <script>
+      // Cada canal mueve una ficha propia entre sus puertos.
+      (() => {
+        const channels = [...document.querySelectorAll(".ab-channel")];
+        const balances = [...document.querySelectorAll(".ab-balance")];
+        const button = document.getElementById("ab-send");
+        const status = document.getElementById("ab-status");
+        const motion = matchMedia("(prefers-reduced-motion: reduce)");
+        const ports = [[114, 326], [394, 606], [674, 886]];
+        const beads = channels.map((channel, index) => {
+          let moving;
+          [[0, 0], [0, 16], [0, 32], [1, 0], [1, 16], [1, 32]].forEach(([side, offset]) => {
+            const bead = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            bead.setAttribute("cx", ports[index][side] + (side === 0 ? offset : -offset));
+            bead.setAttribute("cy", "110");
+            bead.setAttribute("r", "6");
+            bead.setAttribute("fill", "#f1f0e8");
+            if (side === 0 && offset === 32) {
+              moving = bead;
+              bead.setAttribute("fill", "#ff762e");
+            }
+            channel.append(bead);
+          });
+          return moving;
+        });
+
+        button.addEventListener("click", () => {
+          button.disabled = true;
+          balances.forEach((balance, index) => balance.textContent = [30, 60, 60, 30][index] + " sats");
+          beads.forEach((bead, index) => bead.setAttribute("cx", ports[index][0] + 32));
+          channels.forEach(channel => channel.classList.remove("is-route"));
+          status.textContent = "Pago en curso: vos → Jaqui → Lalo → Baba (el local).";
+          let start;
+
+          function frame(time) {
+            start ??= time;
+            const progress = motion.matches ? 3 : Math.min((time - start) / 1300, 3);
+            const totals = [30, 60, 60, 30];
+            beads.forEach((bead, index) => {
+              const fraction = Math.min(Math.max((progress - index) / .8, 0), 1);
+              const from = ports[index][0] + 32;
+              const to = ports[index][1] - 48;
+              bead.setAttribute("cx", from + (to - from) * fraction);
+              channels[index].classList.toggle("is-route", progress > index);
+              if (fraction === 1) {
+                totals[index] -= 10;
+                totals[index + 1] += 10;
+              }
+            });
+            balances.forEach((balance, index) => balance.textContent = totals[index] + " sats");
+            if (progress < 3) {
+              requestAnimationFrame(frame);
+            } else {
+              status.textContent = "Solo cambian los saldos de Vos y el destino final, en este caso Baba. Los saldos totales de Jaqui y Lalo no cambian: reciben 10 sats por un canal y envían 10 por otro.";
+              button.textContent = "Repetir pago de ejemplo";
+              button.disabled = false;
+            }
+          }
+
+          requestAnimationFrame(frame);
+        });
+      })();
+
+    </script>
 
     <script>
       // Tambor de wallets en la portada: gira solo con la portada a la vista.
@@ -2869,16 +3024,11 @@
           }
           return ph;
         });
-        const LEADER_START = phases[0].start;
         const GROUND = phases[phases.length - 1].reach; // route found / leader touches ground
         const PAY = GROUND + 0.26;                       // payment = return stroke
         const ZIP = 0.2;
         const CYCLE = PAY + 3.1;
-        window.__lnTimeline = { phases, LEADER_START, GROUND, PAY, CYCLE };
-
         const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-        const params = new URLSearchParams(location.search);
-        const frozen = params.has("lnt") ? parseFloat(params.get("lnt")) : null;
 
         // ---------- Left: network (SVG) ----------
         const NS = "http://www.w3.org/2000/svg";
@@ -3001,22 +3151,17 @@
         const toNet = (vt) => vt < V_STROKE
           ? (vt / V_STROKE) * PAY
           : PAY + ((vt - V_STROKE) / (vDur() - V_STROKE)) * (CYCLE - PAY);
-        const toVideo = (t) => t < PAY
-          ? (t / PAY) * V_STROKE
-          : V_STROKE + ((t - PAY) / (CYCLE - PAY)) * (vDur() - V_STROKE);
-        window.__lnTimeline.V_STROKE = V_STROKE;
-        window.__lnTimeline.toNet = toNet;
 
         // ---------- Loop: arranca cuando la sección está a la vista ----------
-        const section = document.getElementById("lightning");
+        const section = document.getElementById("lightning-rutas");
+        const dialog = document.getElementById("lightbox");
         let running = false, visible = false, startMs = 0, rafId = 0;
         const seek = (vt) => {
           const go = () => { try { video.currentTime = vt; } catch (e) {} };
           if (video.readyState >= 1) go(); else video.addEventListener("loadedmetadata", go, { once: true });
         };
         function renderIdle() {
-          if (frozen !== null) { drawNet(frozen); video.pause(); seek(toVideo(frozen)); }
-          else if (reduce.matches) { drawNet(PAY + 1.2); if (video.played.length) seek(V_POSTER); }
+          if (reduce.matches) { drawNet(PAY + 1.2); if (video.played.length) seek(V_POSTER); }
           else drawNet(toNet(video.currentTime || 0));
         }
         function frame(now) {
@@ -3027,7 +3172,7 @@
           rafId = requestAnimationFrame(frame);
         }
         function start() {
-          if (running || frozen !== null || reduce.matches) return;
+          if (running || reduce.matches) return;
           running = true;
           startMs = performance.now() - (video.currentTime || 0) * 1000;
           const p = video.play();
@@ -3041,69 +3186,77 @@
         }
         // Nunca reproducir fuera de pantalla ni con movimiento reducido.
         video.pause();
-        if (reduce.matches || frozen !== null) video.removeAttribute("autoplay");
+        if (reduce.matches) video.removeAttribute("autoplay");
         renderIdle();
+        function syncPlayback() {
+          stop();
+          renderIdle();
+          if (visible || (dialog.open && dialog.querySelector(".ln-stage"))) start();
+        }
         if ("IntersectionObserver" in window) {
           new IntersectionObserver(([entry]) => {
             visible = entry.isIntersecting;
-            if (visible) start();
-            else { stop(); renderIdle(); }
+            syncPlayback();
           }, { threshold: 0.35 }).observe(section);
         } else {
           visible = true;
           start();
         }
-        reduce.addEventListener("change", () => {
-          stop();
-          renderIdle();
-          if (visible) start();
-        });
+        reduce.addEventListener("change", syncPlayback);
+        dialog.addEventListener("lightning-view-change", syncPlayback);
       })();
     </script>
 
     <script>
-      // Lightbox compartido: fotos, capturas, logos e íconos del tambor.
+      // Ampliación compartida: imágenes y escenas originales, sin duplicar animaciones.
       (() => {
         const dialog = document.getElementById("lightbox");
         if (!dialog) return;
         const lbImg = dialog.querySelector(".lightbox-img");
+        const lbMedia = dialog.querySelector(".lightbox-media");
         const closeBtn = dialog.querySelector(".lightbox-close");
         const triggers = [...document.querySelectorAll(".lb-trigger")];
-        let lastFocus = null;
-        let open = false;
+        let expanded = null;
+
+        function showDialog(label) {
+          dialog.setAttribute("aria-label", label);
+          dialog.showModal();
+          document.documentElement.classList.add("lb-open");
+          dialog.dispatchEvent(new Event("lightning-view-change"));
+        }
 
         function labelFor(img) {
           const own = (img.getAttribute("alt") || "").trim();
           if (own) return own;
+          if (img.classList.contains("ln-stage")) return img.getAttribute("aria-label");
           const hidden = img.closest(".drum-face, .drum-card")?.querySelector(".visually-hidden");
           const name = hidden ? hidden.textContent.trim() : "";
           return name ? "Ícono de " + name : "Imagen";
         }
 
-        function setOpen(isOpen) {
-          open = isOpen;
-          dialog.hidden = !isOpen;
-          dialog.classList.toggle("is-open", isOpen);
-          document.documentElement.classList.toggle("lb-open", isOpen);
-          document.body.classList.toggle("lb-open", isOpen);
-        }
-
-        function openLightbox(img) {
-          if (open) return;
-          lastFocus = document.activeElement;
-          lbImg.src = img.currentSrc || img.src;
-          lbImg.alt = labelFor(img);
-          setOpen(true);
-          (closeBtn || lbImg).focus();
-        }
-
-        function closeLightbox() {
-          if (!open) return;
-          setOpen(false);
-          lbImg.removeAttribute("src");
-          lbImg.alt = "";
-          if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
-          lastFocus = null;
+        function openLightbox(trigger) {
+          if (dialog.open) return;
+          if (trigger.classList.contains("ln-stage")) {
+            const stage = trigger;
+            const media = stage.querySelector("svg, video");
+            const placeholder = document.createElement("div");
+            placeholder.className = "ln-stage";
+            placeholder.setAttribute("aria-hidden", "true");
+            expanded = { stage, placeholder };
+            stage.replaceWith(placeholder);
+            stage.setAttribute("role", "img");
+            stage.removeAttribute("tabindex");
+            lbMedia.appendChild(stage);
+            const box = media.tagName.toLowerCase() === "svg" ? media.viewBox.baseVal : media;
+            lbMedia.style.setProperty("--media-ratio", box.width / box.height);
+            lbMedia.hidden = false;
+            lbImg.hidden = true;
+          } else {
+            lbImg.src = trigger.currentSrc || trigger.src;
+            lbImg.alt = labelFor(trigger);
+            lbImg.hidden = false;
+          }
+          showDialog("Vista ampliada: " + labelFor(trigger));
         }
 
         triggers.forEach((img) => {
@@ -3115,7 +3268,6 @@
           }
           img.addEventListener("click", (event) => {
             event.preventDefault();
-            event.stopPropagation();
             openLightbox(img);
           });
           img.addEventListener("keydown", (event) => {
@@ -3127,25 +3279,22 @@
         });
 
         dialog.addEventListener("click", (event) => {
-          if (event.target === dialog || event.target === lbImg) closeLightbox();
+          if (event.target === dialog || event.target === lbImg || event.target.closest(".lightbox-media")) dialog.close();
         });
-        closeBtn.addEventListener("click", (event) => {
-          event.preventDefault();
-          closeLightbox();
-        });
-        addEventListener("keydown", (event) => {
-          if (!open) return;
-          if (event.key === "Escape") {
-            event.preventDefault();
-            closeLightbox();
-            return;
+        closeBtn.addEventListener("click", () => dialog.close());
+        dialog.addEventListener("close", () => {
+          if (expanded) {
+            expanded.placeholder.replaceWith(expanded.stage);
+            expanded.stage.setAttribute("role", "button");
+            expanded.stage.setAttribute("tabindex", "0");
+            expanded.stage.focus({ preventScroll: true });
+            expanded = null;
           }
-          if (event.key !== "Tab") return;
-          // Trampa de foco: solo el botón cerrar (y la imagen no es tabulable).
-          const focusables = [closeBtn].filter(Boolean);
-          if (!focusables.length) return;
-          event.preventDefault();
-          focusables[0].focus();
+          lbMedia.hidden = true;
+          document.documentElement.classList.remove("lb-open");
+          lbImg.removeAttribute("src");
+          lbImg.alt = "";
+          dialog.dispatchEvent(new Event("lightning-view-change"));
         });
       })();
     </script>

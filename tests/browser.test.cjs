@@ -91,3 +91,81 @@ test('los badges de código conservan su color aunque cambie el enlace a la fuen
     }
   });
 });
+
+test('el ábaco mueve fichas independientes sin atravesar nodos y actualiza cada paso', async () => {
+  await withPage(async page => {
+    const button = page.locator('#ab-send');
+    const readBalances = () => page.locator('.ab-balance').evaluateAll(elements => elements.map(el => parseInt(el.textContent)));
+    const initial = await readBalances();
+    const shapes = await page.locator('#ab-network > g:nth-child(2) > circle').evaluateAll(elements => elements.map(el => ({ x: el.cx.baseVal.value, y: el.cy.baseVal.value, radius: el.r.baseVal.value })));
+    const beadRows = await page.locator('.ab-channel').evaluateAll(channels => channels.map(channel => [...channel.querySelectorAll('circle')].map(bead => ({ x: bead.cx.baseVal.value, y: bead.cy.baseVal.value }))));
+    assert.equal(initial.length, 4);
+    assert.equal(beadRows.length, initial.length - 1);
+    assert(beadRows.every(row => row.length > 1 && row.every(bead => bead.y === row[0].y)));
+    assert.equal(initial.reduce((a, b) => a + b), beadRows.flat().length * 10);
+    const status = await page.locator('#ab-status').textContent();
+    const moving = page.locator('.ab-channel circle[fill="#ff762e"]');
+    const positions = () => moving.evaluateAll(elements => elements.map(el => ({ x: el.cx.baseVal.value, y: el.cy.baseVal.value, radius: el.r.baseVal.value })));
+    const original = await positions();
+    const channelEnds = await page.locator('.ab-channel path').evaluateAll(paths => paths.map(path => path.getPointAtLength(path.getTotalLength()).x));
+    await button.click();
+    assert(await button.isDisabled());
+    const states = [initial];
+    let sawMovement = false;
+    for (let tick = 0; tick < 15; tick++) {
+      await page.clock.runFor(300);
+      const now = await positions();
+      const totals = await readBalances();
+      assert.equal(totals.reduce((a, b) => a + b), initial.reduce((a, b) => a + b), 'Se conserva el total');
+      if (JSON.stringify(states.at(-1)) !== JSON.stringify(totals)) states.push(totals);
+      now.forEach((bead, index) => {
+        assert.equal(bead.y, original[index].y);
+        assert(bead.x >= original[index].x);
+        assert(bead.x <= channelEnds[index], 'La ficha se queda dentro de su canal, también ante el local');
+        for (const node of shapes) assert(Math.hypot(bead.x - node.x, bead.y - node.y) >= node.radius + bead.radius, 'Las fichas nunca atraviesan los nodos');
+        if (bead.x !== original[index].x) sawMovement = true;
+        if (index > 0 && bead.x !== original[index].x) {
+          for (let node = 0; node < index; node++) {
+            assert.equal(totals[node], initial[node] - (node === 0 ? 10 : 0), 'El siguiente canal espera a que el anterior termine');
+          }
+        }
+      });
+    }
+    assert(sawMovement, 'Debe verse movimiento real');
+    const expected = [initial];
+    for (let channel = 0; channel < beadRows.length; channel++) {
+      const totals = [...expected.at(-1)];
+      totals[channel] -= 10;
+      totals[channel + 1] += 10;
+      expected.push(totals);
+    }
+    assert.deepEqual(states, expected, 'Cada llegada actualiza los dos vecinos antes del siguiente salto');
+    assert(await button.isEnabled());
+    assert.notEqual(await page.locator('#ab-status').textContent(), status);
+    assert.equal(expected.at(-1)[1], initial[1]);
+    assert.equal(expected.at(-1)[2], initial[2]);
+    await button.click();
+    assert.deepEqual(await readBalances(), initial, 'Repetir reinicia el ejemplo, no acumula pagos');
+    await page.clock.runFor(4500);
+    assert.deepEqual(await readBalances(), expected.at(-1));
+  }, { clock: true, reducedMotion: 'no-preference' });
+});
+
+test('movimiento reducido permite completar el pago sin animación y detiene el tambor', async () => {
+  await withPage(async page => {
+    const ring = page.locator('#drum-ring');
+    const rotation = () => ring.evaluate(el => el.style.getPropertyValue('--rot'));
+    const frozen = await rotation();
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.waitForFunction(previous => document.querySelector('#drum-ring').style.getPropertyValue('--rot') !== previous, frozen);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForFunction(() => document.querySelector('#drum-ring').style.getPropertyValue('--rot') === '0deg');
+    await page.locator('#ab-send').click();
+    await page.waitForFunction(() => !document.querySelector('#ab-send').disabled);
+    const totals = await page.locator('.ab-balance').evaluateAll(elements => elements.map(el => parseInt(el.textContent)));
+    assert.equal(totals[1], totals[2]);
+    assert.equal(totals.at(-1) - totals[0], 20, 'El ejemplo completa un pago de diez sats');
+    assert.equal(await rotation(), '0deg');
+    assert(await page.locator('#ln-video').evaluate(el => el.paused));
+  });
+});
