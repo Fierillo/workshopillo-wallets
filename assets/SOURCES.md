@@ -17,6 +17,14 @@ Redimensionadas a ≤1200 px de lado largo, JPEG progresivo, sin EXIF.
   Recortada para quitar el título de marketing; 560 px de ancho.
 
 ## ZEUS
+- zeus-cashu-demo.mp4 — video de configuración provisto por Fierillo ("zeus demo.mp4").
+  Comprimido a H.264, 480×1066, 24 fps, con audio AAC y sin metadatos;
+  se conserva el recorrido completo de aproximadamente 43 segundos.
+  Se muestra al desplegar la configuración de Cashu, con controles y sin autoplay.
+  La guía sigue el asistente observado: Empezar, Repase el cuestionario, Tarifas
+  bajas, LDK Node, recomendaciones de mints de cuentas seguidas por ZEUS en
+  Nostr, Seleccionar y Crear billetera. La lista incluye Minibits; el video no
+  muestra pegar su URL, realizar pagos ni guardar respaldos.
 - zeus-logo.svg — https://github.com/ZeusLN/zeus/blob/master/assets/images/SVG/wordmark-black.svg (recoloreado a blanco)
 - zeus-canales.jpg — captura oficial del listado de App Store,
   https://apps.apple.com/us/app/zeus-wallet/id1456038895 (pantalla de canales):

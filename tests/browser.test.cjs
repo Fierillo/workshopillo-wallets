@@ -151,6 +151,44 @@ test('el ábaco mueve fichas independientes sin atravesar nodos y actualiza cada
   }, { clock: true, reducedMotion: 'no-preference' });
 });
 
+test('Cashu se despliega con teclado, gira la flecha y las comparaciones abren independientemente', async () => {
+  await withPage(async page => {
+    const route = page.locator('.cashu-route');
+    const summary = route.locator('summary');
+    const angle = () => summary.evaluate(el => {
+      const matrix = new DOMMatrix(getComputedStyle(el, '::before').transform);
+      return Math.atan2(matrix.b, matrix.a);
+    });
+    assert.equal(await route.evaluate(el => el.open), false);
+    assert.equal(await angle(), 0);
+    assert.equal(await route.locator('..').evaluate(el => getComputedStyle(el, '::before').display), 'none', 'Sin guion adicional');
+    await summary.focus();
+    await page.keyboard.press('Enter');
+    assert(await route.evaluate(el => el.open));
+    await summary.scrollIntoViewIfNeeded();
+    await page.waitForFunction(el => new DOMMatrix(getComputedStyle(el, '::before').transform).b > .99, await summary.elementHandle(), { timeout: 2000 });
+    const openedAngle = await angle();
+    assert(Math.abs(openedAngle - Math.PI / 2) < .01, 'La flecha apunta hacia abajo');
+    assert(await route.locator('ol').isVisible());
+    const mint = new URL((await route.locator('code').textContent()).trim());
+    assert.equal(mint.protocol, 'https:');
+    assert(mint.pathname !== '/', 'Debe ser el endpoint de la mint, no solo su sitio web');
+    await page.keyboard.press('Space');
+    assert.equal(await route.evaluate(el => el.open), false);
+    assert(await route.locator('ol').isHidden());
+    const wallets = page.locator('.wallet-option');
+    for (const wallet of await wallets.all()) {
+      const summary = wallet.locator('summary');
+      if (await wallet.evaluate(el => el.open)) await summary.click();
+      await summary.focus();
+      await page.keyboard.press('Enter');
+      assert(await wallet.evaluate(el => el.open));
+      assert(await wallet.locator('.pros-cons').isVisible());
+    }
+    assert.equal(await page.locator('.wallet-option[open]').count(), await wallets.count(), 'Abrir una no cierra las otras');
+  });
+});
+
 test('movimiento reducido permite completar el pago sin animación y detiene el tambor', async () => {
   await withPage(async page => {
     const ring = page.locator('#drum-ring');
@@ -167,5 +205,88 @@ test('movimiento reducido permite completar el pago sin animación y detiene el 
     assert.equal(totals.at(-1) - totals[0], 20, 'El ejemplo completa un pago de diez sats');
     assert.equal(await rotation(), '0deg');
     assert(await page.locator('#ln-video').evaluate(el => el.paused));
+  });
+});
+
+test('abrir Cashu reemplaza la captura de ZEUS por un video controlable y cerrar lo pausa', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const zeus = page.locator('#wallets-zeus');
+      const summary = zeus.locator('.cashu-route summary');
+      const image = zeus.locator('.app-shot img');
+      const video = zeus.locator('.app-shot video');
+      assert.equal(await video.count(), 1, 'La demo debe estar disponible en la sección ZEUS');
+      assert(await image.isVisible());
+      assert(await video.isHidden(), 'Sin mostrar el video antes de abrir la configuración');
+      await summary.click();
+      await video.waitFor({ state: 'visible' });
+      assert(await image.isHidden());
+      assert(await video.isVisible());
+      assert(await video.evaluate(el => el.controls && el.playsInline && !el.autoplay && el.paused), 'Controles nativos, sin autoplay');
+      await video.evaluate(el => el.play());
+      await page.waitForFunction(() => {
+        const video = document.querySelector('#wallets-zeus .app-shot video');
+        return video.videoWidth > 0 && video.currentTime > 0 && !video.paused;
+      });
+      const box = await video.boundingBox();
+      assert(box.width > 0 && box.x >= 0 && box.x + box.width <= width + 1, 'Video dentro de la pantalla');
+      await summary.click();
+      await image.waitFor({ state: 'visible' });
+      assert(await image.isVisible());
+      assert(await video.isHidden());
+      assert(await video.evaluate(el => el.paused), 'No dejar audio o reproducción escondidos');
+      await summary.click();
+      await video.waitFor({ state: 'visible' });
+      assert(await video.isVisible());
+      assert(await video.evaluate(el => el.paused), 'Reabrir no inicia reproducción automática');
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
+test('la demo de Cashu ocupa más espacio sin agrandar la captura ni salir de los márgenes', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const zeus = page.locator('#wallets-zeus');
+      const figure = zeus.locator('.app-shot');
+      const closed = await figure.boundingBox();
+      await zeus.locator('.cashu-route summary').click();
+      const video = figure.locator('video');
+      await video.waitFor({ state: 'visible' });
+      await page.waitForFunction(() => document.querySelector('#wallets-zeus video').videoWidth > 0);
+      await page.waitForFunction(previous => document.querySelector('#wallets-zeus .app-shot').getBoundingClientRect().width > previous * 1.1, closed.width, { timeout: 2000 });
+      const box = await video.boundingBox();
+      const container = await figure.boundingBox();
+      const margins = await zeus.locator('.chapter-inner').boundingBox();
+      assert(container.width > closed.width * 1.1, `${width}px: video mayor que la captura cerrada (${container.width} > ${closed.width})`);
+      assert(box.height > 844 * (width > 1000 ? .78 : .62), 'Video más alto que el tamaño anterior');
+      assert(container.x >= margins.x - 1 && container.x + container.width <= margins.x + margins.width + 1, 'Respetar márgenes');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      await zeus.locator('.cashu-route summary').click();
+      await figure.locator('img').waitFor({ state: 'visible' });
+      await page.waitForFunction(previous => document.querySelector('#wallets-zeus .app-shot').getBoundingClientRect().width === previous, closed.width, { timeout: 2000 });
+      assert.equal((await figure.boundingBox()).width, closed.width, 'La captura conserva su tamaño');
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
+test('la guía visible de Cashu sigue el asistente de creación mostrado en la demo', async () => {
+  await withPage(async page => {
+    const route = page.locator('.cashu-route');
+    await route.locator('summary').click();
+    const steps = route.locator('ol > li');
+    const actions = [
+      /Empezar.*Repase el cuestionario/is,
+      /Tarifas bajas.*Cashu ecash/is,
+      /LDK Node.*velocidad y fiabilidad/is,
+      /Cuentas seguidas por ZEUS en Nostr.*Seleccionar/is,
+      /Crear billetera.*sincroniz/is,
+    ];
+    assert.equal(await steps.count(), actions.length, 'La guía cubre la creación observada, no otro flujo de ajustes');
+    for (let index = 0; index < actions.length; index++) {
+      assert(await steps.nth(index).isVisible());
+      assert.match(await steps.nth(index).innerText(), actions[index], `Paso ${index + 1}: acciones en el orden de la demo`);
+    }
+    assert.match(await route.innerText(), /Minibits/);
+    assert(await route.locator('code').isVisible(), 'Conservar la URL de referencia de la mint');
   });
 });

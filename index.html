@@ -1327,6 +1327,49 @@
         gap: clamp(36px, 7vw, 100px);
       }
 
+      .cashu-route summary {
+        cursor: pointer;
+        list-style: none;
+      }
+
+      .cashu-route summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .cashu-route summary::before {
+        content: ">";
+        display: inline-block;
+        margin-right: 8px;
+        color: var(--orange);
+      }
+
+      .cashu-route[open] summary::before {
+        transform: rotate(90deg);
+      }
+
+      .app-lines li:has(> .cashu-route) {
+        padding-left: 0;
+      }
+
+      .app-lines li:has(> .cashu-route)::before,
+      .cashu-route li::before {
+        display: none;
+      }
+
+      .cashu-route summary:focus-visible {
+        outline: 2px solid var(--orange);
+        outline-offset: 4px;
+      }
+
+      .cashu-route ol {
+        padding-left: 22px;
+      }
+
+      .cashu-route code {
+        overflow-wrap: anywhere;
+        color: var(--orange);
+      }
+
       .app-logo {
         display: block;
         width: auto;
@@ -1409,7 +1452,8 @@
         box-shadow: 0 28px 70px rgb(0 0 0 / 40%);
       }
 
-      .app-shot img {
+      .app-shot img,
+      .app-shot video {
         display: block;
         width: 100%;
         height: auto;
@@ -1417,6 +1461,22 @@
         object-fit: cover;
         object-position: top center;
         border-radius: 26px;
+      }
+
+      .app-shot [hidden] {
+        display: none;
+      }
+
+      .app-shot video {
+        object-fit: contain;
+      }
+
+      #wallets-zeus .app-shot:has(video:not([hidden])) {
+        width: min(100%, 420px);
+      }
+
+      #wallets-zeus .app-shot video {
+        max-height: 80svh;
       }
 
       /* LaWallet: wallet destacada con captura apaisada (web), un poco más grande que Strike/ZEUS. */
@@ -1896,6 +1956,14 @@
 
         .app-shot img {
           max-height: 27svh;
+          border-radius: 17px;
+        }
+
+        #wallets-zeus .app-shot:has(video:not([hidden])) {
+          width: min(100%, 360px);
+        }
+
+        #wallets-zeus .app-shot video {
           border-radius: 17px;
         }
 
@@ -2550,26 +2618,41 @@
             <div class="app-copy">
               <h3 class="visually-hidden">ZEUS</h3>
               <img class="app-logo lb-trigger" src="./assets/zeus-logo.svg" alt="ZEUS" width="108" height="42" />
-              <span class="claim-tag is-self">Autocustodial</span>
+              <span class="claim-tag is-progressive">Autocustodia progresiva</span>
               <span class="claim-tag is-open">Código abierto</span>
+              <p class="comparison-note">ZEUS puede ejecutar un nodo en tu teléfono con LDK o LND integrado, o conectarse a un nodo o una wallet remota. Acá mostramos dos rutas partiendo de LDK:</p>
               <ul class="app-lines">
-                <li>Tus llaves, tu nodo, tus canales.</li>
-                <li>Para recibir necesitás liquidez de entrada. Para pagar, canales con saldo.</li>
-                <li>Frase de recuperación + respaldo de canales.</li>
+                <li>
+                  <details class="cashu-route">
+                    <summary><strong>Ruta 1 · Cashu — custodial.</strong> Cómo configurarlo</summary>
+                    <p>Pagás y recibís por Lightning usando los canales de una mint. No necesitás abrir canales propios; confiás en ella para canjear tus fichas.</p>
+                    <ol>
+                      <li>Tocá <strong>Empezar</strong> y después <strong>Repase el cuestionario</strong> para elegir tu configuración.</li>
+                      <li>Elegí <strong>Tarifas bajas</strong>. El tipo de billetera queda en <strong>Cashu ecash (bajas comisiones)</strong>: empezás sin abrir canales propios.</li>
+                      <li>En <strong>Implementación de nodos</strong>, elegí <strong>LDK Node (velocidad y fiabilidad)</strong>.</li>
+                      <li>En <strong>Fuente de recomendaciones de Mint</strong>, elegí <strong>Cuentas seguidas por ZEUS en Nostr</strong> y tocá <strong>Seleccionar</strong>. La lista del video incluye WesternBTC, Coinos y Minibits.</li>
+                      <li>Revisá <strong>Tu configuración seleccionada</strong>, tocá <strong>Crear billetera</strong> y esperá la sincronización del nodo y la inicialización de la billetera ecash.</li>
+                    </ol>
+                    <p class="comparison-note">Entre las mints que aparecen, recomendamos <a href="https://minibits.cash/" target="_blank" rel="noreferrer">Minibits</a> para probar con pocos sats, no para guardar ahorros. Su URL es <code>https://mint.minibits.cash/Bitcoin</code>; en este asistente no hace falta pegarla manualmente.</p>
+                    <p class="comparison-note">La mint es custodial, experimental y opera sin garantías: si falla o no canjea tus fichas, podés perder el saldo. Antes de cargar fondos, guardá tus respaldos siguiendo las indicaciones de ZEUS.</p>
+                    <p class="comparison-note">El video muestra la configuración y la inicialización, no un pago ni el respaldo. Los menús pueden variar según la versión. <a href="https://docs.zeusln.app/cashu" target="_blank" rel="noreferrer">Documentación de Cashu en ZEUS ↗</a></p>
+                  </details>
+                </li>
+                <li><strong>Ruta 2 · Canales propios — autocustodial.</strong> Tu nodo en el teléfono, con tus claves y canales. Podés abrir un canal al recibir un pago (JIT), comprar capacidad por adelantado o financiarlo con bitcoin on-chain.</li>
               </ul>
+              <p class="comparison-note">Podés empezar con Cashu y después pasar a canales propios. Abrir canales tiene costos; en LDK necesitás la frase de recuperación y el respaldo de canales.</p>
               <div class="pros-cons">
-                <div class="is-pro"><span class="pc-label">A favor</span><p>Control total · Nadie te puede bloquear</p></div>
-                <div class="is-con"><span class="pc-label">En contra</span><p>Curva de aprendizaje alta · Si te equivocás, lo resolvés vos</p></div>
+                <div class="is-pro"><span class="pc-label">A favor</span><p>Código abierto · Podés empezar simple y avanzar hacia canales propios</p></div>
+                <div class="is-con"><span class="pc-label">En contra</span><p>Cashu: riesgo de la mint · LDK: costos, liquidez y respaldos de canales</p></div>
               </div>
             </div>
             <figure class="app-shot">
               <img class="lb-trigger" src="./assets/zeus-canales.jpg" alt="Pantalla de canales de ZEUS: capacidad de envío y de recepción, y la lista de canales con su saldo" width="560" height="1216" loading="lazy" />
+              <video src="./assets/zeus-cashu-demo.mp4" controls playsinline preload="metadata" aria-label="Demostración de configuración de Cashu en ZEUS" hidden></video>
             </figure>
           </div>
         </div>
 
-        <!-- LaWallet: logo oficial lawallet-nwc; captura de app (balance/address) provista por Fierillo 2026-10-05.
-             Segunda página #wallets-lawallet-map usa el Connection Map. -->
         <div class="page" id="wallets-lawallet">
           <div class="chapter-inner app-layout">
             <div class="app-copy">
@@ -2755,6 +2838,18 @@
     </dialog>
 
     <script>
+      (() => {
+        const zeus = document.getElementById("wallets-zeus");
+        const route = zeus.querySelector(".cashu-route");
+        const image = zeus.querySelector(".app-shot img");
+        const video = zeus.querySelector(".app-shot video");
+        route.addEventListener("toggle", () => {
+          image.hidden = route.open;
+          video.hidden = !route.open;
+          if (!route.open) video.pause();
+        });
+      })();
+
       // Cada canal mueve una ficha propia entre sus puertos.
       (() => {
         const channels = [...document.querySelectorAll(".ab-channel")];
