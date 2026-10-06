@@ -162,15 +162,19 @@
         white-space: nowrap;
       }
 
-      .chapter {
+      .chapter,
+      .page {
         position: relative;
         min-height: 100svh;
         display: grid;
         align-items: center;
-        overflow: hidden;
         padding: calc(var(--header-height) + 48px) clamp(24px, 10vw, 150px) 72px;
         scroll-snap-align: start;
         scroll-snap-stop: always;
+      }
+
+      .chapter {
+        overflow: hidden;
         isolation: isolate;
       }
 
@@ -301,11 +305,6 @@
       .button:hover {
         transform: translateY(-2px);
         background: #ff8d51;
-      }
-
-      .button svg {
-        width: 14px;
-        height: 14px;
       }
 
       .button-secondary {
@@ -532,21 +531,6 @@
         letter-spacing: .14em;
       }
 
-      .concepts {
-        background: #171b18;
-      }
-
-      .concepts-layout {
-        display: grid;
-        grid-template-columns: minmax(230px, .78fr) minmax(0, 1.22fr);
-        align-items: center;
-        gap: clamp(40px, 8vw, 120px);
-      }
-
-      .concepts-copy .lead {
-        margin-bottom: 0;
-      }
-
       .mito {
         background:
           radial-gradient(ellipse at 82% 76%, rgb(255 118 46 / 8%), transparent 36%),
@@ -562,11 +546,6 @@
 
       .mito-copy .lead {
         margin-bottom: 0;
-      }
-
-      .mito-header h2 em {
-        color: var(--orange);
-        font-style: normal;
       }
 
       .mito-claims {
@@ -846,26 +825,6 @@
         font-style: normal;
       }
 
-      .speaker-copy .lead {
-        max-width: 610px;
-        margin-bottom: 16px;
-      }
-
-      .speaker-values {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 25px;
-      }
-
-      .speaker-values span {
-        padding: 8px 11px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        color: #c0c3bb;
-        font-size: 10px;
-      }
-
       .speaker-link {
         display: inline-flex;
         align-items: center;
@@ -883,16 +842,6 @@
         min-height: 0;
         padding: 0;
         overflow: clip;
-      }
-
-      .page {
-        position: relative;
-        min-height: 100svh;
-        display: grid;
-        align-items: center;
-        padding: calc(var(--header-height) + 48px) clamp(24px, 10vw, 150px) 72px;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
       }
 
       .punch {
@@ -1365,10 +1314,6 @@
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
       }
 
-      .app-copy > .punch:first-of-type {
-        margin-top: 0;
-      }
-
       .app-logo.is-featured {
         height: clamp(38px, 4.4vw, 54px);
         margin-bottom: 24px;
@@ -1385,7 +1330,6 @@
       }
 
       .app-shot.is-landscape img {
-        aspect-ratio: 560 / 350;
         max-height: none;
         object-position: center;
         border-radius: 14px;
@@ -1404,7 +1348,8 @@
           font-size: 11px;
         }
 
-        .chapter {
+        .chapter,
+        .page {
           padding-right: clamp(30px, 7vw, 70px);
           padding-left: clamp(30px, 7vw, 70px);
         }
@@ -1418,12 +1363,18 @@
           font-size: clamp(56px, 8.5vw, 76px);
         }
 
-        .concepts-layout,
         .workshop-layout,
         .mito-layout,
         .wallets-layout,
         .speaker-layout {
           gap: 38px;
+        }
+
+        .lc-layout,
+        .mito-answer,
+        .keys-layout,
+        .app-layout {
+          gap: 32px;
         }
 
         .scroll-cue {
@@ -1432,6 +1383,45 @@
       }
 
       @media (max-width: 620px) {
+        .comparison-head {
+          display: none;
+        }
+
+        .wallet-option summary {
+          grid-template-columns: 36px minmax(0, 1fr) 20px;
+          gap: 6px 12px;
+          padding: 16px;
+        }
+
+        .wallet-option summary img {
+          grid-row: span 3;
+        }
+
+        .wallet-option summary::after {
+          grid-column: 3;
+          grid-row: 1 / span 3;
+        }
+
+        .wallet-option-custody {
+          grid-column: 2;
+          font-size: 12px;
+        }
+
+        .wallet-option-code {
+          grid-column: 2;
+          font-size: 12px;
+        }
+
+        .wallet-option-code::before {
+          content: "Código: ";
+          color: var(--muted);
+        }
+
+        .wallet-option .pros-cons {
+          grid-template-columns: 1fr;
+          padding: 0 16px 16px;
+        }
+
         :root {
           --header-height: 62px;
         }
@@ -1459,10 +1449,10 @@
           font-size: 10px;
         }
 
-        .chapter {
-          min-height: 100svh;
+        .chapter,
+        .page {
           align-items: center;
-          padding: calc(var(--header-height) + 45px) 24px 78px;
+          padding: calc(var(--header-height) + 40px) 24px 84px;
         }
 
         h2 {
@@ -1542,6 +1532,9 @@
           right: 20px;
           bottom: 28px;
           display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          max-width: calc(100vw - 40px);
           gap: 9px;
           padding: 9px 12px;
           transform: none;
@@ -1556,7 +1549,6 @@
           height: 9px;
         }
 
-        .concepts-layout,
         .workshop-layout,
         .mito-layout,
         .wallets-layout {
@@ -1570,20 +1562,16 @@
         }
 
         .speaker-portrait-wrap {
-          width: 100%;
-          display: grid;
-          grid-template-columns: 70px 1fr;
-          align-items: center;
-          gap: 14px;
-          justify-self: stretch;
-          padding: 10px;
+          width: 76px;
+          justify-self: start;
+          padding: 5px;
           border-radius: 16px;
           transform: none;
         }
 
         .speaker-portrait-wrap img {
-          width: 70px;
-          height: 70px;
+          width: 64px;
+          height: 64px;
           border-radius: 11px;
         }
 
@@ -1600,21 +1588,6 @@
           margin-bottom: 13px;
         }
 
-        .speaker-copy .lead {
-          margin-bottom: 12px;
-          font-size: 14px;
-        }
-
-        .speaker-values {
-          gap: 6px;
-          margin-bottom: 17px;
-        }
-
-        .speaker-values span {
-          padding: 7px 9px;
-          font-size: 9px;
-        }
-
         .chapter-index {
           margin-bottom: 15px;
         }
@@ -1626,7 +1599,6 @@
           padding-bottom: 12px;
         }
 
-        .concepts-copy .lead,
         .workshop-copy .lead {
           margin-bottom: 0;
           font-size: 15px;
@@ -1654,81 +1626,6 @@
 
         .steps p {
           font-size: 11px;
-        }
-
-      }
-
-      @media (max-width: 370px) {
-        .chapter {
-          padding-right: 19px;
-          padding-left: 19px;
-        }
-
-        .hero-copy h1 {
-          font-size: 51px;
-        }
-
-        .hero-layout {
-          gap: 16px;
-        }
-
-        .actions {
-          gap: 8px;
-        }
-
-        .button {
-          padding-inline: 12px;
-          font-size: 11px;
-        }
-
-        .wallet-showcase {
-          width: 100%;
-        }
-
-        .drum-stage {
-          --r: 134px;
-          --cw: 64px;
-          --ch: 84px;
-          --icon: 34px;
-          --dy: -10px;
-          height: 134px;
-        }
-
-        .drum-name {
-          font-size: 9px;
-        }
-      }
-
-      @media (max-width: 850px) {
-        .page {
-          padding-right: clamp(30px, 7vw, 70px);
-          padding-left: clamp(30px, 7vw, 70px);
-        }
-
-        .lc-layout,
-        .mito-answer,
-        .keys-layout,
-        .app-layout {
-          gap: 32px;
-        }
-      }
-
-      @media (max-width: 620px) {
-        .page {
-          align-items: center;
-          padding: calc(var(--header-height) + 40px) 24px 84px;
-        }
-
-        .speaker-portrait-wrap {
-          width: 76px;
-          display: block;
-          justify-self: start;
-          padding: 5px;
-        }
-
-        .speaker-portrait-wrap img {
-          width: 64px;
-          height: 64px;
         }
 
         .speaker-lines {
@@ -1943,9 +1840,44 @@
       }
 
       @media (max-width: 370px) {
+        .chapter,
         .page {
           padding-right: 19px;
           padding-left: 19px;
+        }
+
+        .hero-copy h1 {
+          font-size: 51px;
+        }
+
+        .hero-layout {
+          gap: 16px;
+        }
+
+        .actions {
+          gap: 8px;
+        }
+
+        .button {
+          padding-inline: 12px;
+          font-size: 11px;
+        }
+
+        .wallet-showcase {
+          width: 100%;
+        }
+
+        .drum-stage {
+          --r: 134px;
+          --cw: 64px;
+          --ch: 84px;
+          --icon: 34px;
+          --dy: -10px;
+          height: 134px;
+        }
+
+        .drum-name {
+          font-size: 9px;
         }
 
         .lc-gallery {

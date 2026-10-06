@@ -73,12 +73,8 @@ Todos convertidos a WebP 128×128 (lossy ~80) desde el PNG oficial. Ícono de Ap
 - lawallet-logo.svg — logotipo vectorial oficial (wordmark blanco + isotipo de color, se lee bien sobre fondo oscuro),
   repo https://github.com/lawalletio/lawallet-nwc , `apps/web/public/logos/lawallet.svg` →
   https://raw.githubusercontent.com/lawalletio/lawallet-nwc/main/apps/web/public/logos/lawallet.svg
-  Sin modificar. Es el que usa la página (más nítido que la alternativa de abajo).
-- lawallet-logo-ar.svg — versión anterior ya presente en el proyecto (SVG con el logo embebido como imagen PNG,
-  wordmark gris claro); origen exacto no documentado. No se usa en la página; queda como alternativa.
-- lawallet-wallet-ui.jpg — captura oficial de la galería de LaWallet NWC en el app store de Umbrel,
-  https://github.com/lawalletio/umbrel-app-store (`lawallet-nwc/gallery/1-lightning-address.jpg`) →
-  https://raw.githubusercontent.com/lawalletio/umbrel-app-store/master/lawallet-nwc/gallery/1-lightning-address.jpg
-  Redimensionada a 560 px de ancho (560×350, apaisada). Muestra la portada web en inglés ("Get your Lightning Address").
+  Sin modificar.
+- lawallet-app-inicio.jpg — captura de la app provista por Fierillo, redimensionada a 560×743.
+- lawallet-connection-map.jpg — captura del Connection Map provista por Fierillo, 900×426.
 - Texto de la página basado en https://lawallet.io y https://docs.lawallet.io/docs/vision
   (autocustodia progresiva: alias/redirect → NWC de cortesía vía lncurl → NWC propia → self-hosted; MIT).
