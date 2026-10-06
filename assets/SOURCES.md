@@ -1,5 +1,24 @@
 # Fuentes
 
+## Wallet of Satoshi: presentación y respaldo
+- wos-logo.svg — logotipo oficial, sin modificar:
+  https://www.walletofsatoshi.com/assets/images/wallet-logo.svg
+- wos-autocustodia.jpg, wos-lista.jpg, wos-crear.jpg, wos-respaldo.jpg — capturas
+  de Android provistas por Fierillo (versión indicada en su menú: 3.4.10 (370)).
+  Convertidas a JPEG de 540×1200, sin metadatos del original.
+  wos-lista.jpg lleva un círculo y una flecha naranja añadidos para señalar el
+  llavero superior, desde donde se abre Backup Wallet. El respaldo se presenta
+  después de Create a New Wallet; no se muestran palabras de recuperación.
+- wos-sitio.jpg — captura propia del sitio oficial https://www.walletofsatoshi.com/
+  a 540×1200, convertida a JPEG. Incluye los enlaces a las tiendas oficiales.
+  Las capturas de respaldo contienen solo instrucciones, no palabras de recuperación.
+- Modos, instalación y respaldo: https://www.walletofsatoshi.com/#faq
+- Flujo manual observado en Android (v3.1.7):
+  https://walletscrutiny.com/android/com.livingroomofsatoshi.wallet/
+  Settings → Self Custody Mode → respaldo manual/avanzado → desbloqueo →
+  12 palabras → confirmación. Los menús de versiones posteriores pueden variar.
+  No se incluyen capturas de claves ni se afirma haber probado el flujo en la app actual.
+
 ## Fotos de La Crypta (provistas por Fierillo)
 Redimensionadas a ≤1200 px de lado largo, JPEG progresivo, sin EXIF.
 - lacrypta-fachada.jpg — fachada (fuente original 1080 px, ya muy comprimida: queda en ~270 KB)

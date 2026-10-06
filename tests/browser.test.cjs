@@ -151,6 +151,100 @@ test('el ábaco mueve fichas independientes sin atravesar nodos y actualiza cada
   }, { clock: true, reducedMotion: 'no-preference' });
 });
 
+test('WoS selecciona pasos completos, alterna el respaldo y amplía la captura actual', async () => {
+  await withPage(async page => {
+    const tutorial = page.locator('#wallets-wos');
+    const steps = tutorial.locator('.wos-steps button');
+    const image = tutorial.locator('#wos-step-image');
+    const gallery = tutorial.locator('.wos-image-nav');
+    const dialog = page.locator('#lightbox');
+    const source = () => image.evaluate(el => el.currentSrc);
+    assert.equal(await steps.count(), 4);
+    assert.equal(await steps.nth(0).getAttribute('aria-pressed'), 'true');
+    assert.equal(await tutorial.locator('.wos-steps > li:first-child a').count(), 1, 'Descarga dentro del primer paso');
+    assert(await gallery.isHidden());
+    const sources = new Set();
+    for (let index = 0; index < await steps.count(); index++) {
+      const step = steps.nth(index);
+      const box = await step.boundingBox();
+      await step.click({ position: { x: box.width - 8, y: 8 } });
+      await image.evaluate(el => el.decode());
+      assert.equal(await tutorial.locator('.wos-steps button[aria-pressed="true"]').count(), 1);
+      assert.equal(await step.getAttribute('aria-pressed'), 'true');
+      sources.add(await source());
+      assert((await image.getAttribute('alt')).trim());
+      assert(await gallery.isVisible() === (index === await steps.count() - 1));
+    }
+    assert.equal(sources.size, await steps.count(), 'Cada paso cambia la captura');
+    const first = await source();
+    await gallery.getByRole('button', { name: 'Captura siguiente', exact: true }).click();
+    await image.evaluate(el => el.decode());
+    const second = await source();
+    assert.notEqual(second, first);
+    assert.match(await gallery.textContent(), /2\s*\/\s*2/);
+    await image.focus();
+    await page.keyboard.press('Enter');
+    assert(await dialog.evaluate(el => el.open));
+    assert.equal(await dialog.locator('.lightbox-img').getAttribute('src'), second);
+    assert.equal(await dialog.locator('.lightbox-img').getAttribute('alt'), await image.getAttribute('alt'));
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.querySelector('#lightbox').open);
+    assert(await image.evaluate(el => document.activeElement === el));
+    await gallery.getByRole('button', { name: 'Captura anterior', exact: true }).click();
+    await image.evaluate(el => el.decode());
+    assert.equal(await source(), first);
+    await gallery.getByRole('button', { name: 'Captura siguiente', exact: true }).click();
+    await steps.nth(2).click();
+    assert(await gallery.isHidden());
+    await steps.nth(3).focus();
+    await page.keyboard.press('Space');
+    await image.evaluate(el => el.decode());
+    assert.equal(await source(), first, 'Volver al paso reinicia la galería');
+    assert.match(await gallery.textContent(), /1\s*\/\s*2/);
+  });
+});
+
+test('red y video se amplían por separado, siguen animados y vuelven a su lugar', async () => {
+  await withPage(async page => {
+    await page.locator('#lightning-rutas').evaluate(el => el.scrollIntoView({ behavior: 'instant' }));
+    const video = page.locator('#ln-video');
+    const dialog = page.locator('#lightbox');
+    assert(await video.evaluate(el => el.paused), 'Movimiento reducido pausa el video');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.waitForFunction(() => !document.querySelector('#ln-video').paused);
+    const trail = await page.locator('#ln-trail').getAttribute('d');
+    await page.waitForFunction(previous => document.querySelector('#ln-trail').getAttribute('d') !== previous, trail, { timeout: 6000 });
+    for (const mediaID of ['ln-net', 'ln-video']) {
+      const media = page.locator('#' + mediaID);
+      const stage = media.locator('..');
+      const originalStage = await stage.elementHandle();
+      const originalParent = await stage.evaluate(el => el.parentElement.className);
+      await stage.focus();
+      await page.keyboard.press('Enter');
+      assert(await dialog.evaluate(el => el.open));
+      assert.equal(await dialog.locator('svg, video').count(), 1, 'Solo se amplía la escena elegida');
+      assert.equal(await dialog.locator('#' + mediaID).count(), 1);
+      assert(await page.evaluate(el => document.querySelector('#lightbox .ln-stage') === el, originalStage), 'Se mueve el original, no una copia');
+      const time = await video.evaluate(el => el.currentTime);
+      await page.waitForFunction(previous => {
+        const video = document.querySelector('#ln-video');
+        return !video.paused && video.currentTime !== previous;
+      }, time);
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.waitForFunction(() => document.querySelector('#ln-video').paused);
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => !document.querySelector('#lightbox').open);
+      assert.equal(await stage.evaluate(el => el.parentElement.className), originalParent);
+      assert(await stage.evaluate(el => document.activeElement === el), 'El foco vuelve a la escena');
+      assert.equal(await page.locator('#' + mediaID).count(), 1);
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.waitForFunction(() => !document.querySelector('#ln-video').paused);
+    }
+    await page.locator('#wallets-wos').evaluate(el => el.scrollIntoView({ behavior: 'instant' }));
+    await page.waitForFunction(() => document.querySelector('#ln-video').paused);
+  });
+});
+
 test('Cashu se despliega con teclado, gira la flecha y las comparaciones abren independientemente', async () => {
   await withPage(async page => {
     const route = page.locator('.cashu-route');
@@ -205,6 +299,34 @@ test('movimiento reducido permite completar el pago sin animación y detiene el 
     assert.equal(totals.at(-1) - totals[0], 20, 'El ejemplo completa un pago de diez sats');
     assert.equal(await rotation(), '0deg');
     assert(await page.locator('#ln-video').evaluate(el => el.paused));
+  });
+});
+
+test('los badges distinguen custodia, progresión y código en cada wallet destacada', async () => {
+  await withPage(async page => {
+    const rgb = badge => badge.evaluate(el => getComputedStyle(el).color.match(/\d+/g).map(Number));
+    for (const badge of await page.locator('.claim-tag.is-custody, .claim-tag.is-mixed span:first-child').all()) {
+      const color = await rgb(badge);
+      assert(Math.max(...color) - Math.min(...color) < 20, 'Custodial en gris');
+    }
+    for (const badge of await page.locator('.claim-tag.is-self, .claim-tag.is-mixed span:last-child').all()) {
+      const [red, green, blue] = await rgb(badge);
+      assert(red > green && green > blue, 'Autocustodial en naranja');
+    }
+    for (const badge of await page.locator('.claim-tag.is-progressive').all()) {
+      assert((await badge.evaluate(el => getComputedStyle(el).backgroundImage)).startsWith('linear-gradient('));
+      assert((await badge.evaluate(el => getComputedStyle(el, '::before').backgroundImage)).startsWith('linear-gradient('), 'También el borde tiene gradiente');
+    }
+    const featured = page.locator('.app-copy:has(.app-logo)');
+    assert(await featured.count() > 0);
+    for (const wallet of await featured.all()) {
+      const code = wallet.locator('.claim-tag.is-open, .claim-tag.is-closed');
+      assert.equal(await code.count(), 1, 'Cada wallet tiene un badge de código');
+      const [red, green] = await rgb(code);
+      const label = await code.textContent();
+      assert(label.includes('abierto') ? green > red : red > green, 'Código abierto verde; cerrado rojo');
+      assert(await code.isVisible());
+    }
   });
 });
 

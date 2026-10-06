@@ -810,6 +810,90 @@
         line-height: 1.55;
       }
 
+      .wos-steps button {
+        display: grid;
+        grid-template-columns: 45px minmax(0, 1fr);
+        gap: 16px;
+        width: 100%;
+        padding: 18px 0;
+        border: 0;
+        color: var(--paper);
+        background: none;
+        font: inherit;
+        font-weight: 650;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .wos-steps li {
+        display: block;
+        padding: 0;
+      }
+
+      .wos-steps li::before {
+        display: none;
+      }
+
+      .wos-steps button::before {
+        content: "0" counter(steps);
+        color: var(--orange);
+        font: 12px "SFMono-Regular", Consolas, monospace;
+      }
+
+      .wos-steps button[aria-pressed="true"],
+      .wos-steps button:hover {
+        color: var(--orange);
+      }
+
+      .wos-steps button:focus-visible {
+        outline: 2px solid var(--lime);
+        outline-offset: 4px;
+      }
+
+      .wos-step-description {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.55;
+      }
+
+      .wos-download {
+        display: inline-block;
+        margin: 0 0 18px 61px;
+        color: var(--lime);
+        font-size: 13px;
+        text-underline-offset: 3px;
+      }
+
+      .wos-image-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-block: 10px;
+      }
+
+      .wos-image-nav[hidden] {
+        display: none;
+      }
+
+      .wos-image-nav button {
+        width: 44px;
+        height: 36px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--paper);
+        background: var(--panel);
+        cursor: pointer;
+      }
+
+      #wallets-wos .app-shot img {
+        height: auto;
+        max-height: none;
+        object-fit: contain;
+      }
+
       .speaker {
         background:
           radial-gradient(ellipse at 83% 22%, rgb(255 118 46 / 7%), transparent 32%),
@@ -2223,6 +2307,7 @@
       <a href="#wallets-llaves" aria-label="¿Quién tiene las llaves?"><span>Las llaves</span></a>
       <a href="#wallets-strike" aria-label="Strike"><span>Strike</span></a>
       <a href="#wallets-zeus" aria-label="ZEUS"><span>ZEUS</span></a>
+      <a href="#wallets-wos" aria-label="Wallet of Satoshi"><span>Wallet of Satoshi</span></a>
       <a href="#wallets-lawallet" aria-label="LaWallet"><span>LaWallet</span></a>
       <a href="#wallets-lawallet-map" aria-label="LaWallet Connection Map"><span>LaWallet map</span></a>
       <a href="#wallets-tabla" aria-label="Comparar wallets"><span>Comparar wallets</span></a>
@@ -2653,6 +2738,37 @@
           </div>
         </div>
 
+        <div class="page" id="wallets-wos">
+          <div class="chapter-inner app-layout">
+            <div class="app-copy">
+              <img class="app-logo lb-trigger" src="./assets/wos-logo.svg" alt="Wallet of Satoshi" width="594" height="70" />
+              <span class="claim-tag is-mixed"><span>Custodial</span><span>Autocustodial</span></span>
+              <span class="claim-tag is-closed">Código cerrado</span>
+              <div class="pros-cons">
+                <div class="is-pro"><span class="pc-label">A favor</span><p>Fácil para empezar · No necesitás abrir canales · En modo Spark tenés tus claves</p></div>
+                <div class="is-con"><span class="pc-label">En contra</span><p>App de código cerrado · En modo custodial dependés de la empresa; en Spark, de operadores para transferir</p></div>
+              </div>
+              <ol class="steps wos-steps">
+                <li><button type="button" aria-pressed="true" aria-controls="wos-step-image" data-image="./assets/wos-sitio.jpg" data-caption="Sitio oficial · elegí App Store o Google Play." data-alt="Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play"><span>Instalá WoS<span class="wos-step-description">Elegí la tienda de tu teléfono. Instalá la app, abrila y tocá el menú.</span></span></button><a class="wos-download" href="https://www.walletofsatoshi.com/#download" target="_blank" rel="noreferrer">Descargar desde el sitio oficial ↗</a></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-autocustodia.jpg" data-caption="Confirmá Open Self Custody Wallet." data-alt="Pantalla de Wallet of Satoshi para abrir una wallet de autocustodia, con aviso sobre respaldo y fondos separados"><span>Seleccioná “Open Self Custody Wallet”<span class="wos-step-description">Elegí esa opción y confirmá. Es una wallet distinta: el saldo custodial no se mueve automáticamente.</span></span></button></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-crear.jpg" data-caption="Elegí Create a New Wallet para crear una wallet nueva." data-alt="Wallet of Satoshi con las opciones Create a New Wallet y Restore Existing Wallet"><span>Seleccioná “Create a New Wallet”<span class="wos-step-description">Creá una wallet nueva. Restore Existing Wallet es para recuperar una que ya tenías; las palabras se guardan en el siguiente paso.</span></span></button></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-lista.jpg" data-caption="Tocá el llavero resaltado junto al nombre para abrir Backup Wallet." data-alt="Wallet of Satoshi con el llavero superior resaltado con un círculo y una flecha naranja: acceso al respaldo" data-image-next="./assets/wos-respaldo.jpg" data-caption-next="Backup Wallet · leé el aviso, marcá Entiendo y tocá Siguiente para continuar en privado." data-alt-next="Pantalla Backup Wallet con instrucciones de seguridad, interruptor Entiendo y botón Siguiente, sin palabras de recuperación"><span>¡Ya estás casi listo! No te olvides de guardar tus 12 palabras.<span class="wos-step-description">Tocá el llavero de arriba para abrir Backup Wallet. Leé el aviso y seguí las indicaciones: anotá las 12 palabras en papel, en orden, y completá la verificación. Sin fotos ni capturas. Después, probá con pocos sats.</span></span></button></li>
+              </ol>
+            </div>
+            <figure class="app-shot">
+              <img class="lb-trigger" id="wos-step-image" src="./assets/wos-sitio.jpg" alt="Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play" width="540" height="1200" loading="lazy" />
+              <div class="wos-image-nav" hidden>
+                <button type="button" aria-label="Captura anterior">←</button>
+                <span class="comparison-note" aria-live="polite">1 / 2</span>
+                <button type="button" aria-label="Captura siguiente">→</button>
+              </div>
+              <figcaption class="comparison-note" aria-live="polite">Sitio oficial · elegí App Store o Google Play.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- LaWallet: logo oficial lawallet-nwc; captura de app (balance/address) provista por Fierillo 2026-10-05.
+             Segunda página #wallets-lawallet-map usa el Connection Map. -->
         <div class="page" id="wallets-lawallet">
           <div class="chapter-inner app-layout">
             <div class="app-copy">
@@ -2912,6 +3028,40 @@
         });
       })();
 
+      // Un solo tutorial y una sola imagen ampliable.
+      (() => {
+        const tutorial = document.getElementById("wallets-wos");
+        const image = tutorial.querySelector(".app-shot img");
+        const caption = tutorial.querySelector("figcaption");
+        const buttons = [...tutorial.querySelectorAll(".wos-steps button")];
+        const navigation = tutorial.querySelector(".wos-image-nav");
+        let active = buttons[0], current = 0;
+
+        function showImage() {
+          const suffix = current === 0 ? "" : "Next";
+          image.src = active.dataset["image" + suffix];
+          image.alt = active.dataset["alt" + suffix];
+          image.setAttribute("aria-label", "Ampliar: " + image.alt);
+          caption.textContent = active.dataset["caption" + suffix];
+          navigation.hidden = !active.dataset.imageNext;
+          navigation.querySelector("span").textContent = (current + 1) + " / 2";
+        }
+
+        buttons.forEach((button) => {
+          button.addEventListener("click", () => {
+            active = button;
+            current = 0;
+            showImage();
+            buttons.forEach((step) => step.setAttribute("aria-pressed", String(step === button)));
+          });
+        });
+        navigation.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => {
+            current = 1 - current;
+            showImage();
+          });
+        });
+      })();
     </script>
 
     <script>
