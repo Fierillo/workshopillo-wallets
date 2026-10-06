@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests && node --test tests/browser.test.cjs",
+    "test:mutations": "node tests/mutations.cjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.63.0"
+  }
+}
