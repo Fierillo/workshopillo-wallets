@@ -433,3 +433,32 @@ test('Tether Wallet tiene una página navegable después de WoS con badges, pros
     await page.keyboard.press('Escape');
   });
 });
+
+test('el mapa mundial de Lightning precede a las wallets y se amplía sin recorte en móvil y escritorio', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const section = page.locator('#lightning-mapa');
+      assert.equal(await section.count(), 1, 'El mapa tiene una página propia');
+      assert(await section.evaluate(el => Boolean(el.compareDocumentPosition(document.querySelector('#wallets')) & Node.DOCUMENT_POSITION_FOLLOWING)), 'Antes de hablar de wallets');
+      await page.locator('.chapter-nav a[href="#lightning-mapa"]').click();
+      await page.waitForFunction(() => document.querySelector('.chapter-nav a[aria-current]')?.hash === '#lightning-mapa');
+      assert(await section.getByRole('heading', { name: /Señoras y señores.*red Lightning de Bitcoin/i }).isVisible());
+      const image = section.locator('img');
+      await image.evaluate(el => el.decode());
+      assert(await image.isVisible());
+      const frame = await image.boundingBox();
+      const content = await section.locator('.chapter-inner').boundingBox();
+      assert(frame.x >= content.x - 1 && frame.x + frame.width <= content.x + content.width + 1, 'Respeta la sangría');
+      assert.equal(await image.evaluate(el => getComputedStyle(el).objectFit), 'contain', 'Mapa completo, sin recortar');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      await image.focus();
+      await page.keyboard.press('Enter');
+      const dialog = page.locator('#lightbox');
+      assert(await dialog.evaluate(el => el.open));
+      assert.equal(await dialog.locator('.lightbox-img').getAttribute('src'), await image.evaluate(el => el.currentSrc));
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => !document.querySelector('#lightbox').open);
+      assert(await image.evaluate(el => document.activeElement === el));
+    }, { viewport: { width, height: 844 } });
+  }
+});

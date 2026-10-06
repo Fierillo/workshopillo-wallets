@@ -1133,6 +1133,19 @@
         stroke-linecap: round;
       }
 
+      .lightning-map {
+        margin: 24px 0 0;
+      }
+
+      .lightning-map img {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 65svh;
+        object-fit: contain;
+        border-radius: 12px;
+      }
+
       .ab-channel.is-route path {
         stroke: var(--orange);
         stroke-width: 2;
@@ -2304,6 +2317,7 @@
       <a href="#mito-capas" aria-label="¿Son ciertas?"><span>¿Son ciertas?</span></a>
       <a href="#lightning-abaco" aria-label="Lightning: el ábaco"><span>El ábaco</span></a>
       <a href="#lightning-rutas" aria-label="Lightning: las rutas y el rayo"><span>Las rutas</span></a>
+      <a href="#lightning-mapa" aria-label="Mapa mundial de Lightning"><span>La red Lightning</span></a>
       <a href="#wallets-llaves" aria-label="¿Quién tiene las llaves?"><span>Las llaves</span></a>
       <a href="#wallets-strike" aria-label="Strike"><span>Strike</span></a>
       <a href="#wallets-zeus" aria-label="ZEUS"><span>ZEUS</span></a>
@@ -2646,6 +2660,14 @@
             </figure>
           </div>
         </div>
+        </div>
+        <div class="page" id="lightning-mapa">
+          <div class="chapter-inner">
+            <h2 class="punch" id="lightning-map-title">Señoras y señores: esta es la red <em>Lightning de Bitcoin.</em></h2>
+            <figure class="lightning-map">
+              <img class="lb-trigger" src="./assets/lightning-mapa-mundial.png" alt="Mapa mundial de la red Lightning de Bitcoin: nodos y conexiones entre América, Europa, Asia, África y Oceanía" width="1647" height="842" loading="lazy" />
+            </figure>
+          </div>
         </div>
       </section>
 

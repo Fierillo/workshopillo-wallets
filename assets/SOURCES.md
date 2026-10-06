@@ -1,5 +1,11 @@
 # Fuentes
 
+## Mapa mundial de Lightning
+- lightning-mapa-mundial.png — imagen provista y guardada por Fierillo, 1647×842.
+  Se utiliza sin modificar, antes de la sección de wallets, y puede ampliarse.
+  No se proporcionó fuente original ni fecha de los datos; no se presenta como
+  un censo completo o una visualización en tiempo real.
+
 ## Wallet of Satoshi: presentación y respaldo
 - wos-logo.svg — logotipo oficial, sin modificar:
   https://www.walletofsatoshi.com/assets/images/wallet-logo.svg
