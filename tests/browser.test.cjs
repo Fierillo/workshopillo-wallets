@@ -283,6 +283,47 @@ test('Cashu se despliega con teclado, gira la flecha y las comparaciones abren i
   });
 });
 
+test('todas las páginas se navegan sin contenido oculto ni desbordes en escritorio y móvil', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const links = page.locator('.chapter-nav a');
+      const destinations = await links.evaluateAll(elements => elements.map(el => el.hash));
+      for (let index = 0; index < destinations.length; index++) {
+        await links.nth(index).click();
+        await page.waitForFunction(hash => document.querySelector('.chapter-nav a[aria-current]')?.hash === hash, destinations[index]);
+        const section = page.locator(destinations[index]);
+        assert(await section.isVisible(), `${width}px: ${destinations[index]} visible`);
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: sin scroll horizontal`);
+        for (const content of await section.locator('.lead, .app-lines, .app-copy, .app-shot, .abacus, .ln-panels, .wallet-comparison').all()) {
+          assert(await content.isVisible(), `${width}px: no ocultar contenido principal`);
+          const box = await content.boundingBox();
+          assert(box.x >= -1 && box.x + box.width <= width + 1, `${width}px: contenido dentro de los márgenes`);
+        }
+        for (const image of await section.locator('.app-shot img, .app-logo').all()) {
+          await image.evaluate(el => el.decode());
+          assert(await image.evaluate(el => el.naturalWidth > 0 && el.naturalHeight > 0), 'Las imágenes se cargan realmente');
+        }
+      }
+      const route = page.locator('.cashu-route');
+      await route.locator('summary').click();
+      assert(await route.locator('code').isVisible());
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: URL de mint sin desborde`);
+      const abacus = page.locator('.abacus');
+      const inner = await abacus.locator('..').boundingBox();
+      const graphic = await abacus.boundingBox();
+      assert(graphic.x >= inner.x && graphic.x + graphic.width <= inner.x + inner.width + 1, 'El ábaco respeta la sangría');
+      const button = await page.locator('#ab-send').boundingBox();
+      const caption = await page.locator('#ab-status').boundingBox();
+      assert(button.y >= caption.y + caption.height + 8, 'El botón va debajo del texto con espacio');
+      await page.locator('#wallets-wos .app-shot img').click();
+      assert(await page.locator('#lightbox').evaluate(el => el.open));
+      const image = await page.locator('.lightbox-img').boundingBox();
+      assert(image.width > 0 && image.x >= 0 && image.x + image.width <= width + 1, 'Imagen ampliada dentro de la pantalla');
+      await page.keyboard.press('Escape');
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('movimiento reducido permite completar el pago sin animación y detiene el tambor', async () => {
   await withPage(async page => {
     const ring = page.locator('#drum-ring');
