@@ -75,3 +75,19 @@ async function withPage(run, options = {}) {
     await page.close();
   }
 }
+
+test('los badges de código conservan su color aunque cambie el enlace a la fuente', async () => {
+  await withPage(async page => {
+    await page.addStyleTag({ content: 'a { transition: none !important; }' });
+    const badges = page.locator('.wallet-option-code');
+    assert(await badges.count() > 0);
+    for (const badge of await badges.all()) {
+      const label = (await badge.textContent()).trim();
+      const before = await badge.evaluate(el => getComputedStyle(el).color);
+      const [red, green] = before.match(/\d+/g).map(Number);
+      assert(label === 'Abierto' ? green > red : red > green, `${label}: color incorrecto`);
+      await badge.evaluate(el => { el.href = 'https://codeberg.org/example/wallet'; });
+      assert.equal(await badge.evaluate(el => getComputedStyle(el).color), before, 'La clasificación depende del código, no del dominio de la referencia');
+    }
+  });
+});

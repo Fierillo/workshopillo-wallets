@@ -604,7 +604,7 @@
         font-style: normal;
       }
 
-      /* Tabla Pro|Contra: scroll en la página, celdas sin ellipsis/clip */
+      /* Comparación de wallets: desplegables nativos, sin scroll horizontal. */
       #wallets-tabla.page {
         align-items: start;
         max-height: 100svh;
@@ -622,80 +622,110 @@
         max-width: 40rem;
       }
 
-      .table-wrap {
-        overflow-x: auto;
-        overflow-y: visible;
-        -webkit-overflow-scrolling: touch;
+      .wallet-comparison {
+        display: grid;
+        gap: 10px;
+      }
+
+      .wallet-option {
         border: 1px solid var(--line);
         border-radius: 16px;
         background: #121613;
       }
 
-      .wallets-table {
-        width: 100%;
-        min-width: 920px;
-        border-collapse: collapse;
-        table-layout: fixed;
+      .wallet-option[open] {
+        border-color: rgb(255 118 46 / 55%);
+      }
+
+      .wallet-option summary,
+      .comparison-head {
+        display: grid;
+        grid-template-columns: 36px minmax(145px, .7fr) minmax(0, 1.3fr) 100px 20px;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 20px;
+      }
+
+      .comparison-head {
+        padding-block: 0;
+        color: var(--muted);
         font-size: 11px;
       }
 
-      .wallets-table th,
-      .wallets-table td {
-        padding: 12px 15px;
-        border-bottom: 1px solid var(--line);
-        text-align: left;
-        vertical-align: top;
-        overflow: visible;
-        text-overflow: clip;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        word-break: break-word;
+      .comparison-head span:first-child {
+        grid-column: 1 / span 2;
       }
 
-      .wallets-table th {
-        color: var(--muted);
-        font-family: "SFMono-Regular", Consolas, monospace;
-        font-size: 9px;
-        font-weight: 700;
-        letter-spacing: .14em;
-        text-transform: uppercase;
+      .wallet-option summary {
+        cursor: pointer;
+        list-style: none;
       }
 
-      .wallets-table col.col-wallet { width: 12%; }
-      .wallets-table col.col-custodia { width: 24%; }
-      .wallets-table col.col-pro { width: 32%; }
-      .wallets-table col.col-contra { width: 32%; }
+      .wallet-option summary::-webkit-details-marker {
+        display: none;
+      }
 
-      .wallets-table td:first-child,
-      .wallets-table th:first-child {
-        color: var(--paper);
+      .wallet-option summary:focus-visible {
+        outline: 2px solid var(--lime);
+        outline-offset: 3px;
+        border-radius: inherit;
+      }
+
+      .wallet-option summary::after {
+        content: "+";
+        color: var(--orange);
+        font-size: 24px;
+        text-align: center;
+      }
+
+      .wallet-option[open] summary::after {
+        content: "−";
+      }
+
+      .wallet-option summary img {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+      }
+
+      .wallet-option-name {
+        font-size: 16px;
         font-weight: 650;
-        white-space: nowrap;
-        overflow: visible;
-        word-break: normal;
-        overflow-wrap: normal;
+        letter-spacing: -.02em;
       }
 
-      .wallets-table th:first-child {
+      .wallet-option-custody {
         color: var(--muted);
-        font-weight: 700;
-      }
-
-      .wallets-table td:not(:first-child) {
-        color: #c0c3bb;
+        font-size: 13px;
         line-height: 1.5;
       }
 
-      .wallets-table tbody tr:last-child td {
-        border-bottom: 0;
+      .wallet-option-code {
+        color: var(--paper);
+        justify-self: start;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 10px;
+        text-transform: uppercase;
+        text-underline-offset: 3px;
       }
 
-      .table-note {
+      .wallet-option .pros-cons {
+        max-width: none;
+        padding: 0 20px 20px 72px;
+      }
+
+      .wallet-option .pros-cons p {
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .comparison-note {
         margin: 0;
-        padding: 13px 15px;
-        border-top: 1px solid var(--line);
         color: var(--muted);
-        font-size: 10px;
+        font-size: 12px;
         line-height: 1.5;
       }
 
@@ -1180,21 +1210,37 @@
       }
 
       .claim-tag.is-self {
-        border-color: rgb(210 242 120 / 45%);
-        color: var(--lime);
+        border-color: rgb(255 118 46 / 55%);
+        color: var(--orange);
+        background: rgb(255 118 46 / 8%);
+      }
+
+      .claim-tag.is-open,
+      .wallet-option.is-open .wallet-option-code {
+        color: #86d993;
+        border-color: rgb(134 217 147 / 45%);
+        background: rgb(134 217 147 / 8%);
+      }
+
+      .claim-tag.is-closed,
+      .wallet-option.is-closed .wallet-option-code {
+        color: #f28b82;
+        border-color: rgb(242 139 130 / 45%);
+        background: rgb(242 139 130 / 8%);
       }
 
       .claim-tag.is-custody {
-        border-color: rgb(255 118 46 / 45%);
-        color: var(--orange);
+        border-color: rgb(166 170 161 / 55%);
+        color: var(--muted);
+        background: rgb(166 170 161 / 8%);
       }
 
-      /* Autocustodia progresiva: borde que va de naranja (custodial) a lima (autocustodial). */
+      /* Progresiva: de custodial (gris) a autocustodial (naranja). */
       .claim-tag.is-progressive {
         position: relative;
         border-color: transparent;
-        background: linear-gradient(90deg, rgb(255 118 46 / 8%), rgb(210 242 120 / 8%));
-        color: var(--lime);
+        background: linear-gradient(90deg, rgb(166 170 161 / 8%), rgb(255 118 46 / 8%));
+        color: var(--paper);
       }
 
       .claim-tag.is-progressive::before {
@@ -1202,12 +1248,38 @@
         inset: -1px;
         padding: 1px;
         border-radius: inherit;
-        background: linear-gradient(90deg, rgb(255 118 46 / 75%), rgb(210 242 120 / 75%));
+        background: linear-gradient(90deg, var(--muted), var(--orange));
         content: "";
         pointer-events: none;
         -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
+      }
+
+      .claim-tag.is-mixed {
+        display: inline-flex;
+        padding: 0;
+        border: 0;
+      }
+
+      .claim-tag.is-mixed span {
+        padding: 5px 10px;
+        border: 1px solid;
+      }
+
+      .claim-tag.is-mixed span:first-child {
+        border-color: rgb(166 170 161 / 55%);
+        border-right: 0;
+        border-radius: 999px 0 0 999px;
+        color: var(--muted);
+        background: rgb(166 170 161 / 8%);
+      }
+
+      .claim-tag.is-mixed span:last-child {
+        border-color: rgb(255 118 46 / 55%);
+        border-radius: 0 999px 999px 0;
+        color: var(--orange);
+        background: rgb(255 118 46 / 8%);
       }
 
       .app-layout {
@@ -2024,7 +2096,7 @@
       <a href="#wallets-zeus" aria-label="ZEUS"><span>ZEUS</span></a>
       <a href="#wallets-lawallet" aria-label="LaWallet"><span>LaWallet</span></a>
       <a href="#wallets-lawallet-map" aria-label="LaWallet Connection Map"><span>LaWallet map</span></a>
-      <a href="#wallets-tabla" aria-label="Tabla de wallets"><span>Tabla de wallets</span></a>
+      <a href="#wallets-tabla" aria-label="Comparar wallets"><span>Comparar wallets</span></a>
       <a href="#workshop" aria-label="Taller"><span>Taller</span></a>
     </nav>
 
@@ -2362,6 +2434,7 @@
               <h3 class="visually-hidden">Strike</h3>
               <img class="app-logo lb-trigger" src="./assets/strike-logo.svg" alt="Strike" width="190" height="42" />
               <span class="claim-tag is-custody">Custodial</span>
+              <span class="claim-tag is-closed">Código cerrado</span>
               <ul class="app-lines">
                 <li>Te registrás, verificás tu identidad y ya podés mandar y recibir por Lightning.</li>
                 <li>Sin frase de recuperación: tu cuenta es tu acceso.</li>
@@ -2386,6 +2459,7 @@
               <h3 class="visually-hidden">ZEUS</h3>
               <img class="app-logo lb-trigger" src="./assets/zeus-logo.svg" alt="ZEUS" width="108" height="42" />
               <span class="claim-tag is-self">Autocustodial</span>
+              <span class="claim-tag is-open">Código abierto</span>
               <ul class="app-lines">
                 <li>Tus llaves, tu nodo, tus canales.</li>
                 <li>Para recibir necesitás liquidez de entrada. Para pagar, canales con saldo.</li>
@@ -2410,6 +2484,7 @@
               <h3 class="visually-hidden">LaWallet</h3>
               <img class="app-logo is-featured lb-trigger" src="./assets/lawallet-logo.svg" alt="LaWallet" width="234" height="42" />
               <span class="claim-tag is-progressive">Autocustodia progresiva</span>
+              <span class="claim-tag is-open">Código abierto</span>
               <ul class="app-lines">
                 <li>Empezás con poca fricción: alias a una address que ya tengas, o una NWC de cortesía vía LNcurl.</li>
                 <li>Cuando estás listo, conectás tu propia NWC (Alby, Primal u otra compatible).</li>
@@ -2449,40 +2524,107 @@
           <div class="chapter-inner wallets-layout">
             <div class="wallets-copy">
               <p class="eyebrow">Para elegir la tuya</p>
-              <h2 id="wallets-title">Wallets con <em>Lightning</em>.</h2>
-              <p class="lead">Todas usan Lightning y funcionan en el teléfono. Lo que cambia es quién cuida las claves: hay custodial (otros las guardan) y autocustodial (las guardás vos).</p>
+              <h2 id="wallets-title">Elegí tu <em>wallet.</em></h2>
+              <p class="lead">Compará tres cosas: quién cuida tus claves, si el código se puede revisar y de quién dependés para pagar. Abrí las wallets para ver sus ventajas y límites.</p>
             </div>
 
-          <div class="table-wrap">
-            <table class="wallets-table">
-              <colgroup>
-                <col class="col-wallet" />
-                <col class="col-custodia" />
-                <col class="col-pro" />
-                <col class="col-contra" />
-              </colgroup>
-              <thead>
-                <tr><th>Wallet</th><th>Custodia</th><th>Pro</th><th>Contra</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>LaWallet</td><td>Custodial temporal (LNcurl) o NWC (custodia = la de la wallet conectada)</td><td>Lightning Address sin armar nodo</td><td>NWC requiere configuración adicional</td></tr>
-                <tr><td>Wallet of Satoshi</td><td>Autocustodial (Spark) global; custodial solo en algunas regiones</td><td>Muy simple; Lightning y on-chain</td><td>Spark: federación, sin canales LN propios</td></tr>
-                <tr><td>Tether Wallet</td><td>Autocustodial (12 palabras; backup nube opcional)</td><td>BTC on-chain + Lightning; USDT/XAUT</td><td>Lightning vía Spark. Backup nube ata a email+nube. USDT/XAUT congelables. App cerrada</td></tr>
-                <tr><td>Cash App</td><td>Custodial</td><td>Lightning y on-chain, simple</td><td>Solo EE.UU.; si te bloquean, no tenés sats. KYC</td></tr>
-                <tr><td>Strike</td><td>Custodial</td><td>Fácil; Lightning y on-chain; ~98 países (incl. Argentina)</td><td>KYC; sin frase; si te bloquean no tenés sats</td></tr>
-                <tr><td>Blink</td><td>Custodial o autocustodial (Spark); en algunas regiones solo auto</td><td>Elegís el modo; Lightning y on-chain</td><td>Autocustodial vía Spark. Regiones del modo custodial: aviso in-app</td></tr>
-                <tr><td>Phoenix</td><td>Autocustodial</td><td>Canal LN automático; on-chain por splicing</td><td>Depende del LSP de ACINQ. No es nodo a mano</td></tr>
-                <tr><td>Muun</td><td>Autocustodial</td><td>On-chain + Lightning; simple</td><td>Lightning vía swaps (sin canales LN en el teléfono)</td></tr>
-                <tr><td>Bitkit</td><td>Autocustodial</td><td>Lightning y on-chain (LDK; LSP Blocktank sin custodia)</td><td>LSP para liquidez de entrada; no es nodo remoto propio</td></tr>
-                <tr><td>Blixt</td><td>Autocustodial</td><td>Nodo LND embebido; canales automáticos</td><td>Más control, más curva/recursos que una wallet simple</td></tr>
-                <tr><td>BlueWallet</td><td>Autocustodial on-chain</td><td>On-chain sólido</td><td>LN: tu LNDHub o Arkade (Ark+swaps, no LN nativo). lndhub.io ya no existe</td></tr>
-                <tr><td>ZEUS</td><td>Cashu (custodial mint) → nodo embebido (LDK+Olympus) → nodo remoto</td><td>Control total en modos nodo; frase + respaldo de canales</td><td>Cashu no es autocustodial. Curva media/alta. Swaps ZEUS suspendidos. Sin Spark</td></tr>
-                <tr><td>Aqua Wallet</td><td>Autocustodial L-BTC en Liquid (sin canales LN)</td><td>L-BTC + pagar BOLT11 / retirar vía LN (Indra)</td><td>No es LN nativo; sacar por LN sí, no depositar por LN; depende del swap</td></tr>
-              </tbody>
-</table>
-            <p class="table-note">No es un ranking: nadie publica uso comparable entre wallets. Elegí según quién querés que cuide tus claves.</p>
+            <div class="wallet-comparison">
+              <div class="comparison-head" aria-hidden="true"><span>Wallet</span><span>Quién cuida las claves</span><span>Código de la app</span></div>
+              <details class="wallet-option is-open" open>
+                <summary><img src="./assets/icono-lawallet.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">LaWallet</span><span class="wallet-option-custody">Depende de la wallet que conectes. La de cortesía la administra un tercero.</span><a class="wallet-option-code" href="https://github.com/lawalletio/lawallet-nwc" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Recibís pagos con una dirección parecida a un email, sin montar un nodo. Podés conectar tu propia wallet más adelante.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>LaWallet no cambia quién guarda tus fondos: eso depende de la wallet conectada. Conectar la tuya requiere un paso de configuración.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-closed">
+                <summary><img src="./assets/icono-wos.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Wallet of Satoshi</span><span class="wallet-option-custody">Vos en modo Spark; la empresa en modo custodial, donde esté disponible.</span><a class="wallet-option-code" href="https://walletscrutiny.com/android/com.livingroomofsatoshi.wallet/" target="_blank" rel="noreferrer">Cerrado</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Una forma simple de empezar a pagar por Lightning, sin aprender a abrir canales.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>En Spark tenés tus claves, pero transferir requiere operadores y al menos uno debe actuar honestamente. Retirar a la red Bitcoin puede ser lento y caro.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-closed">
+                <summary><img src="./assets/icono-tether.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Tether Wallet</span><span class="wallet-option-custody">Vos, con una frase de 12 palabras. Ofrece respaldo opcional en la nube.</span><a class="wallet-option-code" href="https://wallet.tether.io/application-terms/" target="_blank" rel="noreferrer">Cerrado</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Reúne bitcoin, pagos Lightning, dólares digitales y oro tokenizado en una app.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Los pagos Lightning dependen de servicios externos. Los dólares y el oro tokenizados pueden ser congelados por su emisor. El respaldo en la nube depende de tu cuenta y de sus servicios.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-closed">
+                <summary><img src="./assets/icono-cashapp.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Cash App</span><span class="wallet-option-custody">La empresa guarda los fondos por vos.</span><a class="wallet-option-code" href="https://walletscrutiny.com/android/com.squareup.cash/" target="_blank" rel="noreferrer">Cerrado</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Comprar bitcoin y pagar por Lightning desde una app financiera familiar.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Está orientada a usuarios de EE.UU. y pide verificar tu identidad. Si bloquean tu cuenta, dependés de la empresa para acceder a los fondos.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-closed">
+                <summary><img src="./assets/icono-strike.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Strike</span><span class="wallet-option-custody">La empresa guarda los fondos por vos.</span><a class="wallet-option-code" href="https://strike.me/legal/tos/" target="_blank" rel="noreferrer">Cerrado</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Fácil para comprar, recibir y pagar con bitcoin. Está disponible en Argentina.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Pide verificar tu identidad. No tenés una frase para recuperar los fondos por tu cuenta: dependés del acceso a tu cuenta y de la empresa.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-blink.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Blink</span><span class="wallet-option-custody">Vos en modo Spark; la empresa en modo custodial, según la región.</span><a class="wallet-option-code" href="https://github.com/blinkbitcoin/blink-mobile" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Podés elegir cómo guardar tus fondos entre los modos disponibles, sin abrir canales Lightning.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>En modo custodial confiás los fondos a la empresa. En Spark tenés tus claves, pero transferir depende de operadores y al menos uno debe actuar honestamente.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-phoenix.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Phoenix</span><span class="wallet-option-custody">Vos, con tu frase de recuperación.</span><a class="wallet-option-code" href="https://github.com/ACINQ/phoenix" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Usa canales Lightning propios, pero la app los administra para que no tengas que hacerlo a mano.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>ACINQ es tu conexión a Lightning y te facilita capacidad para recibir. Abrir o ampliar esa capacidad puede tener un costo.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-muun.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Muun</span><span class="wallet-option-custody">Vos, con su sistema de recuperación propio.</span><a class="wallet-option-code" href="https://github.com/muun/apollo" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Maneja bitcoin en la red principal y permite pagar por Lightning desde una interfaz simple.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Para usar Lightning hace una conversión entre redes. Dependés de ese servicio y el costo puede subir cuando la red Bitcoin está congestionada.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-bitkit.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Bitkit</span><span class="wallet-option-custody">Vos, con tu frase de recuperación.</span><a class="wallet-option-code" href="https://github.com/synonymdev/bitkit" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Bitcoin y Lightning con tus propias claves. La app integra ayuda para abrir canales y recibir pagos.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Usa Blocktank para facilitar capacidad de recepción. Es un servicio del que dependés, aunque no guarde tus claves.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-blixt.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Blixt</span><span class="wallet-option-custody">Vos: el nodo Lightning funciona en tu teléfono.</span><a class="wallet-option-code" href="https://github.com/smolcars/blixt-wallet" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Te permite aprender a usar tu propio nodo y tus canales, con opciones para automatizar parte del trabajo.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Requiere más aprendizaje, batería y cuidados. Tenés que entender cómo respaldar y recuperar tus canales.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-bluewallet.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">BlueWallet</span><span class="wallet-option-custody">Bitcoin: vos. Lightning: depende del servicio que conectes.</span><a class="wallet-option-code" href="https://github.com/BlueWallet/BlueWallet" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Una buena opción para manejar bitcoin en la red principal y conectar servicios adicionales.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Lightning requiere otra conexión, como LNDHub o Arkade. La custodia y las dependencias cambian según ese servicio; la app sola no las resuelve.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-zeus.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">ZEUS</span><span class="wallet-option-custody">Vos en modo nodo. En Cashu, el emisor guarda el bitcoin.</span><a class="wallet-option-code" href="https://github.com/ZeusLN/zeus" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Podés usar un nodo en el teléfono o conectar uno propio. En esos modos tenés control de tus claves y canales.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>El control trae más aprendizaje y responsabilidad por los respaldos. Cashu es otro modo: confiás el bitcoin a un emisor.</p></div>
+                </div>
+              </details>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-aqua.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Aqua Wallet</span><span class="wallet-option-custody">Vos, con fondos en Liquid: una red distinta de Bitcoin.</span><a class="wallet-option-code" href="https://github.com/AquaWallet/aqua-wallet" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <div class="pros-cons">
+                  <div class="is-pro"><span class="pc-label">A favor</span><p>Permite manejar bitcoin en Liquid y pagar comprobantes Lightning mediante una conversión.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>No tiene canales Lightning propios. La opción Indra permite salir por Lightning, no recibir por esa vía; dependés del servicio de conversión y de la red Liquid.</p></div>
+                </div>
+              </details>
+            </div>
+            <p class="comparison-note"><strong>Abierto:</strong> el código de la app se puede estudiar y modificar. <strong>Cerrado:</strong> no se publica el código de la app. Tether Wallet tiene una app cerrada aunque sus herramientas de desarrollo (WDK) sean abiertas. Los enlaces llevan al código o a las referencias.</p>
+            <p class="comparison-note">Código abierto no significa fondos bajo tu control ni seguridad garantizada. Tener tus claves tampoco elimina todas las dependencias. Elegí mirando las tres cosas juntas.</p>
           </div>
-        </div>
         </div>
       </section>
 

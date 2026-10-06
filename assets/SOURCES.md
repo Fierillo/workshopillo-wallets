@@ -1,4 +1,4 @@
-# Fuentes de imágenes nuevas
+# Fuentes
 
 ## Fotos de La Crypta (provistas por Fierillo)
 Redimensionadas a ≤1200 px de lado largo, JPEG progresivo, sin EXIF.
@@ -78,3 +78,38 @@ Todos convertidos a WebP 128×128 (lossy ~80) desde el PNG oficial. Ícono de Ap
 - lawallet-connection-map.jpg — captura del Connection Map provista por Fierillo, 900×426.
 - Texto de la página basado en https://lawallet.io y https://docs.lawallet.io/docs/vision
   (autocustodia progresiva: alias/redirect → NWC de cortesía vía lncurl → NWC propia → self-hosted; MIT).
+
+## Comparación de wallets: código y custodia
+
+Revisado el 05-10-2026. «Código» se refiere a la app, no a todos los servidores,
+proveedores o protocolos que utiliza. Un repositorio público no demuestra que la
+app instalada sea reproducible ni que todo el servicio haya sido auditado.
+
+Repositorios de las apps abiertas y licencias declaradas:
+- LaWallet: https://github.com/lawalletio/lawallet-nwc — MIT.
+- Blink: https://github.com/blinkbitcoin/blink-mobile — MIT.
+- Phoenix: https://github.com/ACINQ/phoenix — Apache-2.0.
+- Muun (Android): https://github.com/muun/apollo — MIT.
+- Bitkit: https://github.com/synonymdev/bitkit — MIT.
+- Blixt: https://github.com/smolcars/blixt-wallet — MIT.
+- BlueWallet: https://github.com/BlueWallet/BlueWallet — MIT.
+- ZEUS: https://github.com/ZeusLN/zeus — AGPL-3.0; ver LICENSE.
+- Aqua: https://github.com/AquaWallet/aqua-wallet — MIT.
+
+Apps cerradas / componentes abiertos:
+- Wallet of Satoshi: https://walletscrutiny.com/android/com.livingroomofsatoshi.wallet/
+  (apartado Build Verifications: código no disponible). Modos de custodia:
+  https://www.walletofsatoshi.com/#faq ; no equiparar sus claves Spark con ausencia de confianza en operadores.
+- Cash App: https://walletscrutiny.com/android/com.squareup.cash/
+  (apartado Build Verifications: código no disponible).
+- Strike: app propietaria; https://strike.me/legal/tos/ . Publicar herramientas
+  de API no equivale a publicar el código completo de la app.
+- Tether Wallet: app propietaria según https://wallet.tether.io/application-terms/ .
+  https://github.com/tetherto/tether-wallet-app-releases distribuye APK, no el código de la app.
+  WDK es abierto: https://wdk.tether.io/ . Por eso se presenta como «Mixto»,
+  aclarando expresamente que la app sigue siendo cerrada.
+
+La comparación usa explicaciones para principiantes, no una auditoría de seguridad:
+separar claves, disponibilidad del código y dependencia de otros operadores.
+Modos actuales de Blink: https://www.blink.sv/ .
+Respaldos y activos de Tether Wallet: https://wallet.tether.io/ .
