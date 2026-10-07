@@ -76,6 +76,13 @@ async function withPage(run, options = {}) {
   }
 }
 
+async function goToPage(page, hash) {
+  const link = page.locator(`.chapter-nav a[href="${hash}"]`);
+  if (await link.isVisible()) await link.click();
+  else await page.locator(hash).evaluate(el => el.scrollIntoView({ behavior: 'instant' }));
+  await page.waitForFunction(hash => document.querySelector('.chapter-nav a[aria-current]')?.hash === hash, hash);
+}
+
 test('los badges de código conservan su color aunque cambie el enlace a la fuente', async () => {
   await withPage(async page => {
     await page.addStyleTag({ content: 'a { transition: none !important; }' });
@@ -289,7 +296,7 @@ test('todas las páginas se navegan sin contenido oculto ni desbordes en escrito
       const links = page.locator('.chapter-nav a');
       const destinations = await links.evaluateAll(elements => elements.map(el => el.hash));
       for (let index = 0; index < destinations.length; index++) {
-        await links.nth(index).click();
+        await goToPage(page, destinations[index]);
         await page.waitForFunction(hash => document.querySelector('.chapter-nav a[aria-current]')?.hash === hash, destinations[index]);
         const section = page.locator(destinations[index]);
         assert(await section.isVisible(), `${width}px: ${destinations[index]} visible`);
@@ -454,11 +461,25 @@ test('la guía visible de Cashu sigue el asistente de creación mostrado en la d
   });
 });
 
-test('Tether Wallet tiene una página navegable después de WoS con badges, pros y contras e imagen ampliable', async () => {
+test('Blixt sigue a Tether y el taller empieza antes de WoS, ZEUS y LaWallet sin perder sus presentaciones', async () => {
   await withPage(async page => {
+    const order = ['wallets-strike', 'wallets-tether', 'wallets-blixt', 'workshop-inicio', 'wallets-wos', 'wallets-zeus', 'wallets-lawallet'];
+    assert.deepEqual(await page.locator('main .page').evaluateAll((elements, ids) => elements.map(el => el.id).filter(id => ids.includes(id)), order), order, 'Blixt cierra la presentación y luego empieza el taller');
+    assert.deepEqual(await page.locator('.chapter-nav a').evaluateAll((elements, ids) => elements.map(el => el.hash.slice(1)).filter(id => ids.includes(id)), order), order, 'La navegación sigue el mismo orden');
+    for (const id of ['wallets-wos', 'wallets-zeus', 'wallets-lawallet']) {
+      assert.equal(await page.locator('#' + id).evaluate(el => el.closest('section').id), 'workshop', 'Los tutoriales pertenecen al taller');
+    }
+    await page.locator('.chapter-nav a[href="#wallets-blixt"]').click();
+    const blixt = page.locator('#wallets-blixt');
+    assert(await blixt.getByRole('heading', { name: 'Blixt Wallet', exact: true }).isVisible());
+    assert(await blixt.locator('.claim-tag.is-self').isVisible());
+    assert(await blixt.locator('.claim-tag.is-open').isVisible());
+    assert.equal(await blixt.locator('.pros-cons > div').count(), 2);
+    await page.locator('.chapter-nav a[href="#workshop-inicio"]').click();
+    assert(await page.locator('#workshop-inicio').getByRole('heading', { name: 'De la teoría a tu primera wallet.' }).isVisible());
     const section = page.locator('#wallets-tether');
     assert.equal(await section.count(), 1, 'Tether Wallet debe tener su propia página');
-    assert.equal(await section.evaluate(el => el.previousElementSibling.id), 'wallets-wos');
+    assert.equal(await section.evaluate(el => el.previousElementSibling.id), 'wallets-strike');
     await page.locator('.chapter-nav').getByRole('link', { name: 'Tether Wallet', exact: true }).click();
     await page.waitForFunction(() => document.querySelector('.chapter-nav a[aria-current]')?.hash === '#wallets-tether');
     assert(await section.getByRole('heading', { name: 'Tether Wallet', exact: true }).count() === 1);
@@ -475,13 +496,51 @@ test('Tether Wallet tiene una página navegable después de WoS con badges, pros
   });
 });
 
+test('Blixt releva sus capturas en una imagen grande y amplía la actual en escritorio y móvil', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const section = page.locator('#wallets-blixt');
+      await goToPage(page, '#wallets-blixt');
+      const image = section.locator('.app-shot img');
+      assert.equal(await image.count(), 1, 'Una sola captura grande por vez');
+      const sources = new Set();
+      for (let index = 0; index < 2; index++) {
+        await image.evaluate(el => el.decode());
+        sources.add(await image.evaluate(el => el.currentSrc));
+        assert(await image.isVisible());
+        assert(await image.evaluate(el => el.naturalHeight > el.naturalWidth), 'Capturas verticales de la app');
+        const box = await image.boundingBox();
+        assert(box.x >= 0 && box.x + box.width <= width + 1, 'Dentro de los márgenes');
+        const available = await section.locator('.chapter-inner').boundingBox();
+        assert(box.width > Math.min(available.width, 360) * .6, 'Más grande que las dos miniaturas en paralelo');
+        assert.match(await section.locator('.app-image-nav').innerText(), new RegExp(`${index + 1}\\s*/\\s*2`));
+        assert.equal(await image.evaluate(el => getComputedStyle(el).objectFit), 'contain', 'Sin recortar la UI');
+        await image.focus();
+        await page.keyboard.press('Enter');
+        assert(await page.locator('#lightbox').evaluate(el => el.open));
+        assert.equal(await page.locator('.lightbox-img').getAttribute('src'), await image.evaluate(el => el.currentSrc));
+        await page.keyboard.press('Escape');
+        await page.waitForFunction(() => !document.querySelector('#lightbox').open);
+        if (index === 0) await section.getByRole('button', { name: 'Captura siguiente', exact: true }).click();
+      }
+      assert.equal(sources.size, 2, 'Se conservan ambas capturas de la UI');
+      const next = await image.evaluate(el => el.currentSrc);
+      await section.getByRole('button', { name: 'Captura anterior', exact: true }).focus();
+      await page.keyboard.press('Enter');
+      await image.evaluate(el => el.decode());
+      assert.notEqual(await image.evaluate(el => el.currentSrc), next);
+      assert.match(await section.locator('.app-image-nav').innerText(), /1\s*\/\s*2/);
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('el mapa mundial de Lightning precede a las wallets y se amplía sin recorte en móvil y escritorio', async () => {
   for (const width of [1366, 390, 320]) {
     await withPage(async page => {
       const section = page.locator('#lightning-mapa');
       assert.equal(await section.count(), 1, 'El mapa tiene una página propia');
       assert(await section.evaluate(el => Boolean(el.compareDocumentPosition(document.querySelector('#wallets')) & Node.DOCUMENT_POSITION_FOLLOWING)), 'Antes de hablar de wallets');
-      await page.locator('.chapter-nav a[href="#lightning-mapa"]').click();
+      await goToPage(page, '#lightning-mapa');
       await page.waitForFunction(() => document.querySelector('.chapter-nav a[aria-current]')?.hash === '#lightning-mapa');
       assert(await section.getByRole('heading', { name: /Señoras y señores.*red Lightning de Bitcoin/i }).isVisible());
       const image = section.locator('img');

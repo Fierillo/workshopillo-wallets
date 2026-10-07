@@ -867,7 +867,8 @@
         text-underline-offset: 3px;
       }
 
-      .wos-image-nav {
+      .wos-image-nav,
+      .app-image-nav {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -878,7 +879,8 @@
         display: none;
       }
 
-      .wos-image-nav button {
+      .wos-image-nav button,
+      .app-image-nav button {
         width: 44px;
         height: 36px;
         border: 1px solid var(--line);
@@ -1562,6 +1564,15 @@
 
       .app-shot [hidden] {
         display: none;
+      }
+
+      #wallets-blixt .app-shot {
+        width: min(100%, 360px);
+      }
+
+      #wallets-blixt .app-shot img {
+        max-height: 75svh;
+        object-fit: contain;
       }
 
       .app-shot video {
@@ -2320,13 +2331,14 @@
       <a href="#lightning-mapa" aria-label="Mapa mundial de Lightning"><span>La red Lightning</span></a>
       <a href="#wallets-llaves" aria-label="¿Quién tiene las llaves?"><span>Las llaves</span></a>
       <a href="#wallets-strike" aria-label="Strike"><span>Strike</span></a>
-      <a href="#wallets-zeus" aria-label="ZEUS"><span>ZEUS</span></a>
-      <a href="#wallets-wos" aria-label="Wallet of Satoshi"><span>Wallet of Satoshi</span></a>
       <a href="#wallets-tether" aria-label="Tether Wallet"><span>Tether Wallet</span></a>
+      <a href="#wallets-blixt" aria-label="Blixt Wallet"><span>Blixt Wallet</span></a>
+      <a href="#workshop-inicio" aria-label="Taller"><span>Taller</span></a>
+      <a href="#wallets-wos" aria-label="Wallet of Satoshi"><span>Wallet of Satoshi</span></a>
+      <a href="#wallets-zeus" aria-label="ZEUS"><span>ZEUS</span></a>
       <a href="#wallets-lawallet" aria-label="LaWallet"><span>LaWallet</span></a>
       <a href="#wallets-lawallet-map" aria-label="LaWallet Connection Map"><span>LaWallet map</span></a>
       <a href="#wallets-tabla" aria-label="Comparar wallets"><span>Comparar wallets</span></a>
-      <a href="#workshop" aria-label="Taller"><span>Taller</span></a>
     </nav>
 
     <div class="section-sticky" id="section-sticky" hidden aria-hidden="true">
@@ -2719,6 +2731,111 @@
           </div>
         </div>
 
+        <div class="page" id="wallets-tether">
+          <div class="chapter-inner app-layout">
+            <div class="app-copy">
+              <h3 class="visually-hidden">Tether Wallet</h3>
+              <img class="app-logo lb-trigger" src="./assets/tether-wallet-logo.svg" alt="Tether Wallet" width="197" height="24" />
+              <span class="claim-tag is-self">Autocustodial</span>
+              <span class="claim-tag is-closed">Código cerrado</span>
+              <ul class="app-lines">
+                <li><strong>Más que bitcoin:</strong> también maneja dólares digitales (USD₮ y USA₮) y oro tokenizado (XAU₮). Son activos distintos, con riesgos distintos.</li>
+                <li><strong>Bitcoin on-chain y Lightning:</strong> permite enviar y recibir con facturas Lightning y LNURL.</li>
+                <li><strong>Tus claves, tu respaldo:</strong> firma en el dispositivo. Podés guardar las 12 palabras o usar un respaldo cifrado en la nube.</li>
+              </ul>
+              <div class="pros-cons">
+                <div class="is-pro"><span class="pc-label">A favor</span><p>Varios activos en una app · Claves propias · Alias tether.me para facilitar transferencias</p></div>
+                <div class="is-con"><span class="pc-label">En contra</span><p>App cerrada · Servicios externos · Los tokens del emisor pueden ser congelados</p></div>
+              </div>
+              <p class="comparison-note">Autocustodia no elimina la confianza en el emisor de los tokens. Revisá siempre el activo y la red antes de enviar. <a href="https://wallet.tether.io/" target="_blank" rel="noreferrer">Sitio oficial ↗</a></p>
+            </div>
+            <figure class="app-shot">
+              <img class="lb-trigger" src="./assets/tether-recibir.webp" alt="Imagen oficial de Tether Wallet: pantalla de recepción con QR y alias de ejemplo john.doe.24@tether.me" width="482" height="556" loading="lazy" />
+            </figure>
+          </div>
+        </div>
+
+        <div class="page" id="wallets-blixt">
+          <div class="chapter-inner app-layout">
+            <div class="app-copy">
+              <h3 class="punch">Blixt Wallet</h3>
+              <span class="claim-tag is-self">Autocustodial</span>
+              <span class="claim-tag is-open">Código abierto</span>
+              <ul class="app-lines">
+                <li><strong>Un nodo en tu teléfono:</strong> usa LND y Neutrino para manejar bitcoin y canales Lightning.</li>
+                <li><strong>Tus claves, tus canales:</strong> para pagar necesitás saldo de salida; para recibir, capacidad de entrada.</li>
+                <li><strong>Más control, más cuidado:</strong> entendé la recuperación y los respaldos de canales antes de cargar fondos. Empezá con pocos sats.</li>
+              </ul>
+              <div class="pros-cons">
+                <div class="is-pro"><span class="pc-label">A favor</span><p>Claves propias · Código abierto · Aprendés a usar canales Lightning</p></div>
+                <div class="is-con"><span class="pc-label">En contra</span><p>Requiere sincronización · Liquidez y costos de canales · Más responsabilidad por los respaldos</p></div>
+              </div>
+              <p class="comparison-note">Puede ayudarte a abrir canales automáticamente; eso no elimina los costos ni la necesidad de liquidez. <a href="https://blixtwallet.com/" target="_blank" rel="noreferrer">Sitio oficial y guías ↗</a></p>
+            </div>
+            <figure class="app-shot">
+              <img class="lb-trigger" src="./assets/blixt-lightning.jpg" alt="Blixt Wallet: saldo en sats e historial de pagos de la wallet Lightning" width="251" height="500" loading="lazy" />
+              <div class="app-image-nav">
+                <button type="button" aria-label="Captura anterior">←</button>
+                <span class="comparison-note" aria-live="polite">1 / 2</span>
+                <button type="button" aria-label="Captura siguiente">→</button>
+              </div>
+              <figcaption class="comparison-note" aria-live="polite">Wallet Lightning · saldo y pagos.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter paged workshop" id="workshop" aria-labelledby="workshop-title">
+        <div class="page" id="workshop-inicio">
+          <div class="chapter-inner workshop-layout">
+            <div class="workshop-copy">
+              <p class="chapter-index">06 <span>Taller</span></p>
+              <h2 id="workshop-title">De la teoría a tu primera wallet.</h2>
+              <p class="lead">En el taller practicás cada paso en tu propio teléfono.</p>
+              <div class="safety-note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 20 6v5.5c0 4.7-3.2 7.8-8 9.5-4.8-1.7-8-4.8-8-9.5V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+                <span>Tu frase de recuperación es privada. Nunca la compartas ni la fotografíes.</span>
+              </div>
+            </div>
+
+            <ol class="steps">
+              <li><div><h3>Elegir una wallet</h3><p>Qué mirar para elegir una opción a tu medida.</p></div></li>
+              <li><div><h3>Prepararla con cuidado</h3><p>Crearla y entender la recuperación.</p></div></li>
+              <li><div><h3>Recibir sats</h3><p>Leer el comprobante de pago y reconocer los datos importantes.</p></div></li>
+              <li><div><h3>Hacer un pago</h3><p>Enviar un pago de prueba y ver qué pasó.</p></div></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="page" id="wallets-wos">
+          <div class="chapter-inner app-layout">
+            <div class="app-copy">
+              <img class="app-logo lb-trigger" src="./assets/wos-logo.svg" alt="Wallet of Satoshi" width="594" height="70" />
+              <span class="claim-tag is-mixed"><span>Custodial</span><span>Autocustodial</span></span>
+              <span class="claim-tag is-closed">Código cerrado</span>
+              <div class="pros-cons">
+                <div class="is-pro"><span class="pc-label">A favor</span><p>Fácil para empezar · No necesitás abrir canales · En modo Spark tenés tus claves</p></div>
+                <div class="is-con"><span class="pc-label">En contra</span><p>App de código cerrado · En modo custodial dependés de la empresa; en Spark, de operadores para transferir</p></div>
+              </div>
+              <ol class="steps wos-steps">
+                <li><button type="button" aria-pressed="true" aria-controls="wos-step-image" data-image="./assets/wos-sitio.jpg" data-caption="Sitio oficial · elegí App Store o Google Play." data-alt="Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play"><span>Instalá WoS<span class="wos-step-description">Elegí la tienda de tu teléfono. Instalá la app, abrila y tocá el menú.</span></span></button><a class="wos-download" href="https://www.walletofsatoshi.com/#download" target="_blank" rel="noreferrer">Descargar desde el sitio oficial ↗</a></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-autocustodia.jpg" data-caption="Confirmá Open Self Custody Wallet." data-alt="Pantalla de Wallet of Satoshi para abrir una wallet de autocustodia, con aviso sobre respaldo y fondos separados"><span>Seleccioná “Open Self Custody Wallet”<span class="wos-step-description">Elegí esa opción y confirmá. Es una wallet distinta: el saldo custodial no se mueve automáticamente.</span></span></button></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-crear.jpg" data-caption="Elegí Create a New Wallet para crear una wallet nueva." data-alt="Wallet of Satoshi con las opciones Create a New Wallet y Restore Existing Wallet"><span>Seleccioná “Create a New Wallet”<span class="wos-step-description">Creá una wallet nueva. Restore Existing Wallet es para recuperar una que ya tenías; las palabras se guardan en el siguiente paso.</span></span></button></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-lista.jpg" data-caption="Tocá el llavero resaltado junto al nombre para abrir Backup Wallet." data-alt="Wallet of Satoshi con el llavero superior resaltado con un círculo y una flecha naranja: acceso al respaldo" data-image-next="./assets/wos-respaldo.jpg" data-caption-next="Backup Wallet · leé el aviso, marcá Entiendo y tocá Siguiente para continuar en privado." data-alt-next="Pantalla Backup Wallet con instrucciones de seguridad, interruptor Entiendo y botón Siguiente, sin palabras de recuperación"><span>¡Ya estás casi listo! No te olvides de guardar tus 12 palabras.<span class="wos-step-description">Tocá el llavero de arriba para abrir Backup Wallet. Leé el aviso y seguí las indicaciones: anotá las 12 palabras en papel, en orden, y completá la verificación. Sin fotos ni capturas. Después, probá con pocos sats.</span></span></button></li>
+              </ol>
+            </div>
+            <figure class="app-shot">
+              <img class="lb-trigger" id="wos-step-image" src="./assets/wos-sitio.jpg" alt="Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play" width="540" height="1200" loading="lazy" />
+              <div class="wos-image-nav" hidden>
+                <button type="button" aria-label="Captura anterior">←</button>
+                <span class="comparison-note" aria-live="polite">1 / 2</span>
+                <button type="button" aria-label="Captura siguiente">→</button>
+              </div>
+              <figcaption class="comparison-note" aria-live="polite">Sitio oficial · elegí App Store o Google Play.</figcaption>
+            </figure>
+          </div>
+        </div>
+
         <!-- ZEUS: logo assets/images/SVG/wordmark-black.svg de https://github.com/ZeusLN/zeus (recoloreado a blanco);
              captura oficial del listado de App Store: https://apps.apple.com/us/app/zeus-wallet/id1456038895 (pantalla de canales) -->
         <div class="page" id="wallets-zeus">
@@ -2757,59 +2874,6 @@
             <figure class="app-shot">
               <img class="lb-trigger" src="./assets/zeus-canales.jpg" alt="Pantalla de canales de ZEUS: capacidad de envío y de recepción, y la lista de canales con su saldo" width="560" height="1216" loading="lazy" />
               <video src="./assets/zeus-cashu-demo.mp4" controls playsinline preload="metadata" aria-label="Demostración de configuración de Cashu en ZEUS" hidden></video>
-            </figure>
-          </div>
-        </div>
-
-        <div class="page" id="wallets-wos">
-          <div class="chapter-inner app-layout">
-            <div class="app-copy">
-              <img class="app-logo lb-trigger" src="./assets/wos-logo.svg" alt="Wallet of Satoshi" width="594" height="70" />
-              <span class="claim-tag is-mixed"><span>Custodial</span><span>Autocustodial</span></span>
-              <span class="claim-tag is-closed">Código cerrado</span>
-              <div class="pros-cons">
-                <div class="is-pro"><span class="pc-label">A favor</span><p>Fácil para empezar · No necesitás abrir canales · En modo Spark tenés tus claves</p></div>
-                <div class="is-con"><span class="pc-label">En contra</span><p>App de código cerrado · En modo custodial dependés de la empresa; en Spark, de operadores para transferir</p></div>
-              </div>
-              <ol class="steps wos-steps">
-                <li><button type="button" aria-pressed="true" aria-controls="wos-step-image" data-image="./assets/wos-sitio.jpg" data-caption="Sitio oficial · elegí App Store o Google Play." data-alt="Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play"><span>Instalá WoS<span class="wos-step-description">Elegí la tienda de tu teléfono. Instalá la app, abrila y tocá el menú.</span></span></button><a class="wos-download" href="https://www.walletofsatoshi.com/#download" target="_blank" rel="noreferrer">Descargar desde el sitio oficial ↗</a></li>
-                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-autocustodia.jpg" data-caption="Confirmá Open Self Custody Wallet." data-alt="Pantalla de Wallet of Satoshi para abrir una wallet de autocustodia, con aviso sobre respaldo y fondos separados"><span>Seleccioná “Open Self Custody Wallet”<span class="wos-step-description">Elegí esa opción y confirmá. Es una wallet distinta: el saldo custodial no se mueve automáticamente.</span></span></button></li>
-                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-crear.jpg" data-caption="Elegí Create a New Wallet para crear una wallet nueva." data-alt="Wallet of Satoshi con las opciones Create a New Wallet y Restore Existing Wallet"><span>Seleccioná “Create a New Wallet”<span class="wos-step-description">Creá una wallet nueva. Restore Existing Wallet es para recuperar una que ya tenías; las palabras se guardan en el siguiente paso.</span></span></button></li>
-                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-lista.jpg" data-caption="Tocá el llavero resaltado junto al nombre para abrir Backup Wallet." data-alt="Wallet of Satoshi con el llavero superior resaltado con un círculo y una flecha naranja: acceso al respaldo" data-image-next="./assets/wos-respaldo.jpg" data-caption-next="Backup Wallet · leé el aviso, marcá Entiendo y tocá Siguiente para continuar en privado." data-alt-next="Pantalla Backup Wallet con instrucciones de seguridad, interruptor Entiendo y botón Siguiente, sin palabras de recuperación"><span>¡Ya estás casi listo! No te olvides de guardar tus 12 palabras.<span class="wos-step-description">Tocá el llavero de arriba para abrir Backup Wallet. Leé el aviso y seguí las indicaciones: anotá las 12 palabras en papel, en orden, y completá la verificación. Sin fotos ni capturas. Después, probá con pocos sats.</span></span></button></li>
-              </ol>
-            </div>
-            <figure class="app-shot">
-              <img class="lb-trigger" id="wos-step-image" src="./assets/wos-sitio.jpg" alt="Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play" width="540" height="1200" loading="lazy" />
-              <div class="wos-image-nav" hidden>
-                <button type="button" aria-label="Captura anterior">←</button>
-                <span class="comparison-note" aria-live="polite">1 / 2</span>
-                <button type="button" aria-label="Captura siguiente">→</button>
-              </div>
-              <figcaption class="comparison-note" aria-live="polite">Sitio oficial · elegí App Store o Google Play.</figcaption>
-            </figure>
-          </div>
-        </div>
-
-        <div class="page" id="wallets-tether">
-          <div class="chapter-inner app-layout">
-            <div class="app-copy">
-              <h3 class="visually-hidden">Tether Wallet</h3>
-              <img class="app-logo lb-trigger" src="./assets/tether-wallet-logo.svg" alt="Tether Wallet" width="197" height="24" />
-              <span class="claim-tag is-self">Autocustodial</span>
-              <span class="claim-tag is-closed">Código cerrado</span>
-              <ul class="app-lines">
-                <li><strong>Más que bitcoin:</strong> también maneja dólares digitales (USD₮ y USA₮) y oro tokenizado (XAU₮). Son activos distintos, con riesgos distintos.</li>
-                <li><strong>Bitcoin on-chain y Lightning:</strong> permite enviar y recibir con facturas Lightning y LNURL.</li>
-                <li><strong>Tus claves, tu respaldo:</strong> firma en el dispositivo. Podés guardar las 12 palabras o usar un respaldo cifrado en la nube.</li>
-              </ul>
-              <div class="pros-cons">
-                <div class="is-pro"><span class="pc-label">A favor</span><p>Varios activos en una app · Claves propias · Alias tether.me para facilitar transferencias</p></div>
-                <div class="is-con"><span class="pc-label">En contra</span><p>App cerrada · Servicios externos · Los tokens del emisor pueden ser congelados</p></div>
-              </div>
-              <p class="comparison-note">Autocustodia no elimina la confianza en el emisor de los tokens. Revisá siempre el activo y la red antes de enviar. <a href="https://wallet.tether.io/" target="_blank" rel="noreferrer">Sitio oficial ↗</a></p>
-            </div>
-            <figure class="app-shot">
-              <img class="lb-trigger" src="./assets/tether-recibir.webp" alt="Imagen oficial de Tether Wallet: pantalla de recepción con QR y alias de ejemplo john.doe.24@tether.me" width="482" height="556" loading="lazy" />
             </figure>
           </div>
         </div>
@@ -2966,27 +3030,6 @@
         </div>
       </section>
 
-      <section class="chapter workshop" id="workshop" aria-labelledby="workshop-title">
-        <div class="chapter-inner workshop-layout">
-          <div class="workshop-copy">
-            <p class="chapter-index">06 <span>Probar</span></p>
-            <h2 id="workshop-title">De la teoría a tu primera wallet.</h2>
-            <p class="lead">En el taller practicás cada paso en tu propio teléfono.</p>
-            <div class="safety-note">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 20 6v5.5c0 4.7-3.2 7.8-8 9.5-4.8-1.7-8-4.8-8-9.5V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
-              <span>Tu frase de recuperación es privada. Nunca la compartas ni la fotografíes.</span>
-            </div>
-          </div>
-
-          <ol class="steps">
-            <li><div><h3>Elegir una wallet</h3><p>Qué mirar para elegir una opción a tu medida.</p></div></li>
-            <li><div><h3>Prepararla con cuidado</h3><p>Crearla y entender la recuperación.</p></div></li>
-            <li><div><h3>Recibir sats</h3><p>Leer el comprobante de pago y reconocer los datos importantes.</p></div></li>
-            <li><div><h3>Hacer un pago</h3><p>Enviar un pago de prueba y ver qué pasó.</p></div></li>
-          </ol>
-        </div>
-      </section>
-
     </main>
 
 
@@ -3001,6 +3044,23 @@
     </dialog>
 
     <script>
+      (() => {
+        const gallery = document.querySelector("#wallets-blixt .app-shot");
+        const image = gallery.querySelector("img");
+        const navigation = gallery.querySelector(".app-image-nav");
+        const shots = [
+          [image.getAttribute("src"), image.alt, 251, 500, "Wallet Lightning · saldo y pagos."],
+          ["./assets/blixt-canales.jpg", "Blixt Wallet: canales Lightning con capacidad, saldo para enviar y capacidad para recibir", 306, 600, "Canales · enviar y recibir."],
+        ];
+        let shotIndex = 0;
+        navigation.querySelectorAll("button").forEach(button => button.addEventListener("click", () => {
+          shotIndex = 1 - shotIndex;
+          [image.src, image.alt, image.width, image.height, gallery.querySelector("figcaption").textContent] = shots[shotIndex];
+          image.setAttribute("aria-label", "Ampliar: " + image.alt);
+          navigation.querySelector("span").textContent = (shotIndex + 1) + " / 2";
+        }));
+      })();
+
       (() => {
         const zeus = document.getElementById("wallets-zeus");
         const route = zeus.querySelector(".cashu-route");
