@@ -410,6 +410,28 @@ test('la barra de puntitos desaparece en móvil pero sigue en escritorio y se pu
   }
 });
 
+test('el encabezado conserva solo el título de sección sin barra superior ni botón de taller', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      assert.equal(await page.getByRole('banner').count(), 0, 'Sin encabezado superior');
+      assert.equal(await page.getByRole('link', { name: /Ir al taller/ }).count(), 0, 'Sin botón de taller');
+      for (const [hash, title] of [['#wallets-strike', /Wallets/], ['#wallets-wos', /De la teoría a tu primera wallet/]]) {
+        await goToPage(page, hash);
+        const sticky = page.locator('#section-sticky');
+        await sticky.waitFor({ state: 'visible' });
+        assert.match(await sticky.innerText(), title, 'Se conserva el título del capítulo activo');
+        const style = await sticky.evaluate(el => {
+          const css = getComputedStyle(el);
+          return { background: css.backgroundImage, color: css.backgroundColor, top: el.getBoundingClientRect().top, height: el.getBoundingClientRect().height };
+        });
+        assert.equal(style.background, 'none', 'Sin franja de fondo');
+        assert.equal(style.color, 'rgba(0, 0, 0, 0)');
+        assert(style.top <= 1 && style.height < 48, 'Título compacto en la parte superior');
+      }
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('movimiento reducido permite completar el pago sin animación y detiene el tambor', async () => {
   await withPage(async page => {
     const ring = page.locator('#drum-ring');
