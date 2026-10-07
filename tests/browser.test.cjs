@@ -377,6 +377,22 @@ test('en móvil las capturas de wallets son grandes, centradas y respetan los m�
   }
 });
 
+test('la intro del taller muestra solo el título y continúa directamente con WoS', async () => {
+  await withPage(async page => {
+    await page.locator('.chapter-nav a[href="#workshop-inicio"]').click();
+    const intro = page.locator('#workshop-inicio');
+    const heading = intro.getByRole('heading', { name: 'De la teoría a tu primera wallet.' });
+    assert(await heading.isVisible());
+    assert.equal((await intro.innerText()).trim(), await heading.innerText(), 'Sin texto, advertencias ni pasos adicionales');
+    assert.equal(await intro.evaluate(el => el.nextElementSibling.id), 'wallets-wos');
+    const link = page.locator('.chapter-nav a[href="#workshop-inicio"]');
+    assert.equal(await link.evaluate(el => el.nextElementSibling.hash), '#wallets-wos');
+    await page.locator('.chapter-nav a[href="#wallets-wos"]').click();
+    await page.waitForFunction(() => document.querySelector('.chapter-nav a[aria-current]')?.hash === '#wallets-wos');
+    assert(await page.locator('#wallets-wos .wos-steps').isVisible());
+  });
+});
+
 test('movimiento reducido permite completar el pago sin animación y detiene el tambor', async () => {
   await withPage(async page => {
     const ring = page.locator('#drum-ring');
