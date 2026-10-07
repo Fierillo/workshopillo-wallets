@@ -331,6 +331,52 @@ test('todas las páginas se navegan sin contenido oculto ni desbordes en escrito
   }
 });
 
+test('en móvil la presentación de cada wallet precede a sus capturas y al video de Cashu', async () => {
+  for (const width of [620, 390, 320]) {
+    await withPage(async page => {
+      const layouts = page.locator('.page .app-layout:has(.app-copy):has(.app-shot)');
+      assert(await layouts.count() > 0);
+      for (const layout of await layouts.all()) {
+        await layout.scrollIntoViewIfNeeded();
+        const copy = await layout.locator('.app-copy').boundingBox();
+        const shot = await layout.locator('.app-shot').boundingBox();
+        assert(shot.y >= copy.y + copy.height, `${width}px: ${await layout.locator('..').getAttribute('id')} presenta la wallet antes de la imagen`);
+      }
+      const zeus = page.locator('#wallets-zeus');
+      await zeus.locator('.cashu-route summary').click();
+      await zeus.locator('video').waitFor({ state: 'visible' });
+      const copy = await zeus.locator('.app-copy').boundingBox();
+      const video = await zeus.locator('.app-shot').boundingBox();
+      assert(video.y >= copy.y + copy.height, 'El video también queda después de las instrucciones');
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
+test('en móvil las capturas de wallets son grandes, centradas y respetan los márgenes', async () => {
+  for (const width of [620, 390, 320]) {
+    await withPage(async page => {
+      for (const layout of await page.locator('.page .app-layout:has(.app-shot)').all()) {
+        await layout.scrollIntoViewIfNeeded();
+        const inner = await layout.boundingBox();
+        const figure = await layout.locator('.app-shot').boundingBox();
+        const image = layout.locator('.app-shot img');
+        await image.evaluate(el => el.decode());
+        const box = await image.boundingBox();
+        assert(Math.abs((figure.x + figure.width / 2) - (inner.x + inner.width / 2)) < 1, `${width}px: captura centrada`);
+        assert(box.width >= Math.min(inner.width - 12, 220), `${width}px: captura mayor que la miniatura anterior`);
+        assert(figure.x >= inner.x - 1 && figure.x + figure.width <= inner.x + inner.width + 1, 'Respeta los márgenes');
+      }
+      const zeus = page.locator('#wallets-zeus');
+      await zeus.locator('.cashu-route summary').click();
+      await zeus.locator('video').waitFor({ state: 'visible' });
+      const inner = await zeus.locator('.chapter-inner').boundingBox();
+      const figure = await zeus.locator('.app-shot').boundingBox();
+      assert(Math.abs((figure.x + figure.width / 2) - (inner.x + inner.width / 2)) < 1, 'El video también queda centrado');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('movimiento reducido permite completar el pago sin animación y detiene el tambor', async () => {
   await withPage(async page => {
     const ring = page.locator('#drum-ring');
