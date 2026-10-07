@@ -393,6 +393,23 @@ test('la intro del taller muestra solo el título y continúa directamente con W
   });
 });
 
+test('la barra de puntitos desaparece en móvil pero sigue en escritorio y se puede navegar desplazándose', async () => {
+  for (const width of [1366, 620, 390, 320]) {
+    await withPage(async page => {
+      const navigation = page.getByRole('navigation', { name: 'Ir a una página', includeHidden: true });
+      if (width > 620) assert(await navigation.isVisible(), 'Conservar navegación de escritorio');
+      else {
+        assert(await navigation.isHidden(), 'Sin barra de puntitos en móvil');
+        assert.equal(await page.getByRole('navigation', { name: 'Ir a una página' }).count(), 0, 'No ofrecer enlaces ocultos a tecnologías asistivas');
+        await goToPage(page, '#wallets-wos');
+        assert(await page.locator('#wallets-wos .wos-steps').isVisible());
+        await goToPage(page, '#wallets-blixt');
+        assert(await page.locator('#wallets-blixt .app-shot').isVisible());
+      }
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('movimiento reducido permite completar el pago sin animación y detiene el tambor', async () => {
   await withPage(async page => {
     const ring = page.locator('#drum-ring');
