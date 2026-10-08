@@ -56,8 +56,13 @@ after(async () => {
 });
 
 async function withPage(run, options = {}) {
-  const { clock = false, ...contextOptions } = options;
-  const page = await browser.newPage({ viewport: { width: 1366, height: 900 }, reducedMotion: 'reduce', ...contextOptions });
+  const { clock = false, minimumFontSize = 0, ...contextOptions } = options;
+  const testBrowser = minimumFontSize ? await chromium.launch({
+    headless: true,
+    ...(process.env.CHROMIUM_EXECUTABLE ? { executablePath: process.env.CHROMIUM_EXECUTABLE } : {}),
+    args: [`--blink-settings=minimumFontSize=${minimumFontSize}`],
+  }) : browser;
+  const page = await testBrowser.newPage({ viewport: { width: 1366, height: 900 }, reducedMotion: 'reduce', ...contextOptions });
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('response', response => {
@@ -73,6 +78,7 @@ async function withPage(run, options = {}) {
     assert.deepEqual(errors, [], 'No debe haber errores de JavaScript');
   } finally {
     await page.close();
+    if (testBrowser !== browser) await testBrowser.close();
   }
 }
 
@@ -109,6 +115,197 @@ test('la portada conserva el título anterior como subtítulo, sin atajo al tall
   }
 });
 
+test('la tabla pregunta por LN Address, claves y código con badges compactos y desarrolla cada respuesta al abrir', async () => {
+  const expectedAddress = ['LN Address personalizada', 'LN Address asignada', 'LN Address personalizada', 'LN Address personalizada', 'LN Address personalizada', 'LN Address asignada', 'Sin LN Address', 'Sin LN Address', 'LN Address personalizada', 'Sin LN Address', 'LN Address asignada', 'LN Address asignada'];
+  for (const width of [1366, 1024, 768, 621, 620, 390, 320]) {
+    await withPage(async page => {
+      await goToPage(page, '#wallets-tabla');
+      const table = page.locator('#wallets-tabla');
+      assert.deepEqual(await table.locator('.comparison-head span').allTextContents(), ['Wallet', '¿Tiene LN Address?', '¿Quién tiene las claves?', '¿El código es abierto?']);
+      const wallets = table.locator('.wallet-option');
+      assert.equal(await wallets.count(), expectedAddress.length);
+      const heights = [];
+      for (let index = 0; index < await wallets.count(); index++) {
+        const wallet = wallets.nth(index);
+        const summary = wallet.locator('summary');
+        if (await wallet.evaluate(el => el.open)) await summary.click();
+        const badges = summary.locator('.claim-tag');
+        heights.push((await summary.boundingBox()).height);
+        assert.equal(await badges.count(), 3, 'Tres respuestas compactas por wallet');
+        assert.equal(await badges.first().textContent(), expectedAddress[index]);
+        const custody = summary.locator('.wallet-option-custody');
+        assert.equal((await custody.textContent()).replace(/\s+/g, ' '), ['Autocustodia progresiva', 'Custodial / Autocustodial', 'Autocustodial', 'Custodial', 'Custodial / Autocustodial', 'Autocustodial', 'Autocustodial', 'Autocustodial', 'Autocustodial', 'Custodial / Autocustodial', 'Autocustodia progresiva', 'Autocustodial'][index], 'Custodia con su etiqueta completa');
+        assert.match(await summary.locator('.wallet-option-code').innerText(), /^Código (abierto|cerrado)$/i, 'Código con su etiqueta completa');
+        assert(await summary.locator('.wallet-option-custody.claim-tag').isVisible());
+        for (const badge of await badges.all()) {
+          assert(await badge.isVisible());
+          const box = await badge.boundingBox();
+          assert(box.x >= 0 && box.x + box.width <= width + 1, 'Badge dentro de los márgenes');
+          assert(box.height <= 26, 'Badge compacto, de una sola línea');
+          assert(await badge.evaluate(el => {
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            const text = range.getBoundingClientRect();
+            const box = el.getBoundingClientRect();
+            return text.x >= box.x && text.right <= box.right && text.y >= box.y && text.bottom <= box.bottom;
+          }), `Sin recortar ni desbordar texto del badge: ${width}px, ${await badge.textContent()}`);
+        }
+        const explanation = wallet.locator('.wallet-explanation');
+        assert(await explanation.isHidden(), 'Solo badges al cerrar');
+        await summary.focus();
+        await page.keyboard.press('Enter');
+        assert(await explanation.isVisible());
+        assert.equal(await explanation.locator('p').count(), 3, 'Desarrolla las tres respuestas');
+        const text = await explanation.innerText();
+        assert.match(text, /¿Tiene LN Address\?/);
+        assert.match(text, /¿Quién tiene las claves\?/);
+        assert.match(text, /¿El código es abierto\?/);
+        assert(await wallet.locator('.pros-cons').isVisible(), 'Conserva ventajas y límites');
+        if (index === 5) assert.match(text, /BIP353.*BOLT12/is);
+        if (index === 9) assert.match(text, /servicio.*conect/is);
+        if (index === 11) assert.match(text, /JAN3.*L-BTC/is);
+        await page.keyboard.press('Enter');
+        assert(await explanation.isHidden());
+      }
+      assert(Math.max(...heights) - Math.min(...heights) < 1, 'Todas las entradas cerradas tienen el mismo grosor');
+      assert(Math.max(...heights) <= (width <= 620 ? 146 : 66), 'Filas compactas en escritorio y móvil');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
+test('el texto completo de cada badge queda dentro de su área interior y de su columna al redimensionar la tabla', async () => {
+  await withPage(async page => {
+    await goToPage(page, '#wallets-tabla');
+    await page.evaluate(() => document.fonts.ready);
+    const allFailures = [];
+    for (const width of [320, 360, 390, 480, 620, 621, 640, 680, 720, 768, 800, 850, 900, 960, 1024, 1100, 1280, 1366, 1440, 1920]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const failures = await page.locator('.wallet-option summary .claim-tag').evaluateAll(badges => badges.flatMap(el => {
+        const style = getComputedStyle(el);
+        const box = el.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const text = range.getBoundingClientRect();
+        const left = box.left + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft);
+        const right = box.right - parseFloat(style.borderRightWidth) - parseFloat(style.paddingRight);
+        const top = box.top + parseFloat(style.borderTopWidth) + parseFloat(style.paddingTop);
+        const bottom = box.bottom - parseFloat(style.borderBottomWidth) - parseFloat(style.paddingBottom);
+        const summary = el.closest('summary');
+        const grid = getComputedStyle(summary);
+        const tracks = grid.gridTemplateColumns.split(' ').map(Number.parseFloat);
+        const column = tracks.length === 3 ? 1 : el.classList.contains('wallet-option-address') ? 2 : el.classList.contains('wallet-option-custody') ? 3 : 4;
+        const columnLeft = summary.getBoundingClientRect().left + parseFloat(grid.borderLeftWidth) + parseFloat(grid.paddingLeft) + tracks.slice(0, column).reduce((sum, size) => sum + size, 0) + column * parseFloat(grid.columnGap);
+        const siblings = [...summary.querySelectorAll('.claim-tag')].filter(other => other !== el);
+        const overlaps = siblings.some(other => {
+          const rect = other.getBoundingClientRect();
+          return box.left < rect.right && box.right > rect.left && box.top < rect.bottom && box.bottom > rect.top;
+        });
+        const errors = [];
+        if (text.left < left - .5 || text.right > right + .5 || text.top < top - .5 || text.bottom > bottom + .5) errors.push('texto fuera del área interior');
+        if (el.scrollWidth > el.clientWidth) errors.push('overflow horizontal');
+        if (range.getClientRects().length !== 1) errors.push('más de una línea');
+        if (overlaps) errors.push('solapamiento entre badges');
+        if (box.left < columnLeft - .5 || box.right > columnLeft + tracks[column] + .5) errors.push('badge fuera de su columna');
+        return errors.length ? [{ wallet: summary.querySelector('.wallet-option-name').textContent, badge: el.textContent, errors }] : [];
+      }));
+      if (failures.length) allFailures.push({ width, failures });
+      const headingFailures = await page.locator('.comparison-head span').evaluateAll(headings => headings.flatMap(el => {
+        const box = el.getBoundingClientRect();
+        if (!box.width) return [];
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const text = range.getBoundingClientRect();
+        return range.getClientRects().length !== 1 || text.left < box.left - .5 || text.right > box.right + .5 ? [el.textContent] : [];
+      }));
+      if (headingFailures.length) allFailures.push({ width, headingFailures });
+    }
+    assert.deepEqual(allFailures, [], 'Badges contenidos al redimensionar');
+  });
+});
+
+test('la última columna y los badges siguen contenidos con fuente mínima de navegador de 16px', async () => {
+  await withPage(async page => {
+    await goToPage(page, '#wallets-tabla');
+    for (const width of [1366, 1571, 1920]) {
+      await page.setViewportSize({ width, height: 900 });
+      assert(await page.locator('.wallet-option-code').first().evaluate(el => parseFloat(getComputedStyle(el).fontSize) >= 16), 'Fuente mínima real de Chromium');
+      const failures = await page.locator('.comparison-head span, .wallet-option summary .claim-tag').evaluateAll(elements => elements.flatMap(el => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const text = range.getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        const style = getComputedStyle(el);
+        const failures = [];
+        if (range.getClientRects().length !== 1) failures.push('texto en varias líneas');
+        if (text.left < box.left + parseFloat(style.paddingLeft) - .5 || text.right > box.right - parseFloat(style.paddingRight) + .5) failures.push('texto fuera del badge o columna');
+        const row = el.closest('summary, .comparison-head');
+        const rowBox = row.getBoundingClientRect();
+        if (box.right > rowBox.right - parseFloat(getComputedStyle(row).paddingRight) + .5) failures.push('fuera de la fila');
+        const others = [...row.children].filter(other => other !== el);
+        if (others.some(other => {
+          const rect = other.getBoundingClientRect();
+          return box.left < rect.right && box.right > rect.left && box.top < rect.bottom && box.bottom > rect.top;
+        })) failures.push('solapamiento con otra celda');
+        if (el.matches('.claim-tag')) {
+          const after = getComputedStyle(row, '::after');
+          const plusLeft = rowBox.right - parseFloat(getComputedStyle(row).paddingRight) - 18;
+          if (after.content !== 'none' && box.right > plusLeft - parseFloat(getComputedStyle(row).columnGap) + .5) failures.push('invade el botón de apertura');
+        }
+        return failures.length ? [{ label: el.textContent, failures }] : [];
+      }));
+      assert.deepEqual(failures, [], `Columnas contenidas con fuente mínima a ${width}px`);
+    }
+  }, { minimumFontSize: 16 });
+});
+
+test('la comparación termina en las wallets sin notas al pie', async () => {
+  await withPage(async page => {
+    await goToPage(page, '#wallets-tabla');
+    const table = page.locator('#wallets-tabla');
+    assert.equal(await table.locator('.wallet-option').count(), 12);
+    assert.equal(await table.locator('.comparison-note').filter({ visible: true }).count(), 0, 'Sin texto final debajo de la tabla');
+  });
+});
+
+test('toda la tarjeta de comparación alterna el detalle sin duplicar el click del encabezado ni interferir con enlaces', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      await goToPage(page, '#wallets-tabla');
+      for (const wallet of await page.locator('.wallet-option').all()) {
+        const summary = wallet.locator('summary');
+        await summary.click();
+        assert(await wallet.evaluate(el => el.open), 'El encabezado abre una sola vez');
+        await wallet.locator('.wallet-explanation p').first().click();
+        assert.equal(await wallet.evaluate(el => el.open), false, 'El texto del detalle también cierra');
+        await wallet.click({ position: { x: 2, y: 2 } });
+        assert(await wallet.evaluate(el => el.open), 'El margen de la tarjeta también abre');
+        await wallet.locator('.pros-cons p').first().click();
+        assert.equal(await wallet.evaluate(el => el.open), false, 'El recuadro de ventajas también cierra');
+        await summary.focus();
+        await page.keyboard.press('Enter');
+        assert(await wallet.evaluate(el => el.open), 'Conservar teclado nativo');
+        await page.evaluate(() => {
+          document.addEventListener('click', event => {
+            const link = event.target.closest('.wallet-option a');
+            if (link) {
+              event.preventDefault();
+              window.clickedWalletLink = link.href;
+            }
+          }, { capture: true, once: true });
+        });
+        const link = wallet.locator('.wallet-option-code');
+        await link.click();
+        assert.equal(await page.evaluate(() => window.clickedWalletLink), await link.evaluate(el => el.href), 'El enlace sigue recibiendo su click');
+        assert(await wallet.evaluate(el => el.open), 'Click en enlace no alterna la tarjeta');
+        await summary.click();
+        assert.equal(await wallet.evaluate(el => el.open), false, 'El encabezado también cierra una sola vez');
+      }
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('los badges de código conservan su color aunque cambie el enlace a la fuente', async () => {
   await withPage(async page => {
     await page.addStyleTag({ content: 'a { transition: none !important; }' });
@@ -118,7 +315,7 @@ test('los badges de código conservan su color aunque cambie el enlace a la fuen
       const label = (await badge.textContent()).trim();
       const before = await badge.evaluate(el => getComputedStyle(el).color);
       const [red, green] = before.match(/\d+/g).map(Number);
-      assert(label === 'Abierto' ? green > red : red > green, `${label}: color incorrecto`);
+      assert(label === 'Código abierto' ? green > red : red > green, `${label}: color incorrecto`);
       await badge.evaluate(el => { el.href = 'https://codeberg.org/example/wallet'; });
       assert.equal(await badge.evaluate(el => getComputedStyle(el).color), before, 'La clasificación depende del código, no del dominio de la referencia');
     }

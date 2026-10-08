@@ -558,6 +558,7 @@
         border: 1px solid var(--line);
         border-radius: 16px;
         background: #121613;
+        cursor: pointer;
       }
 
       .wallet-option[open] {
@@ -567,16 +568,17 @@
       .wallet-option summary,
       .comparison-head {
         display: grid;
-        grid-template-columns: 36px minmax(145px, .7fr) minmax(0, 1.3fr) 100px 20px;
+        grid-template-columns: 36px minmax(110px, .6fr) minmax(100px, 1fr) minmax(100px, 1fr) clamp(82px, 12vw, 180px) 18px;
         align-items: center;
-        gap: 16px;
-        padding: 18px 20px;
+        gap: 10px;
+        padding: 12px 16px;
       }
 
       .comparison-head {
         padding-block: 0;
         color: var(--muted);
-        font-size: 11px;
+        font-size: clamp(6px, .8vw, 11px);
+        white-space: nowrap;
       }
 
       .comparison-head span:first-child {
@@ -586,6 +588,7 @@
       .wallet-option summary {
         cursor: pointer;
         list-style: none;
+        min-height: 64px;
       }
 
       .wallet-option summary::-webkit-details-marker {
@@ -616,15 +619,51 @@
       }
 
       .wallet-option-name {
-        font-size: 16px;
+        font-size: 14px;
+        line-height: 20px;
         font-weight: 650;
         letter-spacing: -.02em;
       }
 
-      .wallet-option-custody {
+      .wallet-option summary .claim-tag {
+        justify-self: start;
+        margin: 0;
+        max-width: 100%;
+        font-size: clamp(6px, .65vw, 8px);
+        padding: 3px 4px;
+        line-height: 16px;
+        letter-spacing: 0;
+        white-space: nowrap;
+      }
+
+      .wallet-option summary .is-mixed {
+        display: inline-block;
+        border: 1px solid var(--muted);
+        color: var(--paper);
+        background: linear-gradient(90deg, rgb(166 170 161 / 12%) 50%, rgb(255 118 46 / 12%) 50%);
+      }
+
+      .wallet-option summary .wallet-option-code {
+        font-size: 7px;
+      }
+
+      .wallet-option summary .is-progressive::before {
+        inset: 0;
+      }
+
+      .wallet-explanation {
+        padding: 0 20px 18px 72px;
         color: var(--muted);
         font-size: 13px;
-        line-height: 1.5;
+        line-height: 1.6;
+      }
+
+      .wallet-explanation p {
+        margin: 0 0 10px;
+      }
+
+      .wallet-explanation strong {
+        color: var(--paper);
       }
 
       .wallet-option-code {
@@ -1604,21 +1643,22 @@
         .wallet-option summary {
           grid-template-columns: 36px minmax(0, 1fr) 20px;
           gap: 6px 12px;
-          padding: 16px;
+          padding: 12px 16px;
+          min-height: 134px;
         }
 
         .wallet-option summary img {
-          grid-row: span 3;
+          grid-row: span 4;
         }
 
         .wallet-option summary::after {
           grid-column: 3;
-          grid-row: 1 / span 3;
+          grid-row: 1 / span 4;
         }
 
+        .wallet-option-address,
         .wallet-option-custody {
           grid-column: 2;
-          font-size: 12px;
         }
 
         .wallet-option-code {
@@ -1626,9 +1666,13 @@
           font-size: 12px;
         }
 
-        .wallet-option-code::before {
-          content: "Código: ";
-          color: var(--muted);
+        .wallet-option summary .claim-tag,
+        .wallet-option summary .wallet-option-code {
+          font-size: 9px;
+        }
+
+        .wallet-explanation {
+          padding: 0 16px 12px;
         }
 
         .wallet-option .pros-cons {
@@ -2840,98 +2884,156 @@
             <div class="wallets-copy">
               <p class="eyebrow">Para elegir la tuya</p>
               <h2 id="wallets-title">Elegí tu <em>wallet.</em></h2>
-              <p class="lead">Compará tres cosas: quién cuida tus claves, si el código se puede revisar y de quién dependés para pagar. Abrí las wallets para ver sus ventajas y límites.</p>
+              <p class="lead">¿Tiene LN Address? ¿Quién tiene las claves? ¿El código es abierto? Compará los badges y abrí cada wallet para conocer sus condiciones, ventajas y límites.</p>
             </div>
 
             <div class="wallet-comparison">
-              <div class="comparison-head" aria-hidden="true"><span>Wallet</span><span>Quién cuida las claves</span><span>Código de la app</span></div>
-              <details class="wallet-option is-open" open>
-                <summary><img src="./assets/icono-lawallet.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">LaWallet</span><span class="wallet-option-custody">Depende de la wallet que conectes. La de cortesía la administra un tercero.</span><a class="wallet-option-code" href="https://github.com/lawalletio/lawallet-nwc" target="_blank" rel="noreferrer">Abierto</a></summary>
+              <div class="comparison-head" aria-hidden="true"><span>Wallet</span><span>¿Tiene LN Address?</span><span>¿Quién tiene las claves?</span><span>¿El código es abierto?</span></div>
+              <details class="wallet-option is-open">
+                <summary><img src="./assets/icono-lawallet.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">LaWallet</span><span class="wallet-option-address claim-tag is-address-personalized" title="LN Address personalizada">LN Address personalizada</span><span class="wallet-option-custody claim-tag is-progressive" title="Autocustodia progresiva">Autocustodia progresiva</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/lawalletio/lawallet-nwc" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> Elegís tu alias en el dominio de la comunidad. LaWallet ofrece la dirección; LNcurl o NWC conecta la wallet receptora.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Depende de la wallet que conectes. La de cortesía la administra un tercero; podés conectar una propia mediante NWC.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, el código de LaWallet se publica con licencia MIT. El badge enlaza al repositorio; no garantiza que la wallet conectada también sea abierta.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Recibís pagos con una dirección parecida a un email, sin montar un nodo. Podés conectar tu propia wallet más adelante.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>LaWallet no cambia quién guarda tus fondos: eso depende de la wallet conectada. Conectar la tuya requiere un paso de configuración.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-closed">
-                <summary><img src="./assets/icono-wos.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Wallet of Satoshi</span><span class="wallet-option-custody">Vos en modo Spark; la empresa en modo custodial, donde esté disponible.</span><a class="wallet-option-code" href="https://walletscrutiny.com/android/com.livingroomofsatoshi.wallet/" target="_blank" rel="noreferrer">Cerrado</a></summary>
+                <summary><img src="./assets/icono-wos.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Wallet of Satoshi</span><span class="wallet-option-address claim-tag is-address-assigned" title="LN Address asignada">LN Address asignada</span><span class="wallet-option-custody claim-tag is-mixed" title="Custodial o autocustodial, según el modo">Custodial / Autocustodial</span><a class="wallet-option-code claim-tag is-closed" href="https://walletscrutiny.com/android/com.livingroomofsatoshi.wallet/" target="_blank" rel="noreferrer">Código cerrado</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> Recibís una dirección aleatoria en ambos modos. Para personalizarla, WoS exige respaldo y actividad en la wallet; no necesariamente una suscripción.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos en modo Spark; la empresa en modo custodial, donde esté disponible. Los saldos y respaldos de cada modo son distintos.</p>
+                  <p><strong>¿El código es abierto?</strong> No se publica el código completo de la app. El badge enlaza al análisis de WalletScrutiny.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Una forma simple de empezar a pagar por Lightning, sin aprender a abrir canales.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>En Spark tenés tus claves, pero transferir requiere operadores y al menos uno debe actuar honestamente. Retirar a la red Bitcoin puede ser lento y caro.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-closed">
-                <summary><img src="./assets/icono-tether.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Tether Wallet</span><span class="wallet-option-custody">Vos, con una frase de 12 palabras. Ofrece respaldo opcional en la nube.</span><a class="wallet-option-code" href="https://wallet.tether.io/application-terms/" target="_blank" rel="noreferrer">Cerrado</a></summary>
+                <summary><img src="./assets/icono-tether.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Tether Wallet</span><span class="wallet-option-address claim-tag is-address-personalized" title="LN Address personalizada">LN Address personalizada</span><span class="wallet-option-custody claim-tag is-self">Autocustodial</span><a class="wallet-option-code claim-tag is-closed" href="https://wallet.tether.io/application-terms/" target="_blank" rel="noreferrer">Código cerrado</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> Elegís tu nombre tether.me al crear la wallet. Permite recibir bitcoin desde wallets Lightning compatibles; no significa que esas wallets puedan enviar todos los demás tokens.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos, con una frase de 12 palabras. Ofrece respaldo cifrado opcional en la nube. La autocustodia no elimina el riesgo de los emisores de tokens.</p>
+                  <p><strong>¿El código es abierto?</strong> La app es cerrada aunque su kit de desarrollo WDK sea abierto. El badge enlaza a las condiciones oficiales.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Reúne bitcoin, pagos Lightning, dólares digitales y oro tokenizado en una app.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Los pagos Lightning dependen de servicios externos. Los dólares y el oro tokenizados pueden ser congelados por su emisor. El respaldo en la nube depende de tu cuenta y de sus servicios.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-closed">
-                <summary><img src="./assets/icono-strike.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Strike</span><span class="wallet-option-custody">La empresa guarda los fondos por vos.</span><a class="wallet-option-code" href="https://strike.me/legal/tos/" target="_blank" rel="noreferrer">Cerrado</a></summary>
+                <summary><img src="./assets/icono-strike.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Strike</span><span class="wallet-option-address claim-tag is-address-personalized" title="LN Address personalizada">LN Address personalizada</span><span class="wallet-option-custody claim-tag is-custody">Custodial</span><a class="wallet-option-code claim-tag is-closed" href="https://strike.me/legal/tos/" target="_blank" rel="noreferrer">Código cerrado</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> Tu usuario elegido al registrarte forma usuario@strike.me. Elegís el nombre, no el dominio.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> La empresa guarda los fondos por vos. No tenés una frase de recuperación: dependés del acceso a tu cuenta.</p>
+                  <p><strong>¿El código es abierto?</strong> No se publica el código completo de la app. El badge enlaza a las condiciones del servicio.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Fácil para comprar, recibir y pagar con bitcoin. Está disponible en Argentina.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Pide verificar tu identidad. No tenés una frase para recuperar los fondos por tu cuenta: dependés del acceso a tu cuenta y de la empresa.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-open">
-                <summary><img src="./assets/icono-blink.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Blink</span><span class="wallet-option-custody">Vos en modo Spark; la empresa en modo custodial, según la región.</span><a class="wallet-option-code" href="https://github.com/blinkbitcoin/blink-mobile" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <summary><img src="./assets/icono-blink.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Blink</span><span class="wallet-option-address claim-tag is-address-personalized" title="LN Address personalizada">LN Address personalizada</span><span class="wallet-option-custody claim-tag is-mixed" title="Custodial o autocustodial, según el modo">Custodial / Autocustodial</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/blinkbitcoin/blink-mobile" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> Elegís tu usuario y recibís en usuario@blink.sv. La dirección puede mantenerse al cambiar entre los modos disponibles.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos en modo Spark; la empresa en modo custodial, según la región. Con claves propias, las transferencias siguen dependiendo de operadores.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, la app publica su código. El badge enlaza al repositorio oficial.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Podés elegir cómo guardar tus fondos entre los modos disponibles, sin abrir canales Lightning.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>En modo custodial confiás los fondos a la empresa. En Spark tenés tus claves, pero transferir depende de operadores y al menos uno debe actuar honestamente.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-open">
-                <summary><img src="./assets/icono-phoenix.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Phoenix</span><span class="wallet-option-custody">Vos, con tu frase de recuperación.</span><a class="wallet-option-code" href="https://github.com/ACINQ/phoenix" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <summary><img src="./assets/icono-phoenix.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Phoenix</span><span class="wallet-option-address claim-tag is-address-assigned" title="Dirección asignada BIP353/BOLT12, no una Lightning Address LNURL">LN Address asignada</span><span class="wallet-option-custody claim-tag is-self">Autocustodial</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/ACINQ/phoenix" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> Puede asignarte una dirección phoenixwallet.me mediante BIP353 y BOLT12. No es una dirección LNURL: quien paga necesita una wallet compatible con esos protocolos.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos, con tu frase de recuperación. ACINQ administra la conexión a Lightning y facilita liquidez, pero no guarda tus claves.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, el badge enlaza al código oficial de Phoenix.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Usa canales Lightning propios, pero la app los administra para que no tengas que hacerlo a mano.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>ACINQ es tu conexión a Lightning y te facilita capacidad para recibir. Abrir o ampliar esa capacidad puede tener un costo.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-open">
-                <summary><img src="./assets/icono-muun.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Muun</span><span class="wallet-option-custody">Vos, con su sistema de recuperación propio.</span><a class="wallet-option-code" href="https://github.com/muun/apollo" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <summary><img src="./assets/icono-muun.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Muun</span><span class="wallet-option-address claim-tag is-no-address" title="Sin LN Address">Sin LN Address</span><span class="wallet-option-custody claim-tag is-self">Autocustodial</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/muun/apollo" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> No ofrece una dirección propia reutilizable tipo usuario@dominio. Puede recibir por factura Lightning; no confundas esa factura con una LN Address.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos, con su sistema de recuperación propio. El Emergency Kit y el código de recuperación son importantes; no usa el respaldo habitual de 12 palabras.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, el badge enlaza al repositorio de la app.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Maneja bitcoin en la red principal y permite pagar por Lightning desde una interfaz simple.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Para usar Lightning hace una conversión entre redes. Dependés de ese servicio y el costo puede subir cuando la red Bitcoin está congestionada.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-open">
-                <summary><img src="./assets/icono-bitkit.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Bitkit</span><span class="wallet-option-custody">Vos, con tu frase de recuperación.</span><a class="wallet-option-code" href="https://github.com/synonymdev/bitkit" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <summary><img src="./assets/icono-bitkit.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Bitkit</span><span class="wallet-option-address claim-tag is-no-address" title="Sin LN Address">Sin LN Address</span><span class="wallet-option-custody claim-tag is-self">Autocustodial</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/synonymdev/bitkit" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> No ofrece una dirección nativa tipo usuario@dominio. Sí puede recibir por factura Lightning con la capacidad de entrada necesaria.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos, con tu frase de recuperación y los respaldos correspondientes. Blocktank facilita canales y liquidez, no la custodia de tus claves.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, el badge enlaza al repositorio oficial de Bitkit.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Bitcoin y Lightning con tus propias claves. La app integra ayuda para abrir canales y recibir pagos.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Usa Blocktank para facilitar capacidad de recepción. Es un servicio del que dependés, aunque no guarde tus claves.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-open">
-                <summary><img src="./assets/icono-blixt.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Blixt</span><span class="wallet-option-custody">Vos: el nodo Lightning funciona en tu teléfono.</span><a class="wallet-option-code" href="https://github.com/smolcars/blixt-wallet" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <summary><img src="./assets/icono-blixt.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Blixt</span><span class="wallet-option-address claim-tag is-address-personalized" title="LN Address personalizada">LN Address personalizada</span><span class="wallet-option-custody claim-tag is-self">Autocustodial</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/smolcars/blixt-wallet" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> Registrás tu nombre mediante Lightning Box. Según la FAQ oficial, requiere Android y modo persistente; no se asigna automáticamente al instalar.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos: el nodo Lightning funciona en tu teléfono. Tenés que respaldar la semilla y los canales, y cuidar su liquidez.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, el badge enlaza al código de Blixt.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Te permite aprender a usar tu propio nodo y tus canales, con opciones para automatizar parte del trabajo.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Requiere más aprendizaje, batería y cuidados. Tenés que entender cómo respaldar y recuperar tus canales.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-open">
-                <summary><img src="./assets/icono-bluewallet.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">BlueWallet</span><span class="wallet-option-custody">Bitcoin: vos. Lightning: depende del servicio que conectes.</span><a class="wallet-option-code" href="https://github.com/BlueWallet/BlueWallet" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <summary><img src="./assets/icono-bluewallet.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">BlueWallet</span><span class="wallet-option-address claim-tag is-no-address" title="Sin LN Address propia">Sin LN Address</span><span class="wallet-option-custody claim-tag is-mixed" title="Custodia según la red y el servicio conectado">Custodial / Autocustodial</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/BlueWallet/BlueWallet" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> La app no ofrece una propia. Un servicio conectado puede proveerla por separado; el badge describe la app, no todos los proveedores posibles.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Bitcoin: vos. Lightning: depende del servicio que conectes. El badge mixto resume esas opciones, no garantiza autocustodia en cualquier conexión.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, el badge enlaza al repositorio de BlueWallet.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Una buena opción para manejar bitcoin en la red principal y conectar servicios adicionales.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>Lightning requiere otra conexión, como LNDHub o Arkade. La custodia y las dependencias cambian según ese servicio; la app sola no las resuelve.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-open">
-                <summary><img src="./assets/icono-zeus.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">ZEUS</span><span class="wallet-option-custody">Vos en modo nodo. En Cashu, el emisor guarda el bitcoin.</span><a class="wallet-option-code" href="https://github.com/ZeusLN/zeus" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <summary><img src="./assets/icono-zeus.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">ZEUS</span><span class="wallet-option-address claim-tag is-address-assigned" title="LN Address asignada">LN Address asignada</span><span class="wallet-option-custody claim-tag is-progressive" title="Autocustodia progresiva">Autocustodia progresiva</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/ZeusLN/zeus" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> ZEUS Pay ofrece un nombre asignado al configurarlo. Con Cashu no hay cargo por la dirección; personalizar el nombre mediante Pay+ requiere una suscripción. El modo de recepción puede ser Cashu, Zaplocker o NWC.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos en modo nodo. En Cashu, el emisor guarda el bitcoin que respalda tus fichas. Una conexión remota depende del nodo o wallet conectada.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, el badge enlaza al repositorio oficial de ZEUS.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Podés usar un nodo en el teléfono o conectar uno propio. En esos modos tenés control de tus claves y canales.</p></div>
                   <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>El control trae más aprendizaje y responsabilidad por los respaldos. Cashu es otro modo: confiás el bitcoin a un emisor.</p></div>
                 </div>
               </details>
               <details class="wallet-option is-open">
-                <summary><img src="./assets/icono-aqua.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Aqua Wallet</span><span class="wallet-option-custody">Vos, con fondos en Liquid: una red distinta de Bitcoin.</span><a class="wallet-option-code" href="https://github.com/AquaWallet/aqua-wallet" target="_blank" rel="noreferrer">Abierto</a></summary>
+                <summary><img src="./assets/icono-aqua.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">Aqua Wallet</span><span class="wallet-option-address claim-tag is-address-assigned" title="LN Address asignada">LN Address asignada</span><span class="wallet-option-custody claim-tag is-self">Autocustodial</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/AquaWallet/aqua-wallet" target="_blank" rel="noreferrer">Código abierto</a></summary>
+                <div class="wallet-explanation">
+                  <p><strong>¿Tiene LN Address?</strong> Al iniciar sesión con una cuenta JAN3, recibís un nombre asignado @aqua.net. La personalización es opcional y paga. Los pagos entrantes se convierten en L-BTC en Liquid mediante swaps; no necesitás canales propios.</p>
+                  <p><strong>¿Quién tiene las claves?</strong> Vos, con tu frase de recuperación. Liquid es una red distinta de Bitcoin y tiene sus propias dependencias; los pagos Lightning usan servicios de conversión.</p>
+                  <p><strong>¿El código es abierto?</strong> Sí, el badge enlaza al repositorio de AQUA.</p>
+                </div>
                 <div class="pros-cons">
                   <div class="is-pro"><span class="pc-label">A favor</span><p>Permite manejar bitcoin en Liquid y pagar comprobantes Lightning mediante una conversión.</p></div>
-                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>No tiene canales Lightning propios. La opción Indra permite salir por Lightning, no recibir por esa vía; dependés del servicio de conversión y de la red Liquid.</p></div>
+                  <div class="is-con"><span class="pc-label">A tener en cuenta</span><p>No tiene canales Lightning propios. Indra sirve para salir por Lightning; la recepción por LN Address usa otra vía de swaps. Dependés de los servicios de conversión y de la red Liquid.</p></div>
                 </div>
               </details>
             </div>
-            <p class="comparison-note"><strong>Abierto:</strong> el código de la app se puede estudiar y modificar. <strong>Cerrado:</strong> no se publica el código de la app. Tether Wallet tiene una app cerrada aunque sus herramientas de desarrollo (WDK) sean abiertas. Los enlaces llevan al código o a las referencias.</p>
-            <p class="comparison-note">Código abierto no significa fondos bajo tu control ni seguridad garantizada. Tener tus claves tampoco elimina todas las dependencias. Elegí mirando las tres cosas juntas.</p>
           </div>
         </div>
       </section>
@@ -2950,6 +3052,13 @@
     </dialog>
 
     <script>
+      document.querySelectorAll(".wallet-option").forEach(wallet => {
+        wallet.addEventListener("click", event => {
+          if (event.target.closest("summary, a, button, input, select, textarea")) return;
+          wallet.open = !wallet.open;
+        });
+      });
+
       (() => {
         const gallery = document.querySelector("#wallets-blixt .app-shot");
         const image = gallery.querySelector("img");

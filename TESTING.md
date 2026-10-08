@@ -25,6 +25,13 @@ CHROMIUM_EXECUTABLE=/ruta/al/chrome npm run test:mutations
 
 - `tests/test_page.py`: IDs, referencias, navegación, recursos, alt y estructura de desplegables.
 - `tests/browser.test.cjs`: badges, saldos paso a paso, fichas independientes sin atravesar nodos, repetición del ejemplo, WoS y su galería, ampliaciones con teclado y restauración del foco, escenas originales y reproducción, Cashu desplegable y su video (reemplazo de imagen, reproducción real, pausa al cerrar y sin autoplay), movimiento reducido y navegación/contenido en 1366, 390 y 320 px.
+  La tabla comprueba texto dentro del área interior de los badges, encabezados
+  en una línea y columnas sin solapamiento en 20 anchos entre 320 y 1920 px.
+  Otro Chromium usa `--blink-settings=minimumFontSize=16` para reproducir una
+  fuente mínima de navegador en 1366, 1571 y 1920 px: verifica especialmente
+  que código y encabezado no desborden ni invadan el indicador de apertura.
+  Las mutaciones incluyen badges demasiado angostos y una columna de código
+  reducida a 70 px para verificar que las pruebas detectan ambos fallos.
 - Los tests de animación del ábaco controlan el reloj del navegador: no esperan varios segundos reales ni dependen del rendimiento para capturar cada paso.
 - Cada test usa un contexto nuevo y un servidor local en un puerto libre. No usa la wallet ni el almacenamiento de tu navegador habitual.
 

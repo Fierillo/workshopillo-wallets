@@ -51,6 +51,32 @@
   Consultado el 08-10-2026. No se fuerza «Sin LN Address» en estas presentaciones
   cuando hay una vía de recepción documentada; las condiciones quedan visibles.
 
+### Tabla final: otras wallets y respuestas desplegables
+- Cada fila resume LN Address, custodia y código con tres badges. Al abrirla,
+  desarrolla las condiciones sin eliminar las ventajas y límites anteriores.
+  Custodia mixta en WoS/Blink y BlueWallet (según modo o conexión); progresiva
+  en LaWallet/ZEUS, como en las presentaciones principales.
+- Blink — personalizada, usuario@blink.sv; puede conservarse entre modos:
+  https://blink.sv/blog/blink-wallet-just-got-better
+- Phoenix — asignada phoenixwallet.me, BIP353/BOLT12, no LNURL. Se mantiene la
+  excepción visible al desplegar y en el tooltip del badge. Referencias:
+  https://github.com/ACINQ/phoenix/issues/536
+  https://www.youtube.com/watch?v=TpwnoPUyumA
+- AQUA — asignada al iniciar sesión con JAN3 (color + animal + número), nombre
+  premium opcional pago. Recepción por Boltz a L-BTC en Liquid, distinta de la
+  salida mediante Indra:
+  https://jan3.com/blog/aqua-lightning-addresses-arrive
+- Muun/Bitkit — sin dirección nativa tipo usuario@dominio; no significa que no
+  puedan recibir por factura Lightning. Referencias de funciones y comparación:
+  https://muun.com/
+  https://bitkit.to/features
+  https://atlas21.com/guide-to-using-a-lightning-network-wallet
+- BlueWallet — sin LN Address propia; una dirección del servicio conectado
+  no se atribuye automáticamente a la app:
+  https://bluewallet.io/lightning/
+  https://github.com/andrerfneves/lightning-address
+  Consultado el 08-10-2026. No se realizan pagos ni conexiones a wallets al probar.
+
 ## Mapa mundial de Lightning
 - lightning-mapa-mundial.png — imagen provista y guardada por Fierillo, 1647×842.
   Se utiliza sin modificar, antes de la sección de wallets, y puede ampliarse.

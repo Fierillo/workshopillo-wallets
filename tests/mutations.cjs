@@ -4,10 +4,20 @@ const path = require('node:path');
 
 // Fallos deliberados sobre el HTML servido en memoria, nunca sobre los archivos.
 const mutations = {
+  'columna-codigo-demasiado-angosta': {
+    test: 'la última columna',
+    from: 'clamp(82px, 12vw, 180px)',
+    to: '70px',
+  },
+  'texto-desborda-badge': {
+    test: 'el texto completo de cada badge',
+    from: '</style>',
+    to: '.wallet-option summary .claim-tag { width: 40px !important; } </style>',
+  },
   'badge-depende-del-dominio': {
     test: 'los badges de código',
-    from: '.wallet-option.is-open .wallet-option-code',
-    to: '.wallet-option-code[href^="https://github.com/"]',
+    from: '.claim-tag.is-open,\n      .wallet-option.is-open .wallet-option-code',
+    to: '.claim-tag.is-open:not(.wallet-option-code),\n      .wallet-option-code[href^="https://github.com/"]',
   },
   'abaco-no-actualiza-saldos': {
     test: 'el ábaco mueve fichas',
