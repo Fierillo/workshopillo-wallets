@@ -1,5 +1,56 @@
 # Fuentes
 
+## Concepto y badges de Lightning Address
+- Formato tipo email, recepción mediante una factura Lightning obtenida por el
+  pagador, servicios propios o de terceros y diferencia entre enviar y recibir:
+  https://lightningaddress.com/
+  https://github.com/andrerfneves/lightning-address
+  Consultado el 08-10-2026. vos@wallet.example es un ejemplo ficticio.
+- Tres badges: «LN Address personalizada» (verde: elegís el nombre),
+  «LN Address asignada» (amarillo: el servicio genera el nombre inicial) y
+  «Sin LN Address» (gris: sin dirección propia para recibir). Una sola etiqueta
+  por wallet, según la opción inicial. Personalizar una asignada puede exigir
+  actividad o un pago; el badge no describe precio, custodia ni comisiones.
+  Aplicados a la leyenda, las seis presentaciones principales y la tabla final.
+- ZEUS Cashu: la documentación indica direcciones sin tarifas asociadas:
+  https://docs.zeusln.app/lightning-address/cashu
+- ZEUS Pay+: suscripción premium con nombres personalizados; la documentación
+  consultada indica 80.000 sats/año. No se fija el precio en la presentación:
+  https://docs.zeusln.app/lightning-address/plus
+- Infraestructura propia: servidor HTTPS, dominio y nodo que genere facturas;
+  no implica que cualquier wallet pueda conectarse ni que el alojamiento sea gratis:
+  https://github.com/andrerfneves/lightning-address/blob/master/DIY.md
+  Fuentes consultadas el 08-10-2026; tarifas y disponibilidad pueden cambiar.
+
+### Aplicación a las wallets principales
+- Strike — personalizada: usuario elegido al registrarse, usuario@strike.me:
+  https://strike.me/learn/what-is-a-lightning-address
+- Tether Wallet — personalizada: elegís el nombre tether.me al crear la wallet, recepción desde otras
+  wallets Lightning y sin cargo de la app; no excluye tarifas de red:
+  https://wallet.tether.io/
+- WoS — asignada: dirección aleatoria automática tanto custodial como autocustodial.
+  Personalizarla exige respaldo y actividad, no se clasifica como suscripción:
+  https://support.walletofsatoshi.com/en/support/solutions/articles/36000583190-lightning-addresses-how-they-work-and-how-to-create-a-custom-one
+- ZEUS — asignada de base; nombre personalizado mediante Pay+.
+  Ver las dos fuentes oficiales anteriores. El pago es opcional, no obligatorio
+  para todas las direcciones ni para usar la wallet.
+- Blixt — personalizada: registrás el nombre mediante Lightning Box provisto por el proyecto o una instancia propia.
+  La FAQ oficial limita esa configuración a Android y modo persistente. No se
+  infiere un precio del servicio ni se confunde con simplemente pagar direcciones:
+  https://blixtwallet.github.io/faq#blixt-lnaddress
+- LaWallet — personalizada: elegís el alias; sin cargo en la instancia de cortesía presentada en el taller.
+  La dirección es una función propia de LaWallet: crea, administra y sirve
+  Lightning Addresses (LUD-16). LNcurl/NWC determina la wallet receptora, no
+  convierte la dirección en externa. No se promete alojamiento o gratuidad
+  para todas las instancias; los costos de la wallet conectada son independientes.
+  La instancia de cortesía corresponde al contexto del taller; la documentación
+  oficial confirma la función nativa, no una tarifa universal de alojamiento:
+  https://lawallet.io/
+  https://docs.lawallet.io/
+  https://github.com/lawalletio/lawallet-nwc#lawallet-nwc
+  Consultado el 08-10-2026. No se fuerza «Sin LN Address» en estas presentaciones
+  cuando hay una vía de recepción documentada; las condiciones quedan visibles.
+
 ## Mapa mundial de Lightning
 - lightning-mapa-mundial.png — imagen provista y guardada por Fierillo, 1647×842.
   Se utiliza sin modificar, antes de la sección de wallets, y puede ampliarse.

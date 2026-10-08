@@ -1298,6 +1298,24 @@
         background: rgb(166 170 161 / 8%);
       }
 
+      .claim-tag.is-address-personalized {
+        border-color: rgb(134 217 147 / 55%);
+        color: #86d993;
+        background: rgb(134 217 147 / 8%);
+      }
+
+      .claim-tag.is-no-address {
+        border-color: rgb(166 170 161 / 55%);
+        color: var(--muted);
+        background: rgb(166 170 161 / 8%);
+      }
+
+      .claim-tag.is-address-assigned {
+        border-color: rgb(231 194 111 / 55%);
+        color: #e7c26f;
+        background: rgb(231 194 111 / 8%);
+      }
+
       /* Progresiva: de custodial (gris) a autocustodial (naranja). */
       .claim-tag.is-progressive {
         position: relative;
@@ -2202,7 +2220,9 @@
       <a href="#lightning-abaco" aria-label="Lightning: el ábaco"><span>El ábaco</span></a>
       <a href="#lightning-rutas" aria-label="Lightning: las rutas y el rayo"><span>Las rutas</span></a>
       <a href="#lightning-mapa" aria-label="Mapa mundial de Lightning"><span>La red Lightning</span></a>
-      <a href="#wallets-llaves" aria-label="¿Quién tiene las llaves?"><span>Las llaves</span></a>
+      <a href="#wallets-conceptos" aria-label="Fijemos algunos conceptos"><span>Conceptos</span></a>
+      <a href="#wallets-llaves" aria-label="¿Quién tiene las claves?"><span>Las claves</span></a>
+      <a href="#wallets-address" aria-label="¿Tiene Lightning Address?"><span>Lightning Address</span></a>
       <a href="#wallets-strike" aria-label="Strike"><span>Strike</span></a>
       <a href="#wallets-tether" aria-label="Tether Wallet"><span>Tether Wallet</span></a>
       <a href="#wallets-blixt" aria-label="Blixt Wallet"><span>Blixt Wallet</span></a>
@@ -2557,11 +2577,17 @@
       </section>
 
       <section class="chapter paged wallets" id="wallets" aria-labelledby="keys-title">
+        <div class="page" id="wallets-conceptos">
+          <div class="chapter-inner">
+            <h2>Fijemos algunos conceptos</h2>
+          </div>
+        </div>
+
         <div class="page" id="wallets-llaves">
           <div class="chapter-inner keys-layout">
             <div>
               <p class="chapter-index">05 <span>Wallets</span></p>
-              <h2 id="keys-title">¿Quién tiene las llaves?</h2>
+              <h2 id="keys-title">¿Quién tiene las claves?</h2>
             </div>
             <div>
               <div class="keys-cards">
@@ -2579,6 +2605,32 @@
           </div>
         </div>
 
+        <div class="page" id="wallets-address">
+          <div class="chapter-inner keys-layout">
+            <div>
+              <h2>¿Tiene Lightning Address?</h2>
+              <p class="lead">Una dirección fácil de compartir para recibir sats por Lightning, como <strong>vos@wallet.example</strong>. Se parece a un email, pero no es un correo ni una dirección de Bitcoin on-chain.</p>
+              <p class="comparison-note">Ejemplo ficticio. La wallet de quien paga consulta esa dirección y obtiene una factura Lightning para hacer el pago.</p>
+            </div>
+            <div>
+              <div class="keys-cards">
+                <article class="claim">
+                  <span class="claim-tag is-address-personalized">LN Address personalizada</span>
+                  <p>Elegís el nombre de tu dirección dentro del dominio del servicio. Ejemplo: tu usuario en Strike o LaWallet.</p>
+                </article>
+                <article class="claim">
+                  <span class="claim-tag is-address-assigned">LN Address asignada</span>
+                  <p>El servicio genera y te asigna el nombre inicial. Personalizarlo después puede requerir cumplir requisitos o pagar una suscripción. Ejemplo: WoS o ZEUS.</p>
+                </article>
+                <article class="claim">
+                  <span class="claim-tag is-no-address">Sin LN Address</span>
+                  <p>Podés recibir con una factura Lightning y compartirla como texto o QR. No tener una dirección no significa que la wallet no use Lightning.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Strike: logo del header de https://strike.me/ ; captura oficial del listado de App Store (AR):
              https://apps.apple.com/ar/app/strike-buy-hold-bitcoin/id1488724463 (captura 01, recortada sin el texto de marketing) -->
         <div class="page" id="wallets-strike">
@@ -2588,6 +2640,7 @@
               <img class="app-logo lb-trigger" src="./assets/strike-logo.svg" alt="Strike" width="190" height="42" />
               <span class="claim-tag is-custody">Custodial</span>
               <span class="claim-tag is-closed">Código cerrado</span>
+              <span class="claim-tag is-address-personalized" title="Elegís tu usuario al crear la cuenta: usuario@strike.me">LN Address personalizada</span>
               <ul class="app-lines">
                 <li>Te registrás, verificás tu identidad y ya podés mandar y recibir por Lightning.</li>
                 <li>Sin frase de recuperación: tu cuenta es tu acceso.</li>
@@ -2611,6 +2664,7 @@
               <img class="app-logo lb-trigger" src="./assets/tether-wallet-logo.svg" alt="Tether Wallet" width="197" height="24" />
               <span class="claim-tag is-self">Autocustodial</span>
               <span class="claim-tag is-closed">Código cerrado</span>
+              <span class="claim-tag is-address-personalized" title="Elegís tu nombre al crear la wallet: usuario@tether.me">LN Address personalizada</span>
               <ul class="app-lines">
                 <li><strong>Más que bitcoin:</strong> también maneja dólares digitales (USD₮ y USA₮) y oro tokenizado (XAU₮). Son activos distintos, con riesgos distintos.</li>
                 <li><strong>Bitcoin on-chain y Lightning:</strong> permite enviar y recibir con facturas Lightning y LNURL.</li>
@@ -2634,6 +2688,7 @@
               <h3 class="punch">Blixt Wallet</h3>
               <span class="claim-tag is-self">Autocustodial</span>
               <span class="claim-tag is-open">Código abierto</span>
+              <span class="claim-tag is-address-personalized" title="Registrás tu nombre mediante Lightning Box; según la FAQ oficial, en Android con modo persistente">LN Address personalizada</span>
               <ul class="app-lines">
                 <li><strong>Un nodo en tu teléfono:</strong> usa LND y Neutrino para manejar bitcoin y canales Lightning.</li>
                 <li><strong>Tus claves, tus canales:</strong> para pagar necesitás saldo de salida; para recibir, capacidad de entrada.</li>
@@ -2643,7 +2698,7 @@
                 <div class="is-pro"><span class="pc-label">A favor</span><p>Claves propias · Código abierto · Aprendés a usar canales Lightning</p></div>
                 <div class="is-con"><span class="pc-label">En contra</span><p>Requiere sincronización · Liquidez y costos de canales · Más responsabilidad por los respaldos</p></div>
               </div>
-              <p class="comparison-note">Puede ayudarte a abrir canales automáticamente; eso no elimina los costos ni la necesidad de liquidez. <a href="https://blixtwallet.com/" target="_blank" rel="noreferrer">Sitio oficial y guías ↗</a></p>
+              <p class="comparison-note">LN Address mediante Lightning Box: según la FAQ oficial, requiere Android y modo persistente. El servicio puede ser del proyecto o una instancia propia; revisá sus condiciones y costos. Abrir canales automáticamente no elimina los costos ni la necesidad de liquidez. <a href="https://blixtwallet.github.io/faq#blixt-lnaddress" target="_blank" rel="noreferrer">FAQ oficial ↗</a></p>
             </div>
             <figure class="app-shot">
               <img class="lb-trigger" src="./assets/blixt-lightning.jpg" alt="Blixt Wallet: saldo en sats e historial de pagos de la wallet Lightning" width="251" height="500" loading="lazy" />
@@ -2671,6 +2726,7 @@
               <img class="app-logo lb-trigger" src="./assets/wos-logo.svg" alt="Wallet of Satoshi" width="594" height="70" />
               <span class="claim-tag is-mixed"><span>Custodial</span><span>Autocustodial</span></span>
               <span class="claim-tag is-closed">Código cerrado</span>
+              <span class="claim-tag is-address-assigned" title="Dirección aleatoria incluida tanto en modo custodial como en autocustodia; personalizarla tiene requisitos de uso">LN Address asignada</span>
               <div class="pros-cons">
                 <div class="is-pro"><span class="pc-label">A favor</span><p>Fácil para empezar · No necesitás abrir canales · En modo Spark tenés tus claves</p></div>
                 <div class="is-con"><span class="pc-label">En contra</span><p>App de código cerrado · En modo custodial dependés de la empresa; en Spark, de operadores para transferir</p></div>
@@ -2703,7 +2759,8 @@
               <img class="app-logo lb-trigger" src="./assets/zeus-logo.svg" alt="ZEUS" width="108" height="42" />
               <span class="claim-tag is-progressive">Autocustodia progresiva</span>
               <span class="claim-tag is-open">Código abierto</span>
-              <p class="comparison-note">ZEUS puede ejecutar un nodo en tu teléfono con LDK o LND integrado, o conectarse a un nodo o una wallet remota. Acá mostramos dos rutas partiendo de LDK:</p>
+              <span class="claim-tag is-address-assigned" title="Nombre asignado de base; personalización opcional mediante la suscripción ZEUS Pay+">LN Address asignada</span>
+              <p class="comparison-note">Cashu ofrece LN Address sin cargo; ZEUS Pay+ permite personalizar el nombre con una suscripción opcional. ZEUS puede ejecutar un nodo en tu teléfono con LDK o LND integrado, o conectarse a un nodo o una wallet remota. Acá mostramos dos rutas partiendo de LDK:</p>
               <ul class="app-lines">
                 <li>
                   <details class="cashu-route">
@@ -2745,10 +2802,11 @@
               <img class="app-logo is-featured lb-trigger" src="./assets/lawallet-logo.svg" alt="LaWallet" width="234" height="42" />
               <span class="claim-tag is-progressive">Autocustodia progresiva</span>
               <span class="claim-tag is-open">Código abierto</span>
+              <span class="claim-tag is-address-personalized" title="Elegís tu alias en el dominio de LaWallet; sin cargo en la instancia de cortesía del taller">LN Address personalizada</span>
               <ul class="app-lines">
                 <li>Empezás con poca fricción: alias a una address que ya tengas, o una NWC de cortesía vía LNcurl.</li>
                 <li>Cuando estás listo, conectás tu propia NWC (Alby, Primal u otra compatible).</li>
-                <li>Lightning Address en el dominio de la comunidad. Código abierto.</li>
+                <li>LaWallet te ofrece una dirección en el dominio de la comunidad, sin cargo en la instancia de cortesía del taller. La wallet conectada puede tener sus propios costos o comisiones. Código abierto.</li>
               </ul>
               <div class="pros-cons">
                 <div class="is-pro"><span class="pc-label">A favor</span><p>Escalá a tu ritmo · Dirección Lightning de la comunidad</p></div>

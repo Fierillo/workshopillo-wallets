@@ -433,6 +433,100 @@ test('el encabezado conserva solo el título de sección sin barra superior ni b
   }
 });
 
+test('la sección de wallets abre con conceptos, claves y Lightning Address antes de presentar wallets', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const pages = page.locator('#wallets > .page');
+      const expected = ['wallets-conceptos', 'wallets-llaves', 'wallets-address', 'wallets-strike'];
+      assert.deepEqual((await pages.evaluateAll(elements => elements.map(el => el.id))).slice(0, expected.length), expected, 'Orden introductorio de la sección 5');
+      for (const [id, title] of [['wallets-conceptos', 'Fijemos algunos conceptos'], ['wallets-address', '¿Tiene Lightning Address?']]) {
+        await goToPage(page, '#' + id);
+        const section = page.locator('#' + id);
+        assert(await section.getByRole('heading', { name: title, exact: true }).isVisible());
+        if (id === 'wallets-conceptos') assert.equal((await section.innerText()).trim(), title, 'La portada conserva solo el título');
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      }
+      await goToPage(page, '#wallets-llaves');
+      assert(await page.locator('#wallets-llaves').getByRole('heading', { name: '¿Quién tiene las claves?', exact: true }).isVisible());
+      assert.equal(await page.locator('#wallets-llaves .keys-cards .claim').count(), 2, 'Conservar la explicación de custodia');
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
+test('Lightning Address explica cómo recibir y presenta tres badges sin aclaraciones al pie', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      await goToPage(page, '#wallets-address');
+      const section = page.locator('#wallets-address');
+      const cards = section.locator('.keys-cards .claim');
+      assert.equal(await cards.count(), 3, 'Tres variantes en la misma estructura de tarjetas que custodia');
+      const badges = cards.locator('.claim-tag');
+      assert.deepEqual(await badges.allTextContents(), ['LN Address personalizada', 'LN Address asignada', 'Sin LN Address']);
+      const colors = [];
+      for (const badge of await badges.all()) {
+        assert(await badge.isVisible());
+        colors.push(await badge.evaluate(el => getComputedStyle(el).color));
+      }
+      assert.equal(new Set(colors).size, 3, 'Estados distinguibles también visualmente');
+      assert.deepEqual(colors, ['rgb(134, 217, 147)', 'rgb(231, 194, 111)', 'rgb(166, 170, 161)'], 'Personalizada verde, asignada amarilla y sin dirección gris');
+      const explanation = await section.innerText();
+      assert.match(explanation, /[\w.-]+@[\w.-]+\.example/);
+      assert.match(explanation, /recibir.*sats/is);
+      assert.match(explanation, /no es.*correo/is);
+      assert.match(await cards.nth(2).innerText(), /factura.*Lightning/is, 'Sin dirección igual puede recibir por factura');
+      assert.match(await cards.nth(0).innerText(), /elegís.*nombre/is);
+      assert.match(await cards.nth(1).innerText(), /servicio.*(genera|asigna)/is);
+      assert.match(await cards.nth(1).innerText(), /requisitos.*suscripción/is, 'Asignada no promete personalización gratuita ni necesariamente paga');
+      assert.equal(await section.locator('.keys-cards + p').count(), 0, 'Sin frase ni aclaraciones después de los badges');
+      for (const card of await cards.all()) {
+        const box = await card.boundingBox();
+        assert(box.x >= 0 && box.x + box.width <= width + 1);
+      }
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
+test('las wallets principales muestran badges de LN Address con los colores de la leyenda y sus condiciones', async () => {
+  const expected = {
+    strike: ['LN Address personalizada'],
+    tether: ['LN Address personalizada'],
+    blixt: ['LN Address personalizada'],
+    wos: ['LN Address asignada'],
+    zeus: ['LN Address asignada'],
+    lawallet: ['LN Address personalizada'],
+  };
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const legend = await page.locator('#wallets-address .claim-tag').evaluateAll(elements =>
+        Object.fromEntries(elements.map(el => [el.textContent, getComputedStyle(el).color])));
+      for (const [wallet, labels] of Object.entries(expected)) {
+        await goToPage(page, '#wallets-' + wallet);
+        const copy = page.locator('#wallets-' + wallet + ' .app-copy');
+        const badges = copy.locator(':scope > .claim-tag').filter({ hasText: 'LN Address' });
+        assert.deepEqual(await badges.allTextContents(), labels, `${wallet}: opciones para recibir`);
+        for (const badge of await badges.all()) {
+          assert(await badge.isVisible());
+          const text = await badge.textContent();
+          assert.equal(await badge.evaluate(el => getComputedStyle(el).color), legend[text]);
+          const box = await badge.boundingBox();
+          assert(box.x >= 0 && box.x + box.width <= width + 1, `${wallet}: badge dentro de los márgenes`);
+          assert(box.y < (await copy.locator('.app-lines, .pros-cons').first().boundingBox()).y, 'Badge junto a custodia y código, antes de la explicación');
+        }
+        if (wallet === 'zeus') assert.match(await copy.innerText(), /Cashu.*Pay\+/is, 'Distingue opción gratis y personalización paga');
+        if (wallet === 'wos') assert.match(await badges.first().getAttribute('title'), /aleatoria.*requisitos/is);
+        if (wallet === 'blixt') assert.match(await copy.innerText(), /Lightning Box.*Android.*persistente/is);
+        if (wallet === 'lawallet') {
+          assert.match(await copy.innerText(), /LaWallet.*dirección.*sin cargo.*cortesía/is, 'La dirección la ofrece LaWallet en la instancia del taller');
+          assert.match(await copy.innerText(), /wallet conectada.*(costos|comisiones)/is, 'Los costos de la wallet conectada no convierten la dirección en externa');
+          assert.match(await badges.first().getAttribute('title'), /cortesía/is, 'El badge no promete gratuidad para cualquier despliegue');
+        }
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      }
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('WoS en móvil muestra cada paso seguido de sus capturas al bajar y conserva la galería de escritorio', async () => {
   for (const width of [620, 390, 320, 1366]) {
     await withPage(async page => {
