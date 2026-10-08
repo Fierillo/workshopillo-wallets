@@ -115,6 +115,29 @@ test('la portada conserva el título anterior como subtítulo, sin atajo al tall
   }
 });
 
+test('después de La Crypta se puede abrir el workshop desde un slide con QR legible', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      assert.equal(await page.locator('#lacrypta + section').getAttribute('id'), 'workshop-acceso', 'El acceso al workshop sigue inmediatamente a La Crypta');
+      await goToPage(page, '#lacrypta');
+      await page.keyboard.press('ArrowDown');
+      await page.waitForFunction(() => document.querySelector('.chapter-nav a[aria-current]')?.hash === '#workshop-acceso');
+      const slide = page.locator('#workshop-acceso');
+      assert(await slide.getByRole('heading', { name: 'Seguí el workshop desde tu celu.' }).isVisible());
+      const link = slide.getByRole('link', { name: 'workshop.fierillo.world', exact: true });
+      assert(await link.isVisible());
+      assert.equal(await link.getAttribute('href'), 'https://workshop.fierillo.world');
+      const qr = slide.getByRole('img', { name: 'QR para abrir https://workshop.fierillo.world' });
+      assert(await qr.isVisible());
+      assert(await qr.evaluate(el => el.complete && el.naturalWidth > 0), 'QR local cargado');
+      const box = await qr.boundingBox();
+      assert(box.width >= 240 && Math.abs(box.width - box.height) < 1, 'QR grande y cuadrado');
+      assert(box.x >= 0 && box.x + box.width <= width, 'QR dentro de la pantalla');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('la tabla pregunta por LN Address, claves y código con badges compactos y desarrolla cada respuesta al abrir', async () => {
   const expectedAddress = ['LN Address personalizada', 'LN Address asignada', 'LN Address personalizada', 'LN Address personalizada', 'LN Address personalizada', 'LN Address asignada', 'Sin LN Address', 'Sin LN Address', 'LN Address personalizada', 'Sin LN Address', 'LN Address asignada', 'LN Address asignada'];
   for (const width of [1366, 1024, 768, 621, 620, 390, 320]) {

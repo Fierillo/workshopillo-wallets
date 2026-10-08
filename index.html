@@ -1099,6 +1099,36 @@
         filter: saturate(.9);
       }
 
+      /* ---------- Acceso al workshop ---------- */
+      .workshop-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(240px, .75fr);
+        align-items: center;
+        gap: clamp(32px, 6vw, 80px);
+      }
+
+      .workshop-qr {
+        display: block;
+        width: min(100%, 380px);
+        height: auto;
+        margin-inline: auto;
+        border-radius: 16px;
+      }
+
+      .workshop-link {
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: 760px) {
+        .workshop-layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .workshop-qr {
+          max-width: 300px;
+        }
+      }
+
       /* ---------- Mito ---------- */
       .mito-answer {
         display: grid;
@@ -2415,6 +2445,7 @@
       <a href="#inicio" aria-label="Inicio" aria-current="location"><span>Inicio</span></a>
       <a href="#speaker" aria-label="Sobre mí"><span>Sobre mí</span></a>
       <a href="#lacrypta" aria-label="La Crypta"><span>La Crypta</span></a>
+      <a href="#workshop-acceso" aria-label="Seguí el workshop"><span>Seguí el workshop</span></a>
       <a href="#mito-queja" aria-label="El mito de Bitcoin"><span>El mito</span></a>
       <a href="#mito-capas" aria-label="¿Son ciertas?"><span>¿Son ciertas?</span></a>
       <a href="#lightning-abaco" aria-label="Lightning: el ábaco"><span>El ábaco</span></a>
@@ -2636,6 +2667,18 @@
               </figure>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="chapter" id="workshop-acceso" aria-labelledby="workshop-acceso-title">
+        <div class="chapter-inner workshop-layout">
+          <div>
+            <p class="chapter-index">02 <span>Seguí el workshop</span></p>
+            <h2 id="workshop-acceso-title">Seguí el workshop desde tu <em>celu.</em></h2>
+            <p class="lead">Escaneá el QR y abrí esta presentación. Tené a mano las wallets y acompañá el recorrido a tu ritmo.</p>
+            <a class="speaker-link workshop-link" href="https://workshop.fierillo.world" target="_blank" rel="noreferrer">workshop.fierillo.world</a>
+          </div>
+          <img class="workshop-qr" src="./assets/workshop-qr.png" alt="QR para abrir https://workshop.fierillo.world" width="410" height="410" loading="lazy" />
         </div>
       </section>
 
