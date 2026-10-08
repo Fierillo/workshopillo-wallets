@@ -83,6 +83,32 @@ async function goToPage(page, hash) {
   await page.waitForFunction(hash => document.querySelector('.chapter-nav a[aria-current]')?.hash === hash, hash);
 }
 
+test('la portada conserva el título anterior como subtítulo, sin atajo al taller ni Cash App en el carrusel y la tabla', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      await goToPage(page, '#inicio');
+      const hero = page.locator('#inicio');
+      const title = hero.getByRole('heading', { level: 1 });
+      assert.equal(await title.innerText(), 'Bitcoin no es caro, ni lento, y te lo voy a demostrar');
+      const subtitle = hero.locator('.hero-copy > p').filter({ hasText: 'Bitcoin se entiende mejor cuando lo usás.' });
+      assert(await subtitle.isVisible(), 'Conservar el título anterior como subtítulo');
+      assert.equal(await hero.getByRole('link', { name: /taller/i }).count(), 0);
+      assert(await hero.getByRole('link', { name: /Empezar el recorrido/ }).isVisible());
+      const cards = hero.locator('.drum-card');
+      const names = await cards.locator('strong').allTextContents();
+      assert.equal(names.length, 12);
+      assert(!names.includes('Cash App'));
+      assert.equal((await hero.locator('.wallet-count').innerText()).trim(), '01 — 12');
+      assert.deepEqual(await cards.evaluateAll(elements => elements.map(el => Number(getComputedStyle(el).getPropertyValue('--i')))), Array.from({ length: 12 }, (_, i) => i), 'Sin huecos en el carrusel');
+      assert.equal(await cards.first().evaluate(el => Number(getComputedStyle(el).getPropertyValue('--n'))), 12, 'Ángulos calculados para doce wallets');
+      await goToPage(page, '#wallets-tabla');
+      const tableNames = await page.locator('.wallet-option-name').allTextContents();
+      assert.deepEqual(tableNames, names, 'Carrusel y tabla conservan las mismas wallets y su orden');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('los badges de código conservan su color aunque cambie el enlace a la fuente', async () => {
   await withPage(async page => {
     await page.addStyleTag({ content: 'a { transition: none !important; }' });
