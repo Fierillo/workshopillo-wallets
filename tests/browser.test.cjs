@@ -283,6 +283,29 @@ test('la última columna y los badges siguen contenidos con fuente mínima de na
   }, { minimumFontSize: 16 });
 });
 
+test('la introducción de Spark respeta los tamaños de título y texto principal de los slides anteriores', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      await goToPage(page, '#wallets-spark');
+      const sizes = await page.evaluate(() => {
+        const fontSize = selector => parseFloat(getComputedStyle(document.querySelector(selector)).fontSize);
+        return {
+          title: fontSize('#spark-title'),
+          previousTitle: fontSize('#mito-title'),
+          description: fontSize('#wallets-spark p:last-child'),
+          lead: fontSize('#wallets-spark .lead'),
+        };
+      });
+      assert.equal(sizes.title, sizes.previousTitle, 'Título de Spark con el mismo tamaño que los títulos anteriores');
+      assert.equal(sizes.description, sizes.lead, 'La explicación no usa el tamaño reducido de una nota al pie');
+      for (const element of await page.locator('#wallets-spark h2, #wallets-spark h3, #wallets-spark p').all()) {
+        assert(await element.isVisible());
+        assert(await element.evaluate(el => el.scrollWidth <= el.clientWidth), 'Texto sin desbordes');
+      }
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('Tether introduce Spark y el esquema continúa debajo de su introducción sin comprimir el contenido', async () => {
   for (const width of [1366, 390, 320]) {
     await withPage(async page => {
@@ -330,7 +353,7 @@ test('Tether introduce Spark y el esquema continúa debajo de su introducción s
       for (const card of await explanation.locator('.claim').all()) assert(await card.isVisible());
       for (const section of [spark, explanation]) {
         const bounds = await section.boundingBox();
-        for (const element of await section.locator('h3, .lead, .claim, .comparison-note').all()) {
+        for (const element of await section.locator('h2, h3, .lead, .claim, .comparison-note').all()) {
           const box = await element.boundingBox();
           assert(box.x >= 0 && box.x + box.width <= width, 'Contenido dentro de los márgenes');
           assert(box.y >= bounds.y && box.y + box.height <= bounds.y + bounds.height, 'Contenido dentro de la slide');
