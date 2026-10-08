@@ -725,7 +725,7 @@ test('la barra de puntitos desaparece en móvil pero sigue en escritorio y se pu
   }
 });
 
-test('el encabezado conserva solo el título de sección sin barra superior ni botón de taller', async () => {
+test('el encabezado conserva el título compacto con fondo negro degradado y sin botón de taller', async () => {
   for (const width of [1366, 390, 320]) {
     await withPage(async page => {
       assert.equal(await page.getByRole('banner').count(), 0, 'Sin encabezado superior');
@@ -739,7 +739,8 @@ test('el encabezado conserva solo el título de sección sin barra superior ni b
           const css = getComputedStyle(el);
           return { background: css.backgroundImage, color: css.backgroundColor, top: el.getBoundingClientRect().top, height: el.getBoundingClientRect().height };
         });
-        assert.equal(style.background, 'none', 'Sin franja de fondo');
+        assert.match(style.background, /linear-gradient\(.*rgba?\(0, 0, 0[,)]/, 'Fondo negro degradado');
+        assert.match(style.background, /rgba\(0, 0, 0, 0\)/, 'El fondo se desvanece a transparente');
         assert.equal(style.color, 'rgba(0, 0, 0, 0)');
         assert(style.top <= 1 && style.height < 48, 'Título compacto en la parte superior');
       }

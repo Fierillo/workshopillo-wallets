@@ -433,7 +433,7 @@
         color: var(--orange);
       }
 
-      /* Solo el título de sección, sin barra superior. */
+      /* Título de sección sobre un degradado fino, sin barra superior. */
       .section-sticky {
         position: fixed;
         z-index: 8;
@@ -444,6 +444,7 @@
         align-items: center;
         min-height: 34px;
         padding: 8px clamp(24px, 10vw, 150px) 14px;
+        background: linear-gradient(to bottom, rgb(0 0 0 / 94%) 0%, rgb(0 0 0 / 82%) 55%, transparent 100%);
         pointer-events: none;
       }
 
