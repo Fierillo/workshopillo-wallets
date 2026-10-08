@@ -940,6 +940,62 @@
         text-wrap: balance;
       }
 
+      #creditos .app-lines {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        max-width: none;
+        margin: 0;
+      }
+
+      #creditos .app-lines li {
+        display: grid;
+        grid-template-columns: 80px minmax(0, 1fr);
+        gap: 6px 14px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #121613;
+      }
+
+      #creditos .app-lines li::before {
+        display: none;
+      }
+
+      #creditos .app-lines img {
+        grid-row: 1 / span 2;
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+        object-fit: contain;
+      }
+
+      #creditos .app-lines img.is-portrait {
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      #creditos .app-lines strong {
+        align-self: end;
+      }
+
+      #creditos .app-lines li.is-featured {
+        grid-column: 1 / -1;
+        border-color: rgb(255 118 46 / 40%);
+      }
+
+      #creditos .app-lines li.is-featured strong {
+        grid-row: 1 / span 2;
+        align-self: center;
+        color: var(--orange);
+      }
+
+      @media (max-width: 900px) {
+        #creditos .app-lines {
+          grid-template-columns: 1fr;
+        }
+      }
+
       /* ---------- Sobre mí ---------- */
       .speaker-lines {
         max-width: 610px;
@@ -2280,6 +2336,7 @@
       <a href="#wallets-lawallet" aria-label="LaWallet"><span>LaWallet</span></a>
       <a href="#wallets-lawallet-map" aria-label="LaWallet Connection Map"><span>LaWallet map</span></a>
       <a href="#wallets-tabla" aria-label="Comparar wallets"><span>Comparar wallets</span></a>
+      <a href="#creditos" aria-label="Créditos"><span>Créditos</span></a>
     </nav>
 
     <div class="section-sticky" id="section-sticky" hidden aria-hidden="true">
@@ -3040,6 +3097,44 @@
         </div>
       </section>
 
+      <section class="chapter" id="creditos" aria-labelledby="creditos-title">
+        <div class="chapter-inner keys-layout">
+          <div>
+            <p class="chapter-index">07 <span>Créditos</span></p>
+            <h2 id="creditos-title">Gracias.</h2>
+            <p class="lead">A todos los que hicieron este workshop posible</p>
+          </div>
+          <ul class="app-lines">
+            <li>
+              <img class="is-portrait" src="./assets/creditos-jaqui.webp" alt="Foto de perfil de Jaqui" width="192" height="192" loading="lazy" />
+              <strong>Jaqui</strong>
+              <div class="comparison-note"><a href="https://x.com/Jaqui21M" target="_blank" rel="noreferrer" aria-label="Jaqui en X">X ↗</a> · <a href="https://www.instagram.com/stories/jaqui21m/" target="_blank" rel="noreferrer" aria-label="Jaqui en Instagram">Instagram ↗</a></div>
+            </li>
+            <li>
+              <img class="is-portrait" src="./assets/creditos-andy.webp" alt="Foto de perfil de Andy" width="192" height="192" loading="lazy" />
+              <strong>Andy</strong>
+              <div class="comparison-note"><a href="https://x.com/andycreed0x" target="_blank" rel="noreferrer" aria-label="Andy en X">X ↗</a></div>
+            </li>
+            <li>
+              <img class="is-portrait" src="./assets/creditos-baba.webp" alt="Foto de perfil de Baba" width="100" height="100" loading="lazy" />
+              <strong>Baba</strong>
+              <div class="comparison-note"><a href="https://www.instagram.com/elbababarr/" target="_blank" rel="noreferrer" aria-label="Baba en Instagram">Instagram ↗</a></div>
+            </li>
+            <li>
+              <img src="./assets/creditos-lacrypta.webp" alt="Logo de La Crypta" width="112" height="112" loading="lazy" />
+              <strong>La Crypta</strong>
+              <div class="comparison-note"><a href="https://lacrypta.ar" target="_blank" rel="noreferrer">lacrypta.ar ↗</a> · <a href="https://discord.lacrypta.ar" target="_blank" rel="noreferrer" aria-label="Discord de La Crypta">Discord ↗</a></div>
+            </li>
+            <li>
+              <img src="./assets/creditos-veintiuno.webp" alt="Logo de Veintiuno.lat" width="192" height="192" loading="lazy" />
+              <strong>Veintiuno.lat</strong>
+              <div class="comparison-note"><a href="https://veintiuno.lat" target="_blank" rel="noreferrer">veintiuno.lat ↗</a></div>
+            </li>
+            <li><img src="./assets/creditos-comunidad.svg" alt="Ícono de comunidad" width="192" height="192" loading="lazy" /><strong>A todos los que vinieron hoy</strong></li>
+            <li class="is-featured"><img src="./assets/creditos-bitcoin.svg" alt="Símbolo de Bitcoin" width="192" height="192" loading="lazy" /><strong>Simplemente, a Bitcoin.</strong></li>
+          </ul>
+        </div>
+      </section>
     </main>
 
 

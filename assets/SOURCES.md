@@ -1,5 +1,26 @@
 # Fuentes
 
+## Miniaturas de créditos
+- Fotos públicas de perfil verificadas en los perfiles indicados por Fierillo:
+  - Jaqui: https://x.com/Jaqui21M
+    https://pbs.twimg.com/profile_images/1926402955797835777/WBQ4Wyic_400x400.jpg
+  - Andy: https://x.com/andycreed0x
+    https://pbs.twimg.com/profile_images/2001634525437218816/pNMbxMYa_400x400.jpg
+  - Baba: https://www.instagram.com/elbababarr/
+    Foto publicada como og:image en el perfil, descargada de su CDN y convertida
+    a creditos-baba.webp (100×100, sin metadatos) el 08-10-2026. Se conserva
+    localmente; la URL temporal firmada de Instagram no se usa en la app.
+- Logos desde los sitios oficiales:
+  - La Crypta: https://lacrypta.ar/img/schema-logo.png
+  - Veintiuno.lat: https://veintiuno.lat/logo.png
+- Descargados el 08-10-2026, convertidos a WebP de hasta 192×192 sin metadatos.
+  Conservan las proporciones originales; retratos con recorte circular en CSS,
+  logos completos. Archivos locales para evitar dependencias de X al presentar.
+- creditos-bitcoin.svg: representación propia del símbolo Unicode ₿, blanco
+  sobre círculo naranja; no se atribuye a un logo descargado.
+- creditos-comunidad.svg: ícono vectorial propio de un grupo de personas para
+  el agradecimiento a los asistentes; no representa retratos de personas reales.
+
 ## Valores de La Crypta
 - Honestidad, Libertad, Sinergia, Racionalidad, Humildad, Mérito e Innovación:
   descripción del perfil oficial de La Crypta en LinkedIn.

@@ -306,6 +306,60 @@ test('toda la tarjeta de comparación alterna el detalle sin duplicar el click d
   }
 });
 
+test('los créditos cierran la charla con siete agradecimientos y sus enlaces en escritorio y móvil', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const credits = page.locator('#creditos');
+      assert.equal(await credits.count(), 1, 'Existe el slide final de créditos');
+      assert.equal(await page.locator('main > section').last().getAttribute('id'), 'creditos');
+      assert.equal(await page.locator('.chapter-nav a').last().getAttribute('href'), '#creditos');
+      await goToPage(page, '#creditos');
+      assert(await credits.getByRole('heading', { name: 'Gracias.', exact: true }).isVisible());
+      assert.equal(await credits.locator('.lead').innerText(), 'A todos los que hicieron este workshop posible');
+      const items = credits.locator('li');
+      assert.equal(await items.count(), 7);
+      assert.deepEqual(await items.locator('strong').allTextContents(), ['Jaqui', 'Andy', 'Baba', 'La Crypta', 'Veintiuno.lat', 'A todos los que vinieron hoy', 'Simplemente, a Bitcoin.']);
+      const audience = items.nth(5);
+      assert.equal(await audience.locator('a').count(), 0, 'Agradecimiento a los asistentes, sin enlace');
+      const audienceBox = await audience.boundingBox();
+      const jaquiBox = await items.first().boundingBox();
+      assert(Math.abs(audienceBox.width - jaquiBox.width) < 1, 'El público tiene el ancho de las demás tarjetas');
+      assert.equal(await audience.evaluate(el => getComputedStyle(el).gridColumn), await items.first().evaluate(el => getComputedStyle(el).gridColumn), 'El público no ocupa toda la fila');
+      if (width === 1366) assert((await items.last().boundingBox()).width > audienceBox.width * 1.8, 'Solo Bitcoin ocupa la fila completa');
+      assert.deepEqual(await credits.locator('a').evaluateAll(elements => elements.map(el => el.href)), [
+        'https://x.com/Jaqui21M',
+        'https://www.instagram.com/stories/jaqui21m/',
+        'https://x.com/andycreed0x',
+        'https://www.instagram.com/elbababarr/',
+        'https://lacrypta.ar/',
+        'https://discord.lacrypta.ar/',
+        'https://veintiuno.lat/',
+      ]);
+      for (const item of await items.all()) {
+        assert(await item.isVisible());
+        const image = item.locator('img');
+        assert.equal(await image.count(), 1, 'Una miniatura por persona o entidad');
+        await image.scrollIntoViewIfNeeded();
+        await image.evaluate(el => el.decode());
+        assert(await image.isVisible());
+        assert((await image.getAttribute('alt')).trim().length > 0);
+        assert(await image.evaluate(el => el.naturalWidth > 0 && new URL(el.currentSrc).origin === location.origin), 'Miniatura local y válida');
+        const box = await image.boundingBox();
+        assert(box.width >= 64 && box.width <= 112 && Math.abs(box.width - box.height) < 1, 'Miniatura cuadrada y visible');
+        const bounds = await item.boundingBox();
+        assert(box.x >= bounds.x && box.x + box.width <= bounds.x + bounds.width, 'Dentro de su tarjeta');
+        assert.equal(await image.evaluate(el => getComputedStyle(el).objectFit), ['Jaqui', 'Andy', 'Baba'].includes(await item.locator('strong').textContent()) ? 'cover' : 'contain', 'Retratos recortados y logos completos');
+      }
+      for (const link of await credits.locator('a').all()) {
+        assert(await link.isVisible());
+        assert.equal(await link.getAttribute('target'), '_blank');
+        assert.match(await link.getAttribute('rel'), /noreferrer|noopener/);
+      }
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('Sobre mí enlaza al sitio personal fierillo.world', async () => {
   await withPage(async page => {
     await goToPage(page, '#speaker');
