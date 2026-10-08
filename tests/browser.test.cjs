@@ -378,13 +378,21 @@ test('en móvil las capturas de wallets son grandes, centradas y respetan los m�
   }
 });
 
-test('la intro del taller muestra solo el título y continúa directamente con WoS', async () => {
+test('la intro del taller conserva 06 Manos a la obra en naranja, el título y continúa con WoS', async () => {
   await withPage(async page => {
     await page.locator('.chapter-nav a[href="#workshop-inicio"]').click();
     const intro = page.locator('#workshop-inicio');
     const heading = intro.getByRole('heading', { name: 'De la teoría a tu primera wallet.' });
     assert(await heading.isVisible());
-    assert.equal((await intro.innerText()).trim(), await heading.innerText(), 'Sin texto, advertencias ni pasos adicionales');
+    const index = intro.locator('.chapter-index');
+    assert.equal(await index.count(), 1, 'Conservar la numeración de la sección 06');
+    assert(await index.isVisible());
+    assert.match(await index.innerText(), /^06\s+Manos a la obra$/);
+    for (const element of [index, index.locator('span')]) {
+      const [red, green, blue] = await element.evaluate(el => getComputedStyle(el).color.match(/\d+/g).map(Number));
+      assert(red > green && green > blue, 'Número y nombre en naranja');
+    }
+    assert.equal((await intro.innerText()).replace(await index.innerText(), '').replace(await heading.innerText(), '').trim(), '', 'Sin texto, advertencias ni pasos adicionales');
     assert.equal(await intro.evaluate(el => el.nextElementSibling.id), 'wallets-wos');
     const link = page.locator('.chapter-nav a[href="#workshop-inicio"]');
     assert.equal(await link.evaluate(el => el.nextElementSibling.hash), '#wallets-wos');
@@ -416,7 +424,7 @@ test('el encabezado conserva solo el título de sección sin barra superior ni b
     await withPage(async page => {
       assert.equal(await page.getByRole('banner').count(), 0, 'Sin encabezado superior');
       assert.equal(await page.getByRole('link', { name: /Ir al taller/ }).count(), 0, 'Sin botón de taller');
-      for (const [hash, title] of [['#wallets-strike', /Wallets/], ['#wallets-wos', /De la teoría a tu primera wallet/]]) {
+      for (const [hash, title] of [['#wallets-strike', /Wallets/], ['#wallets-wos', /06\s+Manos a la obra/]]) {
         await goToPage(page, hash);
         const sticky = page.locator('#section-sticky');
         await sticky.waitFor({ state: 'visible' });
