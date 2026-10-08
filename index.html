@@ -818,6 +818,10 @@
         object-fit: contain;
       }
 
+      .wos-step-shot {
+        display: none;
+      }
+
       .speaker {
         background:
           radial-gradient(ellipse at 83% 22%, rgb(255 118 46 / 7%), transparent 32%),
@@ -1932,8 +1936,30 @@
           border-radius: 17px;
         }
 
+        #wallets-wos .app-shot {
+          display: none;
+        }
+
+        .wos-step-shot {
+          display: block;
+          width: min(100%, 240px);
+          margin: 12px auto 24px;
+        }
+
+        .wos-step-shot img {
+          display: block;
+          width: 100%;
+          height: auto;
+          object-fit: contain;
+          border-radius: 17px;
+        }
+
         #wallets-zeus .app-shot:has(video:not([hidden])) {
           width: min(100%, 360px);
+        }
+
+        #wallets-zeus .app-shot {
+          margin: 20px auto;
         }
 
         #wallets-zeus .app-shot video {
@@ -2898,11 +2924,24 @@
         const route = zeus.querySelector(".cashu-route");
         const image = zeus.querySelector(".app-shot img");
         const video = zeus.querySelector(".app-shot video");
+        const figure = zeus.querySelector(".app-shot");
+        const channels = zeus.querySelector(".app-lines > li:last-child");
+        const home = document.createComment("Visor de ZEUS en escritorio");
+        figure.before(home);
+        const mobile = matchMedia("(max-width: 620px)");
+        function placeMedia() {
+          if (!mobile.matches) home.after(figure);
+          else if (route.open) route.querySelector("ol").after(figure);
+          else channels.append(figure);
+        }
         route.addEventListener("toggle", () => {
           image.hidden = route.open;
           video.hidden = !route.open;
           if (!route.open) video.pause();
+          placeMedia();
         });
+        mobile.addEventListener("change", placeMedia);
+        placeMedia();
       })();
 
       // Cada canal mueve una ficha propia entre sus puertos.
@@ -2967,7 +3006,7 @@
         });
       })();
 
-      // Un solo tutorial y una sola imagen ampliable.
+      // Escritorio: galería. Móvil: capturas junto a cada paso del mismo tutorial.
       (() => {
         const tutorial = document.getElementById("wallets-wos");
         const image = tutorial.querySelector(".app-shot img");
@@ -2975,6 +3014,26 @@
         const buttons = [...tutorial.querySelectorAll(".wos-steps button")];
         const navigation = tutorial.querySelector(".wos-image-nav");
         let active = buttons[0], current = 0;
+
+        buttons.forEach(button => {
+          for (const suffix of ["", "Next"]) {
+            if (!button.dataset["image" + suffix]) continue;
+            const figure = document.createElement("figure");
+            figure.className = "wos-step-shot";
+            const capture = document.createElement("img");
+            capture.className = "lb-trigger";
+            capture.src = button.dataset["image" + suffix];
+            capture.alt = button.dataset["alt" + suffix];
+            capture.width = 540;
+            capture.height = 1200;
+            capture.loading = "lazy";
+            const caption = document.createElement("figcaption");
+            caption.className = "comparison-note";
+            caption.textContent = button.dataset["caption" + suffix];
+            figure.append(capture, caption);
+            button.closest("li").append(figure);
+          }
+        });
 
         function showImage() {
           const suffix = current === 0 ? "" : "Next";

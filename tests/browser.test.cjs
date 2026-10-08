@@ -301,7 +301,8 @@ test('todas las páginas se navegan sin contenido oculto ni desbordes en escrito
         const section = page.locator(destinations[index]);
         assert(await section.isVisible(), `${width}px: ${destinations[index]} visible`);
         assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}px: sin scroll horizontal`);
-        for (const content of await section.locator('.lead, .app-lines, .app-copy, .app-shot, .abacus, .ln-panels, .wallet-comparison').all()) {
+        const shots = width <= 620 && destinations[index] === '#wallets-wos' ? '.wos-step-shot' : '.app-shot';
+        for (const content of await section.locator(`.lead, .app-lines, .app-copy, ${shots}, .abacus, .ln-panels, .wallet-comparison`).all()) {
           assert(await content.isVisible(), `${width}px: no ocultar contenido principal`);
           const box = await content.boundingBox();
           assert(box.x >= -1 && box.x + box.width <= width + 1, `${width}px: contenido dentro de los márgenes`);
@@ -322,7 +323,7 @@ test('todas las páginas se navegan sin contenido oculto ni desbordes en escrito
       const button = await page.locator('#ab-send').boundingBox();
       const caption = await page.locator('#ab-status').boundingBox();
       assert(button.y >= caption.y + caption.height + 8, 'El botón va debajo del texto con espacio');
-      await page.locator('#wallets-wos .app-shot img').click();
+      await page.locator(width <= 620 ? '#wallets-wos .wos-step-shot img' : '#wallets-wos .app-shot img').first().click();
       assert(await page.locator('#lightbox').evaluate(el => el.open));
       const image = await page.locator('.lightbox-img').boundingBox();
       assert(image.width > 0 && image.x >= 0 && image.x + image.width <= width + 1, 'Imagen ampliada dentro de la pantalla');
@@ -334,7 +335,7 @@ test('todas las páginas se navegan sin contenido oculto ni desbordes en escrito
 test('en móvil la presentación de cada wallet precede a sus capturas y al video de Cashu', async () => {
   for (const width of [620, 390, 320]) {
     await withPage(async page => {
-      const layouts = page.locator('.page .app-layout:has(.app-copy):has(.app-shot)');
+      const layouts = page.locator('.page:not(#wallets-wos):not(#wallets-zeus) .app-layout:has(.app-copy):has(.app-shot)');
       assert(await layouts.count() > 0);
       for (const layout of await layouts.all()) {
         await layout.scrollIntoViewIfNeeded();
@@ -345,9 +346,9 @@ test('en móvil la presentación de cada wallet precede a sus capturas y al vide
       const zeus = page.locator('#wallets-zeus');
       await zeus.locator('.cashu-route summary').click();
       await zeus.locator('video').waitFor({ state: 'visible' });
-      const copy = await zeus.locator('.app-copy').boundingBox();
+      const copy = await zeus.locator('.cashu-route ol').boundingBox();
       const video = await zeus.locator('.app-shot').boundingBox();
-      assert(video.y >= copy.y + copy.height, 'El video también queda después de las instrucciones');
+      assert(video.y >= copy.y + copy.height, 'El video queda después de los pasos de Cashu');
     }, { viewport: { width, height: 844 } });
   }
 });
@@ -355,7 +356,7 @@ test('en móvil la presentación de cada wallet precede a sus capturas y al vide
 test('en móvil las capturas de wallets son grandes, centradas y respetan los márgenes', async () => {
   for (const width of [620, 390, 320]) {
     await withPage(async page => {
-      for (const layout of await page.locator('.page .app-layout:has(.app-shot)').all()) {
+      for (const layout of await page.locator('.page:not(#wallets-wos):not(#wallets-zeus) .app-layout:has(.app-shot)').all()) {
         await layout.scrollIntoViewIfNeeded();
         const inner = await layout.boundingBox();
         const figure = await layout.locator('.app-shot').boundingBox();
@@ -369,7 +370,7 @@ test('en móvil las capturas de wallets son grandes, centradas y respetan los m�
       const zeus = page.locator('#wallets-zeus');
       await zeus.locator('.cashu-route summary').click();
       await zeus.locator('video').waitFor({ state: 'visible' });
-      const inner = await zeus.locator('.chapter-inner').boundingBox();
+      const inner = await zeus.locator('.cashu-route').boundingBox();
       const figure = await zeus.locator('.app-shot').boundingBox();
       assert(Math.abs((figure.x + figure.width / 2) - (inner.x + inner.width / 2)) < 1, 'El video también queda centrado');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
@@ -428,6 +429,86 @@ test('el encabezado conserva solo el título de sección sin barra superior ni b
         assert.equal(style.color, 'rgba(0, 0, 0, 0)');
         assert(style.top <= 1 && style.height < 48, 'Título compacto en la parte superior');
       }
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
+test('WoS en móvil muestra cada paso seguido de sus capturas al bajar y conserva la galería de escritorio', async () => {
+  for (const width of [620, 390, 320, 1366]) {
+    await withPage(async page => {
+      await goToPage(page, '#wallets-wos');
+      const tutorial = page.locator('#wallets-wos');
+      const steps = tutorial.locator('.wos-steps > li');
+      assert.equal(await steps.count(), 4);
+      if (width > 620) {
+        assert(await tutorial.locator('.app-shot').isVisible());
+        assert.equal(await tutorial.locator('.wos-step-shot:visible').count(), 0, 'Sin duplicados en escritorio');
+        return;
+      }
+      assert.equal(await tutorial.locator('.wos-step-shot img').count(), 5, 'Cuatro pasos y dos capturas de respaldo');
+      assert(await tutorial.locator('.app-shot').isHidden(), 'Sin una galería aislada al final');
+      for (let index = 0; index < await steps.count(); index++) {
+        const step = steps.nth(index);
+        const button = step.locator('button');
+        const images = step.locator('.wos-step-shot img');
+        assert.equal(await images.count(), index === 3 ? 2 : 1);
+        for (const image of await images.all()) {
+          await image.scrollIntoViewIfNeeded();
+          await image.evaluate(el => el.decode());
+          assert(await image.isVisible());
+          const label = await button.boundingBox();
+          const box = await image.boundingBox();
+          const bounds = await step.boundingBox();
+          assert(box.y >= label.y + label.height, 'La captura sigue a las instrucciones de su paso');
+          assert(box.y + box.height <= bounds.y + bounds.height + 1, 'No se mezcla con el siguiente paso');
+          assert(Math.abs((box.x + box.width / 2) - (bounds.x + bounds.width / 2)) < 1, 'Captura centrada');
+          assert(box.width >= Math.min(bounds.width, 240) - 12, 'Captura legible dentro de los márgenes');
+          assert.equal(await image.evaluate(el => getComputedStyle(el).objectFit), 'contain');
+          await image.focus();
+          await page.keyboard.press('Enter');
+          assert(await page.locator('#lightbox').evaluate(el => el.open));
+          assert.equal(await page.locator('.lightbox-img').getAttribute('src'), await image.evaluate(el => el.currentSrc));
+          await page.keyboard.press('Escape');
+          await page.waitForFunction(() => !document.querySelector('#lightbox').open);
+          assert(await image.evaluate(el => document.activeElement === el));
+        }
+        if (index < await steps.count() - 1) {
+          assert((await steps.nth(index + 1).boundingBox()).y >= (await step.boundingBox()).y + (await step.boundingBox()).height - 1, 'Los pasos avanzan al bajar');
+        }
+      }
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
+test('ZEUS en móvil coloca cada medio junto a su ruta y restaura la columna de escritorio', async () => {
+  for (const width of [620, 390, 320]) {
+    await withPage(async page => {
+      await goToPage(page, '#wallets-zeus');
+      const zeus = page.locator('#wallets-zeus');
+      const route = zeus.locator('.cashu-route');
+      const figure = zeus.locator('.app-shot');
+      const channels = zeus.locator('.app-lines > li').nth(1);
+      assert.equal(await channels.locator('.app-shot').count(), 1, 'La captura acompaña Canales propios');
+      assert(await figure.locator('img').isVisible());
+      const screenshot = await figure.boundingBox();
+      const next = await zeus.locator('.app-copy > .comparison-note').last().boundingBox();
+      assert(screenshot.y + screenshot.height <= next.y, 'La captura aparece antes del cierre de la explicación');
+      await route.locator('summary').click();
+      await figure.locator('video').waitFor({ state: 'visible' });
+      assert.equal(await route.locator('.app-shot').count(), 1, 'El video acompaña la configuración de Cashu');
+      const steps = await route.locator('ol').boundingBox();
+      const video = await figure.boundingBox();
+      const notes = await route.locator('.comparison-note').first().boundingBox();
+      assert(video.y >= steps.y + steps.height && video.y + video.height <= notes.y, 'Video entre los pasos y las notas, no al final de la wallet');
+      assert.equal(await zeus.locator('video').count(), 1, 'Mover el original, no duplicar el video');
+      await page.setViewportSize({ width: 1366, height: 844 });
+      await page.waitForFunction(() => document.querySelector('#wallets-zeus .app-shot').parentElement.classList.contains('app-layout'));
+      await route.locator('summary').click();
+      await figure.locator('img').waitFor({ state: 'visible' });
+      assert(await figure.locator('video').evaluate(el => el.paused));
+      await page.setViewportSize({ width, height: 844 });
+      await page.waitForFunction(() => document.querySelector('#wallets-zeus .app-shot').parentElement.tagName === 'LI');
+      assert.equal(await channels.locator('.app-shot').count(), 1);
     }, { viewport: { width, height: 844 } });
   }
 });

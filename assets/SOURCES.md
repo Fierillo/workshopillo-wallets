@@ -18,6 +18,9 @@
 - wos-sitio.jpg — captura propia del sitio oficial https://www.walletofsatoshi.com/
   a 540×1200, convertida a JPEG. Incluye los enlaces a las tiendas oficiales.
   Las capturas de respaldo contienen solo instrucciones, no palabras de recuperación.
+  En móvil, cada paso muestra sus capturas debajo de las instrucciones; el último
+  muestra primero el llavero y después Backup Wallet. En escritorio se conserva
+  la galería interactiva. Ambas vistas permiten ampliar las capturas.
 - Modos, instalación y respaldo: https://www.walletofsatoshi.com/#faq
 - Flujo manual observado en Android (v3.1.7):
   https://walletscrutiny.com/android/com.livingroomofsatoshi.wallet/
@@ -46,6 +49,9 @@ Redimensionadas a ≤1200 px de lado largo, JPEG progresivo, sin EXIF.
   Comprimido a H.264, 480×1066, 24 fps, con audio AAC y sin metadatos;
   se conserva el recorrido completo de aproximadamente 43 segundos.
   Se muestra al desplegar la configuración de Cashu, con controles y sin autoplay.
+  En móvil, el visor se ubica dentro de Cashu después de los pasos cuando está
+  abierto; al cerrar, la captura acompaña la ruta Canales propios. En escritorio
+  vuelve a su columna. Se mueve el mismo visor, sin duplicar el video.
   La guía sigue el asistente observado: Empezar, Repase el cuestionario, Tarifas
   bajas, LDK Node, recomendaciones de mints de cuentas seguidas por ZEUS en
   Nostr, Seleccionar y Crear billetera. La lista incluye Minibits; el video no
