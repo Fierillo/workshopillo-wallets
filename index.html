@@ -1657,6 +1657,31 @@
         border-radius: 14px;
       }
 
+      #wallets-lawallet .app-shot {
+        width: min(100%, 420px);
+      }
+
+      #wallets-lawallet .app-shot img {
+        max-height: none;
+        object-fit: contain;
+      }
+
+      #wallets-lawallet-map .app-shot {
+        width: min(100%, 720px);
+      }
+
+      @media (min-width: 621px) {
+        #wallets-lawallet .app-layout {
+          grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+          gap: 36px;
+        }
+
+        #wallets-lawallet-map .app-layout {
+          grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr);
+          gap: 36px;
+        }
+      }
+
       @media (max-width: 850px) {
         .chapter,
         .page {

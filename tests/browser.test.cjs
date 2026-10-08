@@ -260,6 +260,31 @@ test('la última columna y los badges siguen contenidos con fuente mínima de na
   }, { minimumFontSize: 16 });
 });
 
+test('las capturas de LaWallet aprovechan más espacio sin recortes ni desbordes', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      for (const id of ['wallets-lawallet', 'wallets-lawallet-map']) {
+        await goToPage(page, '#' + id);
+        const image = page.locator('#' + id + ' .app-shot img');
+        await image.scrollIntoViewIfNeeded();
+        await image.evaluate(el => el.decode());
+        const box = await image.boundingBox();
+        if (width === 1366) assert(box.width >= (id.endsWith('-map') ? 580 : 380), 'Captura más grande en escritorio');
+        else {
+          const layout = await page.locator('#' + id + ' .app-layout').boundingBox();
+          assert(box.width >= layout.width - 22, 'En móvil aprovecha el ancho disponible');
+        }
+        assert(box.x >= 0 && box.x + box.width <= width, 'Dentro de los márgenes');
+        assert(await image.evaluate(el => Math.abs(el.getBoundingClientRect().width / el.getBoundingClientRect().height - el.naturalWidth / el.naturalHeight) < .02), 'Imagen completa sin deformación');
+        await image.click();
+        assert(await page.locator('dialog[open]').isVisible(), 'Conserva la ampliación');
+        await page.keyboard.press('Escape');
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      }
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('la comparación termina en las wallets sin notas al pie', async () => {
   await withPage(async page => {
     await goToPage(page, '#wallets-tabla');
