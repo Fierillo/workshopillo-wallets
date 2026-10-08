@@ -316,6 +316,25 @@ test('Sobre mí enlaza al sitio personal fierillo.world', async () => {
   });
 });
 
+test('los siete valores de La Crypta usan el mismo formato que los valores de Fierillo', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      const styles = locator => locator.evaluate(el => {
+        const style = getComputedStyle(el);
+        return Object.fromEntries(['color', 'fontFamily', 'fontSize', 'letterSpacing', 'lineHeight', 'textTransform', 'marginBottom'].map(key => [key, style[key]]));
+      });
+      await goToPage(page, '#speaker');
+      const personal = await styles(page.locator('#speaker .speaker-values-line'));
+      await goToPage(page, '#lacrypta');
+      const values = page.locator('#lacrypta .lc-copy > p').filter({ hasText: 'Honestidad' });
+      assert(await values.isVisible());
+      assert.equal((await values.textContent()).trim(), 'Honestidad · Libertad · Sinergia · Racionalidad · Humildad · Mérito · Innovación');
+      assert.deepEqual(await styles(values), personal, 'Misma tipografía, color, espaciado y mayúsculas');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('los badges de código conservan su color aunque cambie el enlace a la fuente', async () => {
   await withPage(async page => {
     await page.addStyleTag({ content: 'a { transition: none !important; }' });

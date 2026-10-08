@@ -1,5 +1,11 @@
 # Fuentes
 
+## Valores de La Crypta
+- Honestidad, Libertad, Sinergia, Racionalidad, Humildad, Mérito e Innovación:
+  descripción del perfil oficial de La Crypta en LinkedIn.
+  https://www.linkedin.com/company/lacryptaok
+  Consultado el 08-10-2026 mediante el resultado indexado del perfil.
+
 ## Concepto y badges de Lightning Address
 - Formato tipo email, recepción mediante una factura Lightning obtenida por el
   pagador, servicios propios o de terceros y diferencia entre enviar y recibir:
