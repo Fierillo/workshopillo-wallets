@@ -306,6 +306,16 @@ test('toda la tarjeta de comparación alterna el detalle sin duplicar el click d
   }
 });
 
+test('Sobre mí enlaza al sitio personal fierillo.world', async () => {
+  await withPage(async page => {
+    await goToPage(page, '#speaker');
+    const link = page.locator('#speaker .speaker-link');
+    assert(await link.isVisible());
+    assert.equal(await link.evaluate(el => el.href), 'https://fierillo.world/');
+    assert.match(await link.innerText(), /fierillo\.world/);
+  });
+});
+
 test('los badges de código conservan su color aunque cambie el enlace a la fuente', async () => {
   await withPage(async page => {
     await page.addStyleTag({ content: 'a { transition: none !important; }' });
