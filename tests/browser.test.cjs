@@ -260,6 +260,65 @@ test('la última columna y los badges siguen contenidos con fuente mínima de na
   }, { minimumFontSize: 16 });
 });
 
+test('Tether introduce Spark y el esquema continúa debajo de su introducción sin comprimir el contenido', async () => {
+  for (const width of [1366, 390, 320]) {
+    await withPage(async page => {
+      await goToPage(page, '#wallets-tether');
+      const tether = page.locator('#wallets-tether');
+      assert.match(await tether.locator('.app-lines').innerText(), /Lightning vía Spark/);
+      assert.equal(await tether.evaluate(el => el.nextElementSibling.id), 'wallets-spark', 'Spark inmediatamente después de Tether');
+      await goToPage(page, '#wallets-spark');
+      const spark = page.locator('#wallets-spark');
+      assert(await spark.getByRole('heading', { name: '¿Dijiste Spark? ¿Que es eso?', exact: true }).isVisible());
+      assert.equal(await spark.locator('.eyebrow').count(), 0, 'Sin antetítulo adicional');
+      assert(await spark.locator('#spark-title').evaluate(el => getComputedStyle(el).color === getComputedStyle(document.body).color), 'Título blanco como el resto de la presentación');
+      assert(await spark.locator('#spark-title').evaluate((el, minimum) => parseFloat(getComputedStyle(el).fontSize) >= minimum, width === 1366 ? 36 : 28), 'Título de Spark un poco más grande en escritorio y móvil');
+      assert.equal(await spark.evaluate(el => el.nextElementSibling.id), 'wallets-spark-funcionamiento', 'El esquema continúa debajo de la introducción');
+      assert.equal(await spark.locator('figure').count(), 0, 'No comprimir el esquema junto a la introducción');
+      await goToPage(page, '#wallets-spark-funcionamiento');
+      const explanation = page.locator('#wallets-spark-funcionamiento');
+      assert(await explanation.getByRole('heading', { name: '¿Cómo funciona Spark?', exact: true }).isVisible());
+      assert(await explanation.locator('h3').evaluate(el => getComputedStyle(el).color === getComputedStyle(document.body).color), 'El título del esquema también es blanco');
+      assert.equal(await explanation.evaluate(el => el.nextElementSibling.id), 'wallets-blixt', 'Después continúa Blixt');
+      const text = await spark.innerText() + await explanation.innerText();
+      assert.match(text, /Spark no es Lightning/);
+      assert.match(text, /sin abrir.*canales/i);
+      assert.match(text, /operadores/i);
+      assert.match(text, /honest[oa]/i);
+      assert.doesNotMatch(text, /Tether|WDK/i, 'Spark se explica como protocolo de uso general');
+      const diagram = explanation.locator('figure');
+      assert.equal(await diagram.count(), 1, 'Esquema de funcionamiento');
+      assert(await diagram.isVisible());
+      for (const label of ['Bitcoin on-chain', 'Dentro de Spark', 'Vos', 'Otra persona', 'Operadores de Spark', 'Salida a Bitcoin', 'Pago por Lightning']) {
+        assert(await diagram.getByText(label, { exact: true }).isVisible(), `Parte visible del esquema: ${label}`);
+      }
+      assert.match(await diagram.innerText(), /fuera de la cadena/i);
+      assert.match(await diagram.innerText(), /proveedor/i);
+      const deposit = await diagram.locator('.claim').first().boundingBox();
+      const transfer = await diagram.locator('.spark-layer').boundingBox();
+      const exits = await diagram.locator('.spark-exits').boundingBox();
+      assert(deposit.y + deposit.height <= transfer.y && transfer.y + transfer.height <= exits.y, 'Flujo de depósito, transferencia y salida ordenado visualmente');
+      for (const label of await diagram.locator('strong, .claim p, .spark-arrow').all()) {
+        assert(await label.evaluate(el => parseFloat(getComputedStyle(el).fontSize) >= 15 && el.scrollWidth <= el.clientWidth), 'Texto del esquema más grande y sin recortes');
+      }
+      const diagramBox = await diagram.boundingBox();
+      const innerBox = await explanation.locator('.chapter-inner').boundingBox();
+      assert(diagramBox.width >= innerBox.width - 1, 'Diagrama a todo el ancho, no en media columna');
+      for (const card of await explanation.locator('.claim').all()) assert(await card.isVisible());
+      for (const section of [spark, explanation]) {
+        const bounds = await section.boundingBox();
+        for (const element of await section.locator('h3, .lead, .claim, .comparison-note').all()) {
+          const box = await element.boundingBox();
+          assert(box.x >= 0 && box.x + box.width <= width, 'Contenido dentro de los márgenes');
+          assert(box.y >= bounds.y && box.y + box.height <= bounds.y + bounds.height, 'Contenido dentro de la slide');
+        }
+      }
+      assert.equal(await explanation.locator('a[href="https://docs.spark.money/learn/trust-model"]').count(), 1, 'Fuente del modelo de confianza');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    }, { viewport: { width, height: 844 } });
+  }
+});
+
 test('las capturas de LaWallet aprovechan más espacio sin recortes ni desbordes', async () => {
   for (const width of [1366, 390, 320]) {
     await withPage(async page => {

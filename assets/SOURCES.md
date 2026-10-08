@@ -1,5 +1,24 @@
 # Fuentes
 
+## Spark y Tether Wallet
+- La slide de Spark usa un esquema general, sin referencias a una wallet:
+  depósito de BTC, transferencia de control fuera de la cadena con firmas
+  compartidas usuario/operadores, salida on-chain o conexión con Lightning.
+  Es una simplificación, no una descripción completa de statechains/FROST:
+  https://docs.spark.money/learn/tldr
+- Tether Wallet figura en el ecosistema oficial de Spark:
+  https://www.spark.money/ecosystem
+- Integración WDK–Spark para pagos compatibles con Lightning:
+  https://www.spark.money/news/wdk-tether-spark-partnership
+  https://docs.wdk.tether.io/sdk/wallet-modules/wallet-spark/
+- Spark es una red distinta de Lightning; el acceso a Lightning usa proveedores:
+  https://docs.spark.money/learn/lightning
+- Modelo de confianza: al menos un operador honesto (o el umbral configurado)
+  durante la transferencia; no se presenta como libre de confianza ni como
+  canales Lightning propios: https://docs.spark.money/learn/trust-model
+- La mención a Spark se limita a la funcionalidad Bitcoin/Lightning; no implica
+  que todos los activos de Tether Wallet usen Spark. Consultado el 08-10-2026.
+
 ## Miniaturas de créditos
 - Fotos públicas de perfil verificadas en los perfiles indicados por Fierillo:
   - Jaqui: https://x.com/Jaqui21M

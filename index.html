@@ -1342,6 +1342,76 @@
       }
 
       /* ---------- Wallets: llaves, Strike, ZEUS ---------- */
+      .spark-layout {
+        display: grid;
+        gap: 28px;
+        width: min(100%, 820px);
+      }
+
+      .spark-layout .punch {
+        color: var(--paper);
+      }
+
+      #spark-title {
+        font-size: clamp(28px, 3.2vw, 40px);
+      }
+
+      .spark-diagram {
+        display: grid;
+        gap: 12px;
+        margin: 0;
+        text-align: center;
+      }
+
+      .spark-diagram .claim {
+        padding: 20px;
+      }
+
+      .spark-diagram strong {
+        display: block;
+        font-size: 18px;
+      }
+
+      .spark-diagram .claim p {
+        margin-top: 6px;
+        font-size: 15px;
+      }
+
+      .spark-arrow {
+        margin: 0;
+        color: var(--orange);
+        font-size: 15px;
+      }
+
+      .spark-layer {
+        border-color: rgb(255 118 46 / 55%);
+      }
+
+      .spark-transfer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
+        align-items: center;
+        gap: 8px;
+        margin: 12px 0;
+      }
+
+      .spark-party {
+        padding: 10px 4px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+
+      .spark-operators {
+        padding-top: 12px;
+        border-top: 1px dashed var(--line);
+      }
+
+      .spark-exits {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
       .keys-layout {
         display: grid;
         grid-template-columns: minmax(240px, .85fr) minmax(0, 1.15fr);
@@ -2355,6 +2425,8 @@
       <a href="#wallets-address" aria-label="¿Tiene Lightning Address?"><span>Lightning Address</span></a>
       <a href="#wallets-strike" aria-label="Strike"><span>Strike</span></a>
       <a href="#wallets-tether" aria-label="Tether Wallet"><span>Tether Wallet</span></a>
+      <a href="#wallets-spark" aria-label="Spark"><span>Spark</span></a>
+      <a href="#wallets-spark-funcionamiento" aria-label="Cómo funciona Spark"><span>Cómo funciona Spark</span></a>
       <a href="#wallets-blixt" aria-label="Blixt Wallet"><span>Blixt Wallet</span></a>
       <a href="#workshop-inicio" aria-label="Taller"><span>Taller</span></a>
       <a href="#wallets-wos" aria-label="Wallet of Satoshi"><span>Wallet of Satoshi</span></a>
@@ -2792,7 +2864,7 @@
               <span class="claim-tag is-address-personalized" title="Elegís tu nombre al crear la wallet: usuario@tether.me">LN Address personalizada</span>
               <ul class="app-lines">
                 <li><strong>Más que bitcoin:</strong> también maneja dólares digitales (USD₮ y USA₮) y oro tokenizado (XAU₮). Son activos distintos, con riesgos distintos.</li>
-                <li><strong>Bitcoin on-chain y Lightning:</strong> permite enviar y recibir con facturas Lightning y LNURL.</li>
+                <li><strong>Bitcoin on-chain y Lightning vía Spark:</strong> permite enviar y recibir con facturas Lightning y LNURL, sin gestionar canales propios.</li>
                 <li><strong>Tus claves, tu respaldo:</strong> firma en el dispositivo. Podés guardar las 12 palabras o usar un respaldo cifrado en la nube.</li>
               </ul>
               <div class="pros-cons">
@@ -2803,6 +2875,48 @@
             </div>
             <figure class="app-shot">
               <img class="lb-trigger" src="./assets/tether-recibir.webp" alt="Imagen oficial de Tether Wallet: pantalla de recepción con QR y alias de ejemplo john.doe.24@tether.me" width="482" height="556" loading="lazy" />
+            </figure>
+          </div>
+        </div>
+
+        <div class="page" id="wallets-spark" aria-labelledby="spark-title">
+          <div class="chapter-inner spark-layout">
+            <div>
+              <h3 class="punch" id="spark-title">¿Dijiste Spark? ¿Que es eso?</h3>
+              <p class="lead">Pagar por Lightning sin abrir tus propios canales.</p>
+              <p class="comparison-note"><strong>Spark no es Lightning ni una blockchain nueva.</strong> Es un protocolo que transfiere el control de bitcoin fuera de la cadena principal mediante firmas compartidas entre usuarios y operadores.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="wallets-spark-funcionamiento" aria-labelledby="spark-funcionamiento-title">
+          <div class="chapter-inner spark-layout">
+            <h3 class="punch" id="spark-funcionamiento-title">¿Cómo funciona Spark?</h3>
+            <figure class="spark-diagram" aria-label="Esquema simplificado de depósito, transferencia y salida en Spark">
+              <div class="claim">
+                <strong>Bitcoin on-chain</strong>
+                <p>BTC en la cadena principal.</p>
+              </div>
+              <p class="spark-arrow">↓ 1. Depositás BTC en Spark</p>
+              <div class="claim spark-layer">
+                <strong>Dentro de Spark</strong>
+                <div class="spark-transfer">
+                  <div class="spark-party"><strong>Vos</strong></div>
+                  <span class="spark-arrow" aria-label="Transferís a otra persona">→</span>
+                  <div class="spark-party"><strong>Otra persona</strong></div>
+                </div>
+                <p>2. Transferís el control del BTC fuera de la cadena, sin una transacción on-chain por cada pago.</p>
+                <div class="spark-operators">
+                  <strong>Operadores de Spark</strong>
+                  <p>Coordinan y participan en las firmas. No pueden mover el BTC sin la firma del usuario.</p>
+                </div>
+              </div>
+              <p class="spark-arrow">↓ 3. Podés salir o pagar en otra red</p>
+              <div class="spark-exits">
+                <div class="claim"><strong>Salida a Bitcoin</strong><p>Volvés a on-chain. Tiene tiempos y costos de la red.</p></div>
+                <div class="claim"><strong>Pago por Lightning</strong><p>Un proveedor conecta Spark con Lightning; no abrís tus propios canales.</p></div>
+              </div>
+              <figcaption class="comparison-note">Modelo de confianza: al menos un operador honesto durante cada transferencia (o el umbral configurado). No es lo mismo que tener canales Lightning propios. <a href="https://docs.spark.money/learn/trust-model" target="_blank" rel="noreferrer">Fuente ↗</a></figcaption>
             </figure>
           </div>
         </div>
