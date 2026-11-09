@@ -233,8 +233,6 @@ Todos convertidos a WebP 128×128 (lossy ~80) desde el PNG oficial. Ícono de Ap
   https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/f3/37/45/f33745f8-1796-e8a5-9e3b-1a5e5969fc80/AppIcon-0-0-1x_U007emarketing-0-1-85-220.png/256x256bb.png
 - icono-tether.webp — App Store: https://apps.apple.com/us/app/tether-wallet-usdt-bitcoin/id6759002210
   https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/1f/a6/7a/1fa67ad5-1e6c-8021-d2a3-a9ca98413ee8/AppIcon-0-0-1x_U007ephone-0-1-85-220.png/256x256bb.png
-- icono-cashapp.webp — App Store: https://apps.apple.com/us/app/cash-app/id711923939 (Block, Inc.)
-  https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/14/95/84/149584fa-47e1-a3a4-6bf1-bf3ed932ee95/AppIcon-0-0-1x_U007ephone-0-1-0-sRGB-85-220.png/256x256bb.png
 - icono-strike.webp — App Store: https://apps.apple.com/us/app/strike-buy-hold-bitcoin/id1488724463
   https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/4a/e3/00/4ae30037-0d25-051b-d90f-1b0a9337de5f/GlassAppIcon-Live-0-0-1x_U007ephone-0-1-0-0-P3-85-220.png/256x256bb.png
 - icono-blink.webp — App Store: https://apps.apple.com/us/app/blink-bitcoin-wallet/id1531383905

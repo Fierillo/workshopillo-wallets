@@ -1,10 +1,14 @@
 {
   "private": true,
   "scripts": {
-    "test": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests && node --test tests/browser.test.cjs",
+    "test": "npm run test:py && npm run test:node",
+    "test:py": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests",
+    "test:node": "node --test tests/i18n.test.cjs",
+    "test:browser": "node --test tests/browser.test.cjs",
     "test:mutations": "node tests/mutations.cjs"
   },
   "devDependencies": {
+    "jsdom": "25.0.1",
     "playwright-core": "1.63.0"
   }
 }
