@@ -115,27 +115,13 @@ test('la portada conserva el título anterior como subtítulo, sin atajo al tall
   }
 });
 
-test('después de La Crypta se puede abrir el workshop desde un slide con QR legible', async () => {
-  for (const width of [1366, 390, 320]) {
-    await withPage(async page => {
-      assert.equal(await page.locator('#lacrypta + section').getAttribute('id'), 'workshop-acceso', 'El acceso al workshop sigue inmediatamente a La Crypta');
-      await goToPage(page, '#lacrypta');
-      await page.keyboard.press('ArrowDown');
-      await page.waitForFunction(() => document.querySelector('.chapter-nav a[aria-current]')?.hash === '#workshop-acceso');
-      const slide = page.locator('#workshop-acceso');
-      assert(await slide.getByRole('heading', { name: 'Seguí el workshop desde tu celu.' }).isVisible());
-      const link = slide.getByRole('link', { name: 'workshop.fierillo.world', exact: true });
-      assert(await link.isVisible());
-      assert.equal(await link.getAttribute('href'), 'https://workshop.fierillo.world');
-      const qr = slide.getByRole('img', { name: 'QR para abrir https://workshop.fierillo.world' });
-      assert(await qr.isVisible());
-      assert(await qr.evaluate(el => el.complete && el.naturalWidth > 0), 'QR local cargado');
-      const box = await qr.boundingBox();
-      assert(box.width >= 240 && Math.abs(box.width - box.height) < 1, 'QR grande y cuadrado');
-      assert(box.x >= 0 && box.x + box.width <= width, 'QR dentro de la pantalla');
-      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-    }, { viewport: { width, height: 844 } });
-  }
+test('ya no existe el slide de acceso al workshop con QR; La Crypta sigue al mito', async () => {
+  await withPage(async page => {
+    assert.equal(await page.locator('#workshop-acceso').count(), 0);
+    assert.equal(await page.locator('.chapter-nav a[href="#workshop-acceso"]').count(), 0);
+    assert.equal(await page.locator('#lacrypta + section.chapter, #lacrypta + .chapter').first().getAttribute('id'), 'mito');
+    assert.equal(await page.locator('.chapter-nav a[href="#lacrypta"] + a').getAttribute('href'), '#mito-queja');
+  });
 });
 
 test('la tabla pregunta por LN Address, claves y código con badges compactos y desarrolla cada respuesta al abrir', async () => {
@@ -195,6 +181,24 @@ test('la tabla pregunta por LN Address, claves y código con badges compactos y 
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     }, { viewport: { width, height: 844 } });
   }
+});
+
+test('las etiquetas de la tabla usan 12px cuando caben y recuperan ese tamaño tras achicar el navegador', async () => {
+  await withPage(async page => {
+    await goToPage(page, '#wallets-tabla');
+    const columns = await page.locator('.wallet-option summary').first().evaluate(el => getComputedStyle(el).gridTemplateColumns);
+    const check = async () => {
+      const sizes = await page.locator('.wallet-option summary .claim-tag').evaluateAll(elements => elements.map(el => parseFloat(getComputedStyle(el).fontSize)));
+      assert(sizes.every(size => size >= 12), 'Fuente legible cuando las columnas tienen espacio');
+    };
+    await check();
+    await page.setViewportSize({ width: 621, height: 900 });
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await page.setViewportSize({ width: 1366, height: 900 });
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await check();
+    assert.equal(await page.locator('.wallet-option summary').first().evaluate(el => getComputedStyle(el).gridTemplateColumns), columns, 'Se mantienen las columnas originales');
+  });
 });
 
 test('el texto completo de cada badge queda dentro de su área interior y de su columna al redimensionar la tabla', async () => {
@@ -862,7 +866,7 @@ test('el encabezado conserva el título compacto con fondo negro degradado y sin
       assert.equal(await page.getByRole('link', { name: /Ir al taller/ }).count(), 0, 'Sin botón de taller');
       for (const [hash, title] of [['#wallets-strike', /Wallets/], ['#wallets-wos', /06\s+Manos a la obra/]]) {
         await goToPage(page, hash);
-        const sticky = page.locator('#section-sticky');
+        const sticky = page.locator('#header-section-title');
         await sticky.waitFor({ state: 'visible' });
         assert.match(await sticky.innerText(), title, 'Se conserva el título del capítulo activo');
         const style = await sticky.evaluate(el => {
@@ -1282,4 +1286,67 @@ test('el mapa mundial de Lightning precede a las wallets y se amplía sin recort
       assert(await image.evaluate(el => document.activeElement === el));
     }, { viewport: { width, height: 844 } });
   }
+});
+
+
+test('el switch EN/ES del header cambia idioma, lang, aria y persiste la preferencia', async () => {
+  await withPage(async page => {
+    const htmlLang = () => page.locator('html').getAttribute('lang');
+    assert.equal(await htmlLang(), 'es');
+    const en = page.locator('.lang-switch button[data-lang="en"]');
+    const es = page.locator('.lang-switch button[data-lang="es"]');
+    assert.equal(await es.getAttribute('aria-pressed'), 'true');
+    assert.equal(await en.getAttribute('aria-pressed'), 'false');
+    assert.equal(await page.locator('#hero-title').innerText(), 'Bitcoin no es caro, ni lento, y te lo voy a demostrar');
+    await en.click();
+    assert.equal(await htmlLang(), 'en');
+    assert.equal(await en.getAttribute('aria-pressed'), 'true');
+    assert.equal(await es.getAttribute('aria-pressed'), 'false');
+    assert.equal(await page.locator('#hero-title').innerText(), "Bitcoin isn't expensive or slow, and I'll prove it to you");
+    assert.match(await page.locator('#inicio .button').innerText(), /Start the tour/i);
+    assert.equal(await page.evaluate(() => localStorage.getItem('workshopillo-lang')), 'en');
+    await es.click();
+    assert.equal(await htmlLang(), 'es');
+    assert.equal(await page.locator('#hero-title').innerText(), 'Bitcoin no es caro, ni lento, y te lo voy a demostrar');
+    assert.equal(await page.evaluate(() => localStorage.getItem('workshopillo-lang')), 'es');
+  });
+});
+
+test('al recargar respeta el idioma guardado y el sticky de sección sigue bajo el header', async () => {
+  await withPage(async page => {
+    await page.locator('.lang-switch button[data-lang="en"]').click();
+    await page.reload({ waitUntil: 'networkidle' });
+    assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+    assert.equal(await page.locator('.lang-switch button[data-lang="en"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('#hero-title').innerText(), "Bitcoin isn't expensive or slow, and I'll prove it to you");
+    const headerHeight = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')));
+    assert(headerHeight > 0, 'El header superior aporta altura real');
+    await goToPage(page, '#speaker');
+    await page.evaluate(() => {
+      const idx = document.querySelector('#speaker .chapter-index');
+      const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
+      const y = idx.getBoundingClientRect().bottom + window.scrollY - header + 8;
+      window.scrollTo(0, y);
+    });
+    await page.waitForFunction(() => {
+      const sticky = document.getElementById('header-section-title');
+      return sticky && !sticky.hidden;
+    });
+    const box = await page.locator('#header-section-title').evaluate(el => ({ top: el.getBoundingClientRect().top, hidden: el.hidden }));
+    assert.equal(box.hidden, false, 'título visible en header cuando el in-flow ya salió');
+    assert(box.top >= 0 && box.top < headerHeight, 'el título de sección queda en la barra superior compartida');
+    assert.match(await page.locator('#header-section-title').innerText(), /About me/i);
+  });
+});
+
+test('el contenido dinámico del ábaco y la navegación usan el idioma activo', async () => {
+  await withPage(async page => {
+    await page.locator('.lang-switch button[data-lang="en"]').click();
+    await goToPage(page, '#lightning-abaco');
+    const button = page.locator('#ab-send');
+    assert.equal(await button.innerText(), 'Send 10 sats');
+    await button.click();
+    await page.waitForFunction(() => /Payment in progress/i.test(document.getElementById('ab-status')?.textContent || ''));
+    assert.equal(await page.locator('.chapter-nav').getAttribute('aria-label'), 'Go to a page');
+  });
 });
