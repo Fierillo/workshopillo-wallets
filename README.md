@@ -27,14 +27,15 @@ y entrá a http://localhost:8000.
 
 - `index.html`: toda la presentación (HTML, CSS y JS).
 - `assets/`: imágenes, logos y videos.
-- `tests/`: tests Python y de navegador (Playwright + Chromium).
+- `tests/`: tests Python, Node con jsdom (sin navegador) y de navegador (Playwright + Chromium).
 
 ## Tests
 
 ```sh
 npm ci
+npm test                 # sin navegador
 npx playwright-core install chromium
-npm test
+npm run test:browser
 npm run test:mutations
 ```
 
