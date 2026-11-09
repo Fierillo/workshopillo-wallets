@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
+      data-i18n="meta.description"
       content="Una práctica guiada para entender Bitcoin Lightning y usar tu primera wallet."
     />
     <meta name="theme-color" content="#101311" />
-    <title>Wallets Lightning</title>
+    <title data-i18n="meta.title">Wallets Lightning</title>
     <style>
       :root {
         color-scheme: dark;
@@ -20,7 +21,7 @@
         --orange: #ff762e;
         --lime: #d2f278;
         --ln-fail: #ff5a4f;
-        --header-height: 0px;
+        --header-height: 44px;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         font-synthesis: none;
         text-rendering: optimizeLegibility;
@@ -52,6 +53,75 @@
       button,
       a {
         -webkit-tap-highlight-color: transparent;
+      }
+
+
+      .site-header {
+        position: fixed;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-height);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 16px;
+        padding-inline: clamp(24px, 10vw, 150px);
+        background: linear-gradient(to bottom, rgb(16 19 17 / 92%) 40%, transparent 100%);
+        pointer-events: none;
+      }
+
+      .site-header .chapter-index {
+        grid-column: 1;
+        margin: 0;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 11px;
+        line-height: 1.3;
+        letter-spacing: .14em;
+        pointer-events: none;
+      }
+
+      /* Keep the left column reserved: never display:none on the title slot. */
+      .site-header .chapter-index.is-idle {
+        visibility: hidden;
+      }
+
+      .lang-switch {
+        grid-column: 2;
+        justify-self: end;
+        pointer-events: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .12em;
+      }
+
+      .lang-switch button {
+        margin: 0;
+        padding: 4px 2px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        letter-spacing: inherit;
+        cursor: pointer;
+      }
+
+      .lang-switch button[aria-pressed="true"] {
+        color: var(--orange);
+      }
+
+      .lang-switch button:focus-visible {
+        outline: 2px solid var(--orange);
+        outline-offset: 3px;
       }
 
       .chapter-nav {
@@ -391,31 +461,6 @@
         font-size: 10px;
       }
 
-      .scroll-cue {
-        position: absolute;
-        bottom: 30px;
-        left: clamp(24px, 10vw, 150px);
-        display: inline-flex;
-        align-items: center;
-        gap: 11px;
-        color: var(--muted);
-        font-family: "SFMono-Regular", Consolas, monospace;
-        font-size: 10px;
-        letter-spacing: .12em;
-        text-decoration: none;
-        text-transform: uppercase;
-      }
-
-      .scroll-cue span {
-        display: grid;
-        width: 24px;
-        height: 24px;
-        place-items: center;
-        border: 1px solid var(--line);
-        border-radius: 50%;
-        color: var(--orange);
-      }
-
       .chapter-index {
         margin-bottom: 22px;
         color: var(--orange);
@@ -431,32 +476,6 @@
 
       .chapter-index span.is-action {
         color: var(--orange);
-      }
-
-      /* Título de sección sobre un degradado fino, sin barra superior. */
-      .section-sticky {
-        position: fixed;
-        z-index: 8;
-        top: var(--header-height);
-        left: 0;
-        right: 0;
-        display: flex;
-        align-items: center;
-        min-height: 34px;
-        padding: 8px clamp(24px, 10vw, 150px) 14px;
-        background: linear-gradient(to bottom, rgb(0 0 0 / 94%) 0%, rgb(0 0 0 / 82%) 55%, transparent 100%);
-        pointer-events: none;
-      }
-
-      .section-sticky[hidden] {
-        display: none;
-      }
-
-      .section-sticky .chapter-index {
-        margin: 0;
-        font-size: 11px;
-        line-height: 1.3;
-        letter-spacing: .14em;
       }
 
       .mito {
@@ -578,7 +597,7 @@
       .comparison-head {
         padding-block: 0;
         color: var(--muted);
-        font-size: clamp(6px, .8vw, 11px);
+        font-size: 12px;
         white-space: nowrap;
       }
 
@@ -630,7 +649,7 @@
         justify-self: start;
         margin: 0;
         max-width: 100%;
-        font-size: clamp(6px, .65vw, 8px);
+        font-size: 12px;
         padding: 3px 4px;
         line-height: 16px;
         letter-spacing: 0;
@@ -642,10 +661,6 @@
         border: 1px solid var(--muted);
         color: var(--paper);
         background: linear-gradient(90deg, rgb(166 170 161 / 12%) 50%, rgb(255 118 46 / 12%) 50%);
-      }
-
-      .wallet-option summary .wallet-option-code {
-        font-size: 7px;
       }
 
       .wallet-option summary .is-progressive::before {
@@ -702,16 +717,7 @@
           var(--ink);
       }
 
-      .workshop-layout {
-        display: grid;
-        grid-template-columns: minmax(0, .88fr) minmax(350px, 1.12fr);
-        align-items: center;
-        gap: clamp(38px, 8vw, 110px);
-      }
 
-      .workshop-copy .lead {
-        max-width: 450px;
-      }
 
       .safety-note {
         display: flex;
@@ -1099,34 +1105,10 @@
         filter: saturate(.9);
       }
 
-      /* ---------- Acceso al workshop ---------- */
-      .workshop-layout {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(240px, .75fr);
-        align-items: center;
-        gap: clamp(32px, 6vw, 80px);
-      }
 
-      .workshop-qr {
-        display: block;
-        width: min(100%, 380px);
-        height: auto;
-        margin-inline: auto;
-        border-radius: 16px;
-      }
 
-      .workshop-link {
-        overflow-wrap: anywhere;
-      }
 
       @media (max-width: 760px) {
-        .workshop-layout {
-          grid-template-columns: minmax(0, 1fr);
-        }
-
-        .workshop-qr {
-          max-width: 300px;
-        }
       }
 
       /* ---------- Mito ---------- */
@@ -1566,15 +1548,18 @@
         gap: clamp(36px, 7vw, 100px);
       }
 
+      .zeus-route summary,
       .cashu-route summary {
         cursor: pointer;
         list-style: none;
       }
 
+      .zeus-route summary::-webkit-details-marker,
       .cashu-route summary::-webkit-details-marker {
         display: none;
       }
 
+      .zeus-route summary::before,
       .cashu-route summary::before {
         content: ">";
         display: inline-block;
@@ -1582,32 +1567,60 @@
         color: var(--orange);
       }
 
+      .zeus-route[open] summary::before,
       .cashu-route[open] summary::before {
         transform: rotate(90deg);
       }
 
+      .app-lines li:has(> .zeus-route),
       .app-lines li:has(> .cashu-route) {
         padding-left: 0;
       }
 
+      .app-lines li:has(> .zeus-route)::before,
       .app-lines li:has(> .cashu-route)::before,
+      .zeus-route li::before,
       .cashu-route li::before {
         display: none;
       }
 
+      .zeus-route summary:focus-visible,
       .cashu-route summary:focus-visible {
         outline: 2px solid var(--orange);
         outline-offset: 4px;
       }
 
+      .zeus-route ol,
       .cashu-route ol {
         padding-left: 22px;
       }
 
+      .zeus-route code,
       .cashu-route code {
         overflow-wrap: anywhere;
         color: var(--orange);
       }
+
+      .zeus-route summary {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0 6px;
+      }
+
+      .zeus-route-title {
+        font-weight: 700;
+      }
+
+      .zeus-route-blurb {
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .zeus-route > p:first-of-type {
+        margin-top: 10px;
+      }
+
 
       .app-logo {
         display: block;
@@ -1794,7 +1807,6 @@
           font-size: clamp(56px, 8.5vw, 76px);
         }
 
-        .workshop-layout,
         .mito-layout,
         .wallets-layout,
         .speaker-layout {
@@ -1806,10 +1818,6 @@
         .keys-layout,
         .app-layout {
           gap: 32px;
-        }
-
-        .scroll-cue {
-          left: clamp(30px, 7vw, 70px);
         }
       }
 
@@ -1842,11 +1850,6 @@
         .wallet-option-code {
           grid-column: 2;
           font-size: 12px;
-        }
-
-        .wallet-option summary .claim-tag,
-        .wallet-option summary .wallet-option-code {
-          font-size: 9px;
         }
 
         .wallet-explanation {
@@ -1930,17 +1933,14 @@
         }
 
 
-        .scroll-cue {
-          bottom: 22px;
-          left: 24px;
-          font-size: 9px;
+        .site-header {
+          padding-inline: 24px;
         }
 
         .chapter-nav {
           display: none;
         }
 
-        .workshop-layout,
         .mito-layout,
         .wallets-layout {
           grid-template-columns: 1fr;
@@ -1981,22 +1981,6 @@
 
         .chapter-index {
           margin-bottom: 15px;
-        }
-
-        .section-sticky {
-          padding-inline: 24px;
-          min-height: 30px;
-          padding-top: 6px;
-          padding-bottom: 12px;
-        }
-
-        .workshop-copy .lead {
-          margin-bottom: 0;
-          font-size: 15px;
-        }
-
-        .workshop-layout {
-          gap: 24px;
         }
 
         .safety-note {
@@ -2437,53 +2421,58 @@
     </style>
   </head>
   <body>
-    <nav class="chapter-nav" aria-label="Ir a una página">
-      <a href="#inicio" aria-label="Inicio" aria-current="location"><span>Inicio</span></a>
-      <a href="#speaker" aria-label="Sobre mí"><span>Sobre mí</span></a>
-      <a href="#lacrypta" aria-label="La Crypta"><span>La Crypta</span></a>
-      <a href="#workshop-acceso" aria-label="Seguí el workshop"><span>Seguí el workshop</span></a>
-      <a href="#mito-queja" aria-label="El mito de Bitcoin"><span>El mito</span></a>
-      <a href="#mito-capas" aria-label="¿Son ciertas?"><span>¿Son ciertas?</span></a>
-      <a href="#lightning-abaco" aria-label="Lightning: el ábaco"><span>El ábaco</span></a>
-      <a href="#lightning-rutas" aria-label="Lightning: las rutas y el rayo"><span>Las rutas</span></a>
-      <a href="#lightning-mapa" aria-label="Mapa mundial de Lightning"><span>La red Lightning</span></a>
-      <a href="#wallets-conceptos" aria-label="Fijemos algunos conceptos"><span>Conceptos</span></a>
-      <a href="#wallets-llaves" aria-label="¿Quién tiene las claves?"><span>Las claves</span></a>
-      <a href="#wallets-address" aria-label="¿Tiene Lightning Address?"><span>Lightning Address</span></a>
-      <a href="#wallets-strike" aria-label="Strike"><span>Strike</span></a>
-      <a href="#wallets-tether" aria-label="Tether Wallet"><span>Tether Wallet</span></a>
-      <a href="#wallets-spark" aria-label="Spark"><span>Spark</span></a>
-      <a href="#wallets-spark-funcionamiento" aria-label="Cómo funciona Spark"><span>Cómo funciona Spark</span></a>
-      <a href="#wallets-blixt" aria-label="Blixt Wallet"><span>Blixt Wallet</span></a>
-      <a href="#workshop-inicio" aria-label="Taller"><span>Taller</span></a>
-      <a href="#wallets-wos" aria-label="Wallet of Satoshi"><span>Wallet of Satoshi</span></a>
-      <a href="#wallets-zeus" aria-label="ZEUS"><span>ZEUS</span></a>
-      <a href="#wallets-lawallet" aria-label="LaWallet"><span>LaWallet</span></a>
-      <a href="#wallets-lawallet-map" aria-label="LaWallet Connection Map"><span>LaWallet map</span></a>
-      <a href="#wallets-tabla" aria-label="Comparar wallets"><span>Comparar wallets</span></a>
-      <a href="#creditos" aria-label="Créditos"><span>Créditos</span></a>
+    <header class="site-header">
+      <p class="chapter-index is-idle" id="header-section-title" aria-hidden="true"></p>
+      <div class="lang-switch" role="group" aria-label="Idioma" data-i18n-aria-label="chrome.langSwitch">
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" data-lang="es" aria-pressed="true">ES</button>
+      </div>
+    </header>
+
+    <nav class="chapter-nav" aria-label="Ir a una página" data-i18n-aria-label="nav.label">
+      <a href="#inicio" aria-label="Inicio" data-i18n-aria-label="nav.inicio" aria-current="location"><span data-i18n="nav.inicio">Inicio</span></a>
+      <a href="#speaker" aria-label="Sobre mí" data-i18n-aria-label="nav.speaker"><span data-i18n="nav.speaker">Sobre mí</span></a>
+      <a href="#lacrypta" aria-label="La Crypta" data-i18n-aria-label="nav.lacrypta"><span data-i18n="nav.lacrypta">La Crypta</span></a>
+      <a href="#mito-queja" aria-label="El mito de Bitcoin" data-i18n-aria-label="nav.mitoFull"><span data-i18n="nav.mito">El mito</span></a>
+      <a href="#mito-capas" aria-label="¿Son ciertas?" data-i18n-aria-label="nav.capas"><span data-i18n="nav.capas">¿Son ciertas?</span></a>
+      <a href="#lightning-abaco" aria-label="Lightning: el ábaco" data-i18n-aria-label="nav.abacoFull"><span data-i18n="nav.abaco">El ábaco</span></a>
+      <a href="#lightning-rutas" aria-label="Lightning: las rutas y el rayo" data-i18n-aria-label="nav.rutasFull"><span data-i18n="nav.rutas">Las rutas</span></a>
+      <a href="#lightning-mapa" aria-label="Mapa mundial de Lightning" data-i18n-aria-label="nav.mapaFull"><span data-i18n="nav.mapa">La red Lightning</span></a>
+      <a href="#wallets-conceptos" aria-label="Fijemos algunos conceptos" data-i18n-aria-label="nav.conceptosFull"><span data-i18n="nav.conceptos">Conceptos</span></a>
+      <a href="#wallets-llaves" aria-label="¿Quién tiene las claves?" data-i18n-aria-label="nav.llavesFull"><span data-i18n="nav.llaves">Las claves</span></a>
+      <a href="#wallets-address" aria-label="¿Tiene Lightning Address?" data-i18n-aria-label="nav.addressFull"><span data-i18n="nav.address">Lightning Address</span></a>
+      <a href="#wallets-strike" aria-label="Strike" data-i18n-aria-label="nav.strike"><span data-i18n="nav.strike">Strike</span></a>
+      <a href="#wallets-tether" aria-label="Tether Wallet" data-i18n-aria-label="nav.tether"><span data-i18n="nav.tether">Tether Wallet</span></a>
+      <a href="#wallets-spark" aria-label="Spark" data-i18n-aria-label="nav.spark"><span data-i18n="nav.spark">Spark</span></a>
+      <a href="#wallets-spark-funcionamiento" aria-label="Cómo funciona Spark" data-i18n-aria-label="nav.sparkHow"><span data-i18n="nav.sparkHow">Cómo funciona Spark</span></a>
+      <a href="#wallets-blixt" aria-label="Blixt Wallet" data-i18n-aria-label="nav.blixt"><span data-i18n="nav.blixt">Blixt Wallet</span></a>
+      <a href="#workshop-inicio" aria-label="Taller" data-i18n-aria-label="nav.taller"><span data-i18n="nav.taller">Taller</span></a>
+      <a href="#wallets-wos" aria-label="Wallet of Satoshi" data-i18n-aria-label="nav.wos"><span data-i18n="nav.wos">Wallet of Satoshi</span></a>
+      <a href="#wallets-zeus" aria-label="ZEUS" data-i18n-aria-label="nav.zeus"><span data-i18n="nav.zeus">ZEUS</span></a>
+      <a href="#wallets-lawallet" aria-label="LaWallet" data-i18n-aria-label="nav.lawallet"><span data-i18n="nav.lawallet">LaWallet</span></a>
+      <a href="#wallets-lawallet-map" aria-label="LaWallet Connection Map" data-i18n-aria-label="nav.lawalletMapFull"><span data-i18n="nav.lawalletMap">LaWallet map</span></a>
+      <a href="#wallets-tabla" aria-label="Comparar wallets" data-i18n-aria-label="nav.tabla"><span data-i18n="nav.tabla">Comparar wallets</span></a>
+      <a href="#creditos" aria-label="Créditos" data-i18n-aria-label="nav.creditos"><span data-i18n="nav.creditos">Créditos</span></a>
     </nav>
 
-    <div class="section-sticky" id="section-sticky" hidden aria-hidden="true">
-      <p class="chapter-index"></p>
-    </div>
 
     <main>
       <section class="chapter hero" id="inicio" aria-labelledby="hero-title">
         <div class="chapter-inner hero-layout">
           <div class="hero-copy">
-            <p class="eyebrow">Bitcoin / Lightning</p>
-            <h1 id="hero-title">Bitcoin no es caro, ni lento, <em>y te lo voy a demostrar</em></h1>
-            <p class="lead">Bitcoin se entiende mejor <em>cuando lo usás.</em></p>
-            <p class="lead">Una introducción clara a Lightning y una práctica guiada para crear, cuidar y usar tu primera wallet.</p>
+            <p class="eyebrow" data-i18n="hero.eyebrow">Bitcoin / Lightning</p>
+            <h1 id="hero-title" data-i18n-html="hero.title">Bitcoin no es caro, ni lento, <em>y te lo voy a demostrar</em></h1>
+            <p class="lead" data-i18n-html="hero.lead1">Bitcoin se entiende mejor <em>cuando lo usás.</em></p>
+            <p class="lead" data-i18n="hero.lead2">Una introducción clara a Lightning y una práctica guiada para crear, cuidar y usar tu primera wallet.</p>
             <div class="actions">
-              <a class="button" href="#speaker">Empezar el recorrido <span aria-hidden="true">↓</span></a>
+              <a class="button" href="#speaker"><span data-i18n="hero.cta">Empezar el recorrido</span> <span aria-hidden="true">↓</span></a>
             </div>
           </div>
 
-          <aside class="wallet-showcase" aria-label="Wallets Bitcoin y Lightning para conocer">
+          <aside class="wallet-showcase" aria-label="Wallets Bitcoin y Lightning para conocer" data-i18n-aria-label="hero.showcaseLabel">
             <div class="wallet-showcase-head">
-              <span class="micro-label">Wallets con Lightning</span>
+              <span class="micro-label" data-i18n="hero.micro">Wallets con Lightning</span>
               <span class="wallet-count">01 — 12</span>
             </div>
             <!-- Íconos oficiales: ver assets/SOURCES.md -->
@@ -2589,10 +2578,9 @@
                 </ul>
               </div>
             </div>
-            <p class="wallet-showcase-foot">Doce opciones para llevar Lightning en el teléfono.</p>
+            <p class="wallet-showcase-foot" data-i18n="hero.foot">Doce opciones para llevar Lightning en el teléfono.</p>
           </aside>
         </div>
-        <a class="scroll-cue" href="#speaker"><span aria-hidden="true">↓</span> Deslizá para descubrir</a>
       </section>
 
       <section class="chapter speaker" id="speaker" aria-labelledby="speaker-title">
@@ -2601,7 +2589,7 @@
             <img
               class="lb-trigger"
               src="https://avatars.githubusercontent.com/u/31271916?v=4"
-              alt="Retrato de Fierillo"
+              alt="Retrato de Fierillo" data-i18n-alt="speaker.alt"
               loading="lazy"
               width="320"
               height="320"
@@ -2609,16 +2597,16 @@
           </div>
 
           <div class="speaker-copy">
-            <p class="chapter-index">01 <span>Sobre mí</span></p>
-            <p class="eyebrow">Community Manager de La Crypta · Programador en mis ratos libres</p>
-            <h2 id="speaker-title">Soy <em>Fierillo</em>, el oso de La Crypta.</h2>
+            <p class="chapter-index">01 <span data-i18n="speaker.index">Sobre mí</span></p>
+            <p class="eyebrow" data-i18n="speaker.eyebrow">Community Manager de La Crypta · Programador en mis ratos libres</p>
+            <h2 id="speaker-title" data-i18n-html="speaker.title">Soy <em>Fierillo</em>, el oso de La Crypta.</h2>
             <ul class="speaker-lines">
-              <li>Estudié ingeniería y aprendí a programar por mi cuenta.</li>
-              <li>Más de 20 proyectos, casi todos de código abierto.</li>
-              <li>Bitcoin, Lightning, Nostr y herramientas para la comunidad.</li>
+              <li data-i18n="speaker.li1">Estudié ingeniería y aprendí a programar por mi cuenta.</li>
+              <li data-i18n="speaker.li2">Más de 20 proyectos, casi todos de código abierto.</li>
+              <li data-i18n="speaker.li3">Bitcoin, Lightning, Nostr y herramientas para la comunidad.</li>
             </ul>
-            <p class="speaker-values-line">Honestidad · Minimalismo · Humildad · Curiosidad</p>
-            <a class="speaker-link" href="https://fierillo.world" target="_blank" rel="noreferrer">Más sobre mí en fierillo.world <span aria-hidden="true">↗</span></a>
+            <p class="speaker-values-line" data-i18n="speaker.values">Honestidad · Minimalismo · Humildad · Curiosidad</p>
+            <a class="speaker-link" href="https://fierillo.world" target="_blank" rel="noreferrer"><span data-i18n="speaker.link">Más sobre mí en fierillo.world</span> <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </section>
@@ -2666,17 +2654,6 @@
         </div>
       </section>
 
-      <section class="chapter" id="workshop-acceso" aria-labelledby="workshop-acceso-title">
-        <div class="chapter-inner workshop-layout">
-          <div>
-            <p class="chapter-index">02 <span>Seguí el workshop</span></p>
-            <h2 id="workshop-acceso-title">Seguí el workshop desde tu <em>celu.</em></h2>
-            <p class="lead">Escaneá el QR y abrí esta presentación. Tené a mano las wallets y acompañá el recorrido a tu ritmo.</p>
-            <a class="speaker-link workshop-link" href="https://workshop.fierillo.world" target="_blank" rel="noreferrer">workshop.fierillo.world</a>
-          </div>
-          <img class="workshop-qr" src="./assets/workshop-qr.png" alt="QR para abrir https://workshop.fierillo.world" width="410" height="410" loading="lazy" />
-        </div>
-      </section>
 
       <section class="chapter paged mito" id="mito" aria-labelledby="mito-title">
         <div class="page" id="mito-queja">
@@ -2740,7 +2717,7 @@
                 </g>
                 <g fill="#f1f0e8" font-family="sans-serif" font-size="23" text-anchor="middle">
                   <text class="ab-balance" x="80" y="55">30 sats</text><text class="ab-balance" x="360" y="55">60 sats</text><text class="ab-balance" x="640" y="55">60 sats</text><text class="ab-balance" x="920" y="55">30 sats</text>
-                  <text x="80" y="185">Vos</text><text x="360" y="185">Jaqui</text><text x="640" y="185">Lalo</text><text x="920" y="185">Baba</text>
+                  <text x="80" y="185" data-i18n="abacus.you">Vos</text><text x="360" y="185">Jaqui</text><text x="640" y="185">Lalo</text><text x="920" y="185">Baba</text>
                 </g>
               </svg>
               <figcaption class="comparison-note" id="ab-status" aria-live="polite">Cada pelotita representa 10 sats. Cada canal tiene sus propias pelotitas.</figcaption>
@@ -2796,7 +2773,7 @@
               <figcaption class="ln-caption">
                 <span class="ln-label">Un rayo</span>
                 <span class="ln-text">Un rayo hace lo mismo: tantea caminos hacia el suelo y descarga solo por el que conecta.</span>
-                <small class="ln-credit">Video: <a href="https://commons.wikimedia.org/wiki/File:Lightning_strikes_in_slow_motion_(240fps)_in_Muurame,_Finland.webm" target="_blank" rel="noreferrer">MrNousia</a>, <a href="https://creativecommons.org/licenses/by/3.0/deed.es" target="_blank" rel="noreferrer">CC BY 3.0</a>, vía Wikimedia Commons · editado</small>
+                <small class="ln-credit" data-i18n-html="rutas.credit">Video: <a href="https://commons.wikimedia.org/wiki/File:Lightning_strikes_in_slow_motion_(240fps)_in_Muurame,_Finland.webm" target="_blank" rel="noreferrer">MrNousia</a>, <a href="https://creativecommons.org/licenses/by/3.0/deed.es" target="_blank" rel="noreferrer">CC BY 3.0</a>, vía Wikimedia Commons · editado</small>
               </figcaption>
             </figure>
           </div>
@@ -2910,7 +2887,7 @@
                 <div class="is-pro"><span class="pc-label">A favor</span><p>Varios activos en una app · Claves propias · Alias tether.me para facilitar transferencias</p></div>
                 <div class="is-con"><span class="pc-label">En contra</span><p>App cerrada · Servicios externos · Los tokens del emisor pueden ser congelados</p></div>
               </div>
-              <p class="comparison-note">Autocustodia no elimina la confianza en el emisor de los tokens. Revisá siempre el activo y la red antes de enviar. <a href="https://wallet.tether.io/" target="_blank" rel="noreferrer">Sitio oficial ↗</a></p>
+              <p class="comparison-note" data-i18n-html="tether.note">Autocustodia no elimina la confianza en el emisor de los tokens. Revisá siempre el activo y la red antes de enviar. <a href="https://wallet.tether.io/" target="_blank" rel="noreferrer">Sitio oficial ↗</a></p>
             </div>
             <figure class="app-shot">
               <img class="lb-trigger" src="./assets/tether-recibir.webp" alt="Imagen oficial de Tether Wallet: pantalla de recepción con QR y alias de ejemplo john.doe.24@tether.me" width="482" height="556" loading="lazy" />
@@ -2955,7 +2932,7 @@
                 <div class="claim"><strong>Salida a Bitcoin</strong><p>Volvés a on-chain. Tiene tiempos y costos de la red.</p></div>
                 <div class="claim"><strong>Pago por Lightning</strong><p>Un proveedor conecta Spark con Lightning; no abrís tus propios canales.</p></div>
               </div>
-              <figcaption class="comparison-note">Modelo de confianza: al menos un operador honesto durante cada transferencia (o el umbral configurado). No es lo mismo que tener canales Lightning propios. <a href="https://docs.spark.money/learn/trust-model" target="_blank" rel="noreferrer">Fuente ↗</a></figcaption>
+              <figcaption class="comparison-note" data-i18n-html="spark.trustCaption">Modelo de confianza: al menos un operador honesto durante cada transferencia (o el umbral configurado). No es lo mismo que tener canales Lightning propios. <a href="https://docs.spark.money/learn/trust-model" target="_blank" rel="noreferrer">Fuente ↗</a></figcaption>
             </figure>
           </div>
         </div>
@@ -2976,7 +2953,7 @@
                 <div class="is-pro"><span class="pc-label">A favor</span><p>Claves propias · Código abierto · Aprendés a usar canales Lightning</p></div>
                 <div class="is-con"><span class="pc-label">En contra</span><p>Requiere sincronización · Liquidez y costos de canales · Más responsabilidad por los respaldos</p></div>
               </div>
-              <p class="comparison-note">LN Address mediante Lightning Box: según la FAQ oficial, requiere Android y modo persistente. El servicio puede ser del proyecto o una instancia propia; revisá sus condiciones y costos. Abrir canales automáticamente no elimina los costos ni la necesidad de liquidez. <a href="https://blixtwallet.github.io/faq#blixt-lnaddress" target="_blank" rel="noreferrer">FAQ oficial ↗</a></p>
+              <p class="comparison-note" data-i18n-html="blixt.note">LN Address mediante Lightning Box: según la FAQ oficial, requiere Android y modo persistente. El servicio puede ser del proyecto o una instancia propia; revisá sus condiciones y costos. Abrir canales automáticamente no elimina los costos ni la necesidad de liquidez. <a href="https://blixtwallet.github.io/faq#blixt-lnaddress" target="_blank" rel="noreferrer">FAQ oficial ↗</a></p>
             </div>
             <figure class="app-shot">
               <img class="lb-trigger" src="./assets/blixt-lightning.jpg" alt="Blixt Wallet: saldo en sats e historial de pagos de la wallet Lightning" width="251" height="500" loading="lazy" />
@@ -3011,10 +2988,10 @@
                 <div class="is-con"><span class="pc-label">En contra</span><p>App de código cerrado · En modo custodial dependés de la empresa; en Spark, de operadores para transferir</p></div>
               </div>
               <ol class="steps wos-steps">
-                <li><button type="button" aria-pressed="true" aria-controls="wos-step-image" data-image="./assets/wos-sitio.jpg" data-caption="Sitio oficial · elegí App Store o Google Play." data-alt="Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play"><span>Instalá WoS<span class="wos-step-description">Elegí la tienda de tu teléfono. Instalá la app, abrila y tocá el menú.</span></span></button><a class="wos-download" href="https://www.walletofsatoshi.com/#download" target="_blank" rel="noreferrer">Descargar desde el sitio oficial ↗</a></li>
-                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-autocustodia.jpg" data-caption="Confirmá Open Self Custody Wallet." data-alt="Pantalla de Wallet of Satoshi para abrir una wallet de autocustodia, con aviso sobre respaldo y fondos separados"><span>Seleccioná “Open Self Custody Wallet”<span class="wos-step-description">Elegí esa opción y confirmá. Es una wallet distinta: el saldo custodial no se mueve automáticamente.</span></span></button></li>
-                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-crear.jpg" data-caption="Elegí Create a New Wallet para crear una wallet nueva." data-alt="Wallet of Satoshi con las opciones Create a New Wallet y Restore Existing Wallet"><span>Seleccioná “Create a New Wallet”<span class="wos-step-description">Creá una wallet nueva. Restore Existing Wallet es para recuperar una que ya tenías; las palabras se guardan en el siguiente paso.</span></span></button></li>
-                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-lista.jpg" data-caption="Tocá el llavero resaltado junto al nombre para abrir Backup Wallet." data-alt="Wallet of Satoshi con el llavero superior resaltado con un círculo y una flecha naranja: acceso al respaldo" data-image-next="./assets/wos-respaldo.jpg" data-caption-next="Backup Wallet · leé el aviso, marcá Entiendo y tocá Siguiente para continuar en privado." data-alt-next="Pantalla Backup Wallet con instrucciones de seguridad, interruptor Entiendo y botón Siguiente, sin palabras de recuperación"><span>¡Ya estás casi listo! No te olvides de guardar tus 12 palabras.<span class="wos-step-description">Tocá el llavero de arriba para abrir Backup Wallet. Leé el aviso y seguí las indicaciones: anotá las 12 palabras en papel, en orden, y completá la verificación. Sin fotos ni capturas. Después, probá con pocos sats.</span></span></button></li>
+                <li><button type="button" aria-pressed="true" aria-controls="wos-step-image" data-image="./assets/wos-sitio.jpg" data-caption="Sitio oficial · elegí App Store o Google Play." data-alt="Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play"><span><span class="wos-step-title" data-i18n="wos.step1.title">Instalá WoS</span><span class="wos-step-description">Elegí la tienda de tu teléfono. Instalá la app, abrila y tocá el menú.</span></span></button><a class="wos-download" href="https://www.walletofsatoshi.com/#download" target="_blank" rel="noreferrer">Descargar desde el sitio oficial ↗</a></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-autocustodia.jpg" data-caption="Confirmá Open Self Custody Wallet." data-alt="Pantalla de Wallet of Satoshi para abrir una wallet de autocustodia, con aviso sobre respaldo y fondos separados"><span><span class="wos-step-title" data-i18n="wos.step2.title">Seleccioná “Open Self Custody Wallet”</span><span class="wos-step-description">Elegí esa opción y confirmá. Es una wallet distinta: el saldo custodial no se mueve automáticamente.</span></span></button></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-crear.jpg" data-caption="Elegí Create a New Wallet para crear una wallet nueva." data-alt="Wallet of Satoshi con las opciones Create a New Wallet y Restore Existing Wallet"><span><span class="wos-step-title" data-i18n="wos.step3.title">Seleccioná “Create a New Wallet”</span><span class="wos-step-description">Creá una wallet nueva. Restore Existing Wallet es para recuperar una que ya tenías; las palabras se guardan en el siguiente paso.</span></span></button></li>
+                <li><button type="button" aria-pressed="false" aria-controls="wos-step-image" data-image="./assets/wos-lista.jpg" data-caption="Tocá el llavero resaltado junto al nombre para abrir Backup Wallet." data-alt="Wallet of Satoshi con el llavero superior resaltado con un círculo y una flecha naranja: acceso al respaldo" data-image-next="./assets/wos-respaldo.jpg" data-caption-next="Backup Wallet · leé el aviso, marcá Entiendo y tocá Siguiente para continuar en privado." data-alt-next="Pantalla Backup Wallet con instrucciones de seguridad, interruptor Entiendo y botón Siguiente, sin palabras de recuperación"><span><span class="wos-step-title" data-i18n="wos.step4.title">¡Ya estás casi listo! No te olvides de guardar tus 12 palabras.</span><span class="wos-step-description">Tocá el llavero de arriba para abrir Backup Wallet. Leé el aviso y seguí las indicaciones: anotá las 12 palabras en papel, en orden, y completá la verificación. Sin fotos ni capturas. Después, probá con pocos sats.</span></span></button></li>
               </ol>
             </div>
             <figure class="app-shot">
@@ -3039,27 +3016,38 @@
               <span class="claim-tag is-progressive">Autocustodia progresiva</span>
               <span class="claim-tag is-open">Código abierto</span>
               <span class="claim-tag is-address-assigned" title="Nombre asignado de base; personalización opcional mediante la suscripción ZEUS Pay+">LN Address asignada</span>
-              <p class="comparison-note">Cashu ofrece LN Address sin cargo; ZEUS Pay+ permite personalizar el nombre con una suscripción opcional. ZEUS puede ejecutar un nodo en tu teléfono con LDK o LND integrado, o conectarse a un nodo o una wallet remota. Acá mostramos dos rutas partiendo de LDK:</p>
+              <p class="comparison-note" data-i18n="zeus.intro">Cashu ofrece LN Address sin cargo; ZEUS Pay+ permite personalizar el nombre con una suscripción opcional. ZEUS puede ejecutar un nodo en tu teléfono con LDK o LND integrado, o conectarse a un nodo o una wallet remota. Acá mostramos dos rutas partiendo de LDK:</p>
               <ul class="app-lines">
                 <li>
-                  <details class="cashu-route">
-                    <summary><strong>Ruta 1 · Cashu — custodial.</strong> Cómo configurarlo</summary>
-                    <p>Pagás y recibís por Lightning usando los canales de una mint. No necesitás abrir canales propios; confiás en ella para canjear tus fichas.</p>
+                  <details class="zeus-route cashu-route">
+                    <summary>
+                      <strong class="zeus-route-title" data-i18n="zeus.route1.title">Ruta 1 · Cashu — custodial.</strong>
+                      <span class="zeus-route-blurb" data-i18n="zeus.route1.blurb">Cómo configurarlo</span>
+                    </summary>
+                    <p data-i18n="zeus.route1.lead">Pagás y recibís por Lightning usando los canales de una mint. No necesitás abrir canales propios; confiás en ella para canjear tus fichas.</p>
                     <ol>
-                      <li>Tocá <strong>Empezar</strong> y después <strong>Repase el cuestionario</strong> para elegir tu configuración.</li>
-                      <li>Elegí <strong>Tarifas bajas</strong>. El tipo de billetera queda en <strong>Cashu ecash (bajas comisiones)</strong>: empezás sin abrir canales propios.</li>
-                      <li>En <strong>Implementación de nodos</strong>, elegí <strong>LDK Node (velocidad y fiabilidad)</strong>.</li>
-                      <li>En <strong>Fuente de recomendaciones de Mint</strong>, elegí <strong>Cuentas seguidas por ZEUS en Nostr</strong> y tocá <strong>Seleccionar</strong>. La lista del video incluye WesternBTC, Coinos y Minibits.</li>
-                      <li>Revisá <strong>Tu configuración seleccionada</strong>, tocá <strong>Crear billetera</strong> y esperá la sincronización del nodo y la inicialización de la billetera ecash.</li>
+                      <li data-i18n-html="zeus.route1.step1">Tocá <strong>Empezar</strong> y después <strong>Repase el cuestionario</strong> para elegir tu configuración.</li>
+                      <li data-i18n-html="zeus.route1.step2">Elegí <strong>Tarifas bajas</strong>. El tipo de billetera queda en <strong>Cashu ecash (bajas comisiones)</strong>: empezás sin abrir canales propios.</li>
+                      <li data-i18n-html="zeus.route1.step3">En <strong>Implementación de nodos</strong>, elegí <strong>LDK Node (velocidad y fiabilidad)</strong>.</li>
+                      <li data-i18n-html="zeus.route1.step4">En <strong>Fuente de recomendaciones de Mint</strong>, elegí <strong>Cuentas seguidas por ZEUS en Nostr</strong> y tocá <strong>Seleccionar</strong>. La lista del video incluye WesternBTC, Coinos y Minibits.</li>
+                      <li data-i18n-html="zeus.route1.step5">Revisá <strong>Tu configuración seleccionada</strong>, tocá <strong>Crear billetera</strong> y esperá la sincronización del nodo y la inicialización de la billetera ecash.</li>
                     </ol>
-                    <p class="comparison-note">Entre las mints que aparecen, recomendamos <a href="https://minibits.cash/" target="_blank" rel="noreferrer">Minibits</a> para probar con pocos sats, no para guardar ahorros. Su URL es <code>https://mint.minibits.cash/Bitcoin</code>; en este asistente no hace falta pegarla manualmente.</p>
-                    <p class="comparison-note">La mint es custodial, experimental y opera sin garantías: si falla o no canjea tus fichas, podés perder el saldo. Antes de cargar fondos, guardá tus respaldos siguiendo las indicaciones de ZEUS.</p>
-                    <p class="comparison-note">El video muestra la configuración y la inicialización, no un pago ni el respaldo. Los menús pueden variar según la versión. <a href="https://docs.zeusln.app/cashu" target="_blank" rel="noreferrer">Documentación de Cashu en ZEUS ↗</a></p>
+                    <p class="comparison-note" data-i18n-html="zeus.route1.noteMint">Entre las mints que aparecen, recomendamos <a href="https://minibits.cash/" target="_blank" rel="noreferrer">Minibits</a> para probar con pocos sats, no para guardar ahorros. Su URL es <code>https://mint.minibits.cash/Bitcoin</code>; en este asistente no hace falta pegarla manualmente.</p>
+                    <p class="comparison-note" data-i18n="zeus.route1.noteRisk">La mint es custodial, experimental y opera sin garantías: si falla o no canjea tus fichas, podés perder el saldo. Antes de cargar fondos, guardá tus respaldos siguiendo las indicaciones de ZEUS.</p>
+                    <p class="comparison-note" data-i18n-html="zeus.route1.noteVideo">El video muestra la configuración y la inicialización, no un pago ni el respaldo. Los menús pueden variar según la versión. <a href="https://docs.zeusln.app/cashu" target="_blank" rel="noreferrer">Documentación de Cashu en ZEUS ↗</a></p>
                   </details>
                 </li>
-                <li><strong>Ruta 2 · Canales propios — autocustodial.</strong> Tu nodo en el teléfono, con tus claves y canales. Podés abrir un canal al recibir un pago (JIT), comprar capacidad por adelantado o financiarlo con bitcoin on-chain.</li>
+                <li>
+                  <details class="zeus-route">
+                    <summary>
+                      <strong class="zeus-route-title" data-i18n="zeus.route2.title">Ruta 2 · Canales propios — autocustodial.</strong>
+                      <span class="zeus-route-blurb" data-i18n="zeus.route2.blurb">Nodo en el teléfono</span>
+                    </summary>
+                    <p data-i18n="zeus.route2.lead">Tu nodo en el teléfono, con tus claves y canales. Podés abrir un canal al recibir un pago (JIT), comprar capacidad por adelantado o financiarlo con bitcoin on-chain.</p>
+                  </details>
+                </li>
               </ul>
-              <p class="comparison-note">Podés empezar con Cashu y después pasar a canales propios. Abrir canales tiene costos; en LDK necesitás la frase de recuperación y el respaldo de canales.</p>
+              <p class="comparison-note" data-i18n="zeus.after">Podés empezar con Cashu y después pasar a canales propios. Abrir canales tiene costos; en LDK necesitás la frase de recuperación y el respaldo de canales.</p>
               <div class="pros-cons">
                 <div class="is-pro"><span class="pc-label">A favor</span><p>Código abierto · Podés empezar simple y avanzar hacia canales propios</p></div>
                 <div class="is-con"><span class="pc-label">En contra</span><p>Cashu: riesgo de la mint · LDK: costos, liquidez y respaldos de canales</p></div>
@@ -3126,7 +3114,7 @@
             </div>
 
             <div class="wallet-comparison">
-              <div class="comparison-head" aria-hidden="true"><span>Wallet</span><span>¿Tiene LN Address?</span><span>¿Quién tiene las claves?</span><span>¿El código es abierto?</span></div>
+              <div class="comparison-head" aria-hidden="true"><span>Wallet</span><span data-i18n="tabla.col.address">¿Tiene LN Address?</span><span data-i18n="tabla.col.keys">¿Quién tiene las claves?</span><span data-i18n="tabla.col.code">¿El código es abierto?</span></div>
               <details class="wallet-option is-open">
                 <summary><img src="./assets/icono-lawallet.webp" alt="" width="36" height="36" loading="lazy" /><span class="wallet-option-name">LaWallet</span><span class="wallet-option-address claim-tag is-address-personalized" title="LN Address personalizada">LN Address personalizada</span><span class="wallet-option-custody claim-tag is-progressive" title="Autocustodia progresiva">Autocustodia progresiva</span><a class="wallet-option-code claim-tag is-open" href="https://github.com/lawalletio/lawallet-nwc" target="_blank" rel="noreferrer">Código abierto</a></summary>
                 <div class="wallet-explanation">
@@ -3320,14 +3308,663 @@
     <dialog
       id="lightbox"
       class="lightbox"
-      aria-label="Imagen ampliada"
+      aria-label="Imagen ampliada" data-i18n-aria-label="lightbox.dialog"
     >
-      <button type="button" class="lightbox-close" aria-label="Cerrar imagen" autofocus>&times;</button>
+      <button type="button" class="lightbox-close" aria-label="Cerrar imagen" data-i18n-aria-label="lightbox.close" autofocus>&times;</button>
       <img class="lightbox-img" alt="" />
       <div class="lightbox-media" hidden></div>
     </dialog>
 
+
     <script>
+      (() => {
+        const STORAGE_KEY = "workshopillo-lang";
+        const phrases = {
+          "Wallets Lightning": "Lightning Wallets",
+          "2. Transferís el control del BTC fuera de la cadena, sin una transacción on-chain por cada pago.": "2. You transfer control of the BTC off-chain, without an on-chain transaction for every payment.",
+          "5 hackatones en lo que va del año.": "5 hackathons so far this year.",
+          "A favor": "Pros",
+          "A tener en cuenta": "Keep in mind",
+          "A todos los que hicieron este workshop posible": "To everyone who made this workshop possible",
+          "A todos los que vinieron hoy": "To everyone who came today",
+          "ACINQ es tu conexión a Lightning y te facilita capacidad para recibir. Abrir o ampliar esa capacidad puede tener un costo.": "ACINQ is your Lightning connection and helps you get receive capacity. Opening or expanding that capacity can cost money.",
+          "Al inicio podés depender de una wallet de cortesía · Pasar a tu NWC es un paso más": "At first you may depend on a courtesy wallet · Moving to your NWC is an extra step",
+          "Alguien guarda las llaves por vos. Fácil para empezar, pero tus sats dependen de un tercero.": "Someone holds the keys for you. Easy to start, but your sats depend on a third party.",
+          "Almuerzo de la comunidad: selfie grupal en una mesa larga": "Community lunch: group selfie at a long table",
+          "Andy en X": "Andy on X",
+          "App cerrada · Servicios externos · Los tokens del emisor pueden ser congelados": "Closed-source app · External services · The issuer's tokens can be frozen",
+          "App de código cerrado · En modo custodial dependés de la empresa; en Spark, de operadores para transferir": "Closed-source app · In custodial mode you depend on the company; in Spark, on operators to transfer",
+          "Aprendemos Bitcoin haciendo: en La Crypta se come lo que se cocina.": "We learn Bitcoin by doing: at La Crypta you eat what you cook.",
+          "Autocustodia no elimina la confianza en el emisor de los tokens. Revisá siempre el activo y la red antes de enviar. Sitio oficial ↗": "Self-custody does not remove trust in the token issuer. Always check the asset and network before sending. Official site ↗",
+          "Autocustodia progresiva": "Progressive self-custody",
+          "Autocustodial": "Self-custodial",
+          "Ayudar a otras comunidades a crecer": "Helping other communities grow",
+          "BTC en la cadena principal.": "BTC on the main chain.",
+          "Baba en Instagram": "Baba on Instagram",
+          "Backup Wallet · leé el aviso, marcá Entiendo y tocá Siguiente para continuar en privado.": "Backup Wallet · read the notice, turn on I understand, and tap Next to continue in private.",
+          "Bitcoin / Lightning": "Bitcoin / Lightning",
+          "Bitcoin no es caro, ni lento, y te lo voy a demostrar": "Bitcoin isn't expensive or slow, and I'll prove it to you",
+          "Bitcoin on-chain": "Bitcoin on-chain",
+          "Bitcoin on-chain y Lightning vía Spark: permite enviar y recibir con facturas Lightning y LNURL, sin gestionar canales propios.": "On-chain bitcoin and Lightning via Spark: send and receive with Lightning invoices and LNURL, without managing your own channels.",
+          "Bitcoin se entiende mejor cuando lo usás.": "Bitcoin makes more sense when you use it.",
+          "Bitcoin también tiene su capa 2: se llama Lightning.": "Bitcoin also has a layer 2: it's called Lightning.",
+          "Bitcoin y Lightning con tus propias claves. La app integra ayuda para abrir canales y recibir pagos.": "Bitcoin and Lightning with your own keys. The app builds in help to open channels and receive payments.",
+          "Bitcoin, Lightning, Nostr y herramientas para la comunidad.": "Bitcoin, Lightning, Nostr, and tools for the community.",
+          "Blixt Wallet: saldo en sats e historial de pagos de la wallet Lightning": "Blixt Wallet: sats balance and Lightning payment history",
+          "Cada canal es un ábaco: sus pelotitas representan saldo. Pagás a Baba a través de Jaqui y Lalo, que reciben por un canal y envían por otro sin cambiar su total.": "Each channel is an abacus: its beads are balance. You pay Baba through Jaqui and Lalo, who receive on one channel and send on another without changing their totals.",
+          "Cada pelotita representa 10 sats. Cada canal tiene sus propias pelotitas.": "Each bead is 10 sats. Each channel has its own beads.",
+          "Captura anterior": "Previous screenshot",
+          "Captura siguiente": "Next screenshot",
+          "Cashu ofrece LN Address sin cargo; ZEUS Pay+ permite personalizar el nombre con una suscripción opcional. ZEUS puede ejecutar un nodo en tu teléfono con LDK o LND integrado, o conectarse a un nodo o una wallet remota. Acá mostramos dos rutas partiendo de LDK:": "Cashu offers an LN Address at no charge; ZEUS Pay+ lets you customize the name with an optional subscription. ZEUS can run a node on your phone with built-in LDK or LND, or connect to a remote node or wallet. Here we show two paths starting from LDK:",
+          "Cashu: riesgo de la mint · LDK: costos, liquidez y respaldos de canales": "Cashu: mint risk · LDK: costs, liquidity, and channel backups",
+          "Cerrar imagen": "Close image",
+          "Claves propias · Código abierto · Aprendés a usar canales Lightning": "Your own keys · Open source · You learn to use Lightning channels",
+          "Community Manager de La Crypta · Programador en mis ratos libres": "Community Manager at La Crypta · Programmer in my free time",
+          "Comparar wallets": "Compare wallets",
+          "Comunidad": "Community",
+          "Conceptos": "Concepts",
+          "Confirmá Open Self Custody Wallet.": "Confirm Open Self Custody Wallet.",
+          "Connection Map de LaWallet: varias Lightning Address enlazadas a wallets NWC y a cards": "LaWallet Connection Map: several Lightning Addresses linked to NWC wallets and cards",
+          "Coordinan y participan en las firmas. No pueden mover el BTC sin la firma del usuario.": "They coordinate and take part in signatures. They cannot move the BTC without the user's signature.",
+          "Creá una wallet nueva. Restore Existing Wallet es para recuperar una que ya tenías; las palabras se guardan en el siguiente paso.": "Create a new wallet. Restore Existing Wallet is for recovering one you already had; the words are saved in the next step.",
+          "Créditos": "Credits",
+          "Cuando encuentra una que llega, el pago pasa entero, en un instante.": "When it finds one that reaches, the payment goes through in full, instantly.",
+          "Cuando estás listo, conectás tu propia NWC (Alby, Primal u otra compatible).": "When you're ready, you connect your own NWC (Alby, Primal, or another compatible one).",
+          "Cuatro nodos en línea: vos, Jaqui, Lalo y Baba, el local. Cada canal tiene sus propias pelotitas de saldo; llegan al puerto de entrada sin atravesar el nodo y otra pelotita sale por el canal siguiente.": "Four nodes in a line: you, Jaqui, Lalo, and Baba the shop. Each channel has its own balance beads; they reach the inbound port without crossing the node and another bead leaves on the next channel.",
+          "Custodia según la red y el servicio conectado": "Custody depends on the network and connected service",
+          "Custodial": "Custodial",
+          "Custodial / Autocustodial": "Custodial / Self-custodial",
+          "Custodial o autocustodial, según el modo": "Custodial or self-custodial, depending on the mode",
+          "Código abierto": "Open source",
+          "Código abierto · Podés empezar simple y avanzar hacia canales propios": "Open source · You can start simple and move toward your own channels",
+          "Código cerrado": "Closed source",
+          "Cómo funciona Spark": "How Spark works",
+          "De la teoría a tu primera wallet.": "From theory to your first wallet.",
+          "Demostración de configuración de Cashu en ZEUS": "Demo of Cashu setup in ZEUS",
+          "Dentro de Spark": "Inside Spark",
+          "Descargar desde el sitio oficial ↗": "Download from the official site ↗",
+          "Dirección aleatoria incluida tanto en modo custodial como en autocustodia; personalizarla tiene requisitos de uso": "Random address included in both custodial and self-custody modes; customizing it has usage requirements",
+          "Dirección asignada BIP353/BOLT12, no una Lightning Address LNURL": "Assigned BIP353/BOLT12 address, not an LNURL Lightning Address",
+          "Discord de La Crypta": "La Crypta Discord",
+          "Discord ↗": "Discord ↗",
+          "Doce opciones para llevar Lightning en el teléfono.": "Twelve options to carry Lightning on your phone.",
+          "Documentación de Cashu en ZEUS ↗": "Cashu docs in ZEUS ↗",
+          "Ejemplo ficticio. La wallet de quien paga consulta esa dirección y obtiene una factura Lightning para hacer el pago.": "Fictional example. The payer's wallet looks up that address and gets a Lightning invoice to pay.",
+          "El control trae más aprendizaje y responsabilidad por los respaldos. Cashu es otro modo: confiás el bitcoin a un emisor.": "Control brings more learning and backup responsibility. Cashu is another mode: you trust bitcoin to an issuer.",
+          "El mapa muestra cómo se enlazan addresses y wallets.": "The map shows how addresses and wallets link together.",
+          "El mito": "The myth",
+          "El mito de Bitcoin": "The Bitcoin myth",
+          "El pago se completa en conjunto. Ejemplo sin comisiones.": "The payment completes as a whole. Example with no fees.",
+          "El servicio genera y te asigna el nombre inicial. Personalizarlo después puede requerir cumplir requisitos o pagar una suscripción. Ejemplo: WoS o ZEUS.": "The service generates and assigns the initial name. Customizing it later may require meeting requirements or paying a subscription. Example: WoS or ZEUS.",
+          "El video muestra la configuración y la inicialización, no un pago ni el respaldo. Los menús pueden variar según la versión. Documentación de Cashu en ZEUS ↗": "The video shows setup and initialization, not a payment or the backup. Menus may vary by version. Cashu docs in ZEUS ↗",
+          "El ábaco": "The abacus",
+          "Elegí Create a New Wallet para crear una wallet nueva.": "Choose Create a New Wallet to make a new wallet.",
+          "Elegí Tarifas bajas. El tipo de billetera queda en Cashu ecash (bajas comisiones): empezás sin abrir canales propios.": "Choose Low fees. The wallet type stays on Cashu ecash (low fees): you start without opening your own channels.",
+          "Elegí esa opción y confirmá. Es una wallet distinta: el saldo custodial no se mueve automáticamente.": "Choose that option and confirm. It is a different wallet: custodial balance does not move automatically.",
+          "Elegí la tienda de tu teléfono. Instalá la app, abrila y tocá el menú.": "Pick your phone's store. Install the app, open it, and tap the menu.",
+          "Elegí tu wallet.": "Choose your wallet.",
+          "Elegís el nombre de tu dirección dentro del dominio del servicio. Ejemplo: tu usuario en Strike o LaWallet.": "You choose the name of your address inside the service's domain. Example: your username on Strike or LaWallet.",
+          "Elegís tu alias en el dominio de LaWallet; sin cargo en la instancia de cortesía del taller": "You choose your alias on the LaWallet domain; free on the workshop courtesy instance",
+          "Elegís tu nombre al crear la wallet: usuario@tether.me": "You choose your name when creating the wallet: user@tether.me",
+          "Elegís tu usuario al crear la cuenta: usuario@strike.me": "You choose your username when creating the account: user@strike.me",
+          "Empezar el recorrido": "Start the tour",
+          "Empezás con poca fricción: alias a una address que ya tengas, o una NWC de cortesía vía LNcurl.": "You start with little friction: alias to an address you already have, or a courtesy NWC via LNcurl.",
+          "En Fuente de recomendaciones de Mint, elegí Cuentas seguidas por ZEUS en Nostr y tocá Seleccionar. La lista del video incluye WesternBTC, Coinos y Minibits.": "Under Mint recommendation source, choose Accounts followed by ZEUS on Nostr and tap Select. The video list includes WesternBTC, Coinos, and Minibits.",
+          "En Implementación de nodos, elegí LDK Node (velocidad y fiabilidad).": "Under Node implementation, choose LDK Node (speed and reliability).",
+          "En Spark tenés tus claves, pero transferir requiere operadores y al menos uno debe actuar honestamente. Retirar a la red Bitcoin puede ser lento y caro.": "In Spark you hold your keys, but transfers need operators and at least one must act honestly. Withdrawing to the Bitcoin network can be slow and expensive.",
+          "En cada una elegís LNcurl (cortesía) o conectar tu propia NWC.": "For each one you choose LNcurl (courtesy) or connect your own NWC.",
+          "En contra": "Cons",
+          "En modo custodial confiás los fondos a la empresa. En Spark tenés tus claves, pero transferir depende de operadores y al menos uno debe actuar honestamente.": "In custodial mode you trust funds to the company. In Spark you hold your keys, but transfers depend on operators and at least one must act honestly.",
+          "Entre las mints que aparecen, recomendamos Minibits para probar con pocos sats, no para guardar ahorros. Su URL es https://mint.minibits.cash/Bitcoin; en este asistente no hace falta pegarla manualmente.": "Among the mints shown, we recommend Minibits to try with a few sats, not to store savings. Its URL is https://mint.minibits.cash/Bitcoin; in this wizard you don't need to paste it manually.",
+          "Enviar 10 sats": "Send 10 sats",
+          "Es caro": "It's expensive",
+          "Es lento": "It's slow",
+          "Escalá a tu ritmo · Dirección Lightning de la comunidad": "Scale at your pace · Community Lightning address",
+          "Esquema simplificado de depósito, transferencia y salida en Spark": "Simplified diagram of deposit, transfer, and exit in Spark",
+          "Estudié ingeniería y aprendí a programar por mi cuenta.": "I studied engineering and taught myself to program.",
+          "Eventos que se pagan en sats.": "Events paid in sats.",
+          "Exposición en el patio de La Crypta: público sentado frente a una pantalla": "Talk in La Crypta's courtyard: audience seated facing a screen",
+          "FAQ oficial ↗": "Official FAQ ↗",
+          "Fachada de La Crypta en Belgrano: casona de piedra con hiedra y portón de madera": "La Crypta facade in Belgrano: stone house with ivy and a wooden gate",
+          "Fijemos algunos conceptos": "Let's lock in a few concepts",
+          "Foto de perfil de Andy": "Andy's profile photo",
+          "Foto de perfil de Baba": "Baba's profile photo",
+          "Foto de perfil de Jaqui": "Jaqui's profile photo",
+          "Foto grupal de la comunidad en el stand de Veintiuno.lat": "Community group photo at the Veintiuno.lat booth",
+          "Fotos de La Crypta": "Photos of La Crypta",
+          "Fuente ↗": "Source ↗",
+          "Fácil para comprar, recibir y pagar con bitcoin. Está disponible en Argentina.": "Easy to buy, receive, and pay with bitcoin. Available in Argentina.",
+          "Fácil para empezar · No necesitás abrir canales · En modo Spark tenés tus claves": "Easy to start · No need to open channels · In Spark mode you hold your keys",
+          "Gracias.": "Thank you.",
+          "Hablemos un poco de Lightning": "Let's talk a bit about Lightning",
+          "Honestidad · Libertad · Sinergia · Racionalidad · Humildad · Mérito · Innovación": "Honesty · Freedom · Synergy · Rationality · Humility · Merit · Innovation",
+          "Honestidad · Minimalismo · Humildad · Curiosidad": "Honesty · Minimalism · Humility · Curiosity",
+          "Idioma": "Language",
+          "Imagen ampliada": "Enlarged image",
+          "Imagen oficial de Tether Wallet: pantalla de recepción con QR y alias de ejemplo john.doe.24@tether.me": "Official Tether Wallet image: receive screen with QR and sample alias john.doe.24@tether.me",
+          "Inicio": "Home",
+          "Instagram ↗": "Instagram ↗",
+          "Instalá WoS": "Install WoS",
+          "Ir a una página": "Go to a page",
+          "Jaqui en Instagram": "Jaqui on Instagram",
+          "Jaqui en X": "Jaqui on X",
+          "LN Address asignada": "Assigned LN Address",
+          "LN Address mediante Lightning Box: según la FAQ oficial, requiere Android y modo persistente. El servicio puede ser del proyecto o una instancia propia; revisá sus condiciones y costos. Abrir canales automáticamente no elimina los costos ni la necesidad de liquidez. FAQ oficial ↗": "LN Address via Lightning Box: per the official FAQ, it needs Android and persistent mode. The service may be the project's or your own instance; check its terms and costs. Opening channels automatically does not remove costs or the need for liquidity. Official FAQ ↗",
+          "LN Address personalizada": "Custom LN Address",
+          "La capa 1 se compara con la liquidación de un banco central: lenta, cara y definitiva.": "Layer 1 is like central-bank settlement: slow, expensive, and final.",
+          "La mejor comunidad de Bitcoin de este lado de la galaxia.": "The best Bitcoin community on this side of the galaxy.",
+          "La mint es custodial, experimental y opera sin garantías: si falla o no canjea tus fichas, podés perder el saldo. Antes de cargar fondos, guardá tus respaldos siguiendo las indicaciones de ZEUS.": "The mint is custodial, experimental, and offers no guarantees: if it fails or won't redeem your tokens, you can lose the balance. Before loading funds, save your backups following ZEUS's instructions.",
+          "La queja más escuchada. Veamos qué hay detrás antes de responder.": "The most common complaint. Let's see what's behind it before we answer.",
+          "La red Lightning": "The Lightning Network",
+          "LaWallet Connection Map": "LaWallet Connection Map",
+          "LaWallet map": "LaWallet map",
+          "LaWallet no cambia quién guarda tus fondos: eso depende de la wallet conectada. Conectar la tuya requiere un paso de configuración.": "LaWallet does not change who holds your funds: that depends on the connected wallet. Connecting yours takes an extra setup step.",
+          "LaWallet te ofrece una dirección en el dominio de la comunidad, sin cargo en la instancia de cortesía del taller. La wallet conectada puede tener sus propios costos o comisiones. Código abierto.": "LaWallet gives you an address on the community domain, free on the workshop courtesy instance. The connected wallet may have its own costs or fees. Open source.",
+          "Las claves": "The keys",
+          "Las comisiones suben cuando hay mucha demanda. En horarios pico, una transferencia puede costar varios dólares.": "Fees rise when demand is high. At peak times, a transfer can cost several dollars.",
+          "Las dos afirmaciones": "The two claims",
+          "Las llaves son tuyas. Más responsabilidad, nadie te puede congelar los fondos.": "The keys are yours. More responsibility — nobody can freeze your funds.",
+          "Las rutas": "The routes",
+          "Las transferencias en Spark dependen de operadores y los pagos Lightning, de un proveedor que conecta ambas redes. Los dólares y el oro tokenizados pueden ser congelados por su emisor. El respaldo en la nube depende de tu cuenta y de sus servicios.": "Spark transfers depend on operators and Lightning payments on a provider that bridges both networks. Tokenized dollars and gold can be frozen by their issuer. Cloud backup depends on your account and their services.",
+          "Lightning requiere otra conexión, como LNDHub o Arkade. La custodia y las dependencias cambian según ese servicio; la app sola no las resuelve.": "Lightning needs another connection, such as LNDHub or Arkade. Custody and dependencies change with that service; the app alone does not solve them.",
+          "Lightning: el ábaco": "Lightning: the abacus",
+          "Lightning: las rutas y el rayo": "Lightning: routes and the bolt",
+          "Logo de La Crypta": "La Crypta logo",
+          "Logo de Veintiuno.lat": "Veintiuno.lat logo",
+          "Los canales conectan. El pago busca una ruta.": "Channels connect. The payment looks for a route.",
+          "Los sats los guarda la empresa por vos.": "The company holds the sats for you.",
+          "Maneja bitcoin en la red principal y permite pagar por Lightning desde una interfaz simple.": "It handles bitcoin on the main network and lets you pay over Lightning from a simple interface.",
+          "Manos a la obra": "Hands-on",
+          "Mapa mundial de Lightning": "World map of Lightning",
+          "Mapa mundial de la red Lightning de Bitcoin: nodos y conexiones entre América, Europa, Asia, África y Oceanía": "World map of Bitcoin's Lightning Network: nodes and links across America, Europe, Asia, Africa, and Oceania",
+          "Mesa de trabajo con laptops bajo el banner de La Crypta": "Work table with laptops under the La Crypta banner",
+          "Modelo de confianza: al menos un operador honesto durante cada transferencia (o el umbral configurado). No es lo mismo que tener canales Lightning propios. Fuente ↗": "Trust model: at least one honest operator during each transfer (or the configured threshold). Not the same as having your own Lightning channels. Source ↗",
+          "Muy fácil · Ideal para empezar con poco": "Very easy · Ideal to start with a little",
+          "Más control, más cuidado: entendé la recuperación y los respaldos de canales antes de cargar fondos. Empezá con pocos sats.": "More control, more care: understand recovery and channel backups before loading funds. Start with a few sats.",
+          "Más de 20 proyectos, casi todos de código abierto.": "More than 20 projects, almost all open source.",
+          "Más que bitcoin: también maneja dólares digitales (USD₮ y USA₮) y oro tokenizado (XAU₮). Son activos distintos, con riesgos distintos.": "More than bitcoin: it also handles digital dollars (USD₮ and USA₮) and tokenized gold (XAU₮). Different assets, different risks.",
+          "Más sobre mí en fierillo.world": "More about me at fierillo.world",
+          "Networking y Community Call, religiosamente todos los martes.": "Networking and Community Call, religiously every Tuesday.",
+          "No tiene canales Lightning propios. Indra sirve para salir por Lightning; la recepción por LN Address usa otra vía de swaps. Dependés de los servicios de conversión y de la red Liquid.": "It has no Lightning channels of its own. Indra is used to exit via Lightning; LN Address receives use another swap path. You depend on conversion services and the Liquid network.",
+          "Nombre asignado de base; personalización opcional mediante la suscripción ZEUS Pay+": "Base assigned name; optional customization via ZEUS Pay+ subscription",
+          "Operadores de Spark": "Spark operators",
+          "Otra persona": "Someone else",
+          "Pagar por Lightning sin abrir tus propios canales.": "Pay over Lightning without opening your own channels.",
+          "Pago en curso: vos → Jaqui → Lalo → Baba (el local).": "Payment in progress: you → Jaqui → Lalo → Baba (the shop).",
+          "Pago por Lightning": "Pay over Lightning",
+          "Pagás y recibís por Lightning usando los canales de una mint. No necesitás abrir canales propios; confiás en ella para canjear tus fichas.": "You pay and receive over Lightning using a mint's channels. You don't need your own channels; you trust it to redeem your tokens.",
+          "Pantalla Backup Wallet con instrucciones de seguridad, interruptor Entiendo y botón Siguiente, sin palabras de recuperación": "Backup Wallet screen with security instructions, I understand switch, and Next button, without recovery words",
+          "Pantalla de Wallet of Satoshi para abrir una wallet de autocustodia, con aviso sobre respaldo y fondos separados": "Wallet of Satoshi screen to open a self-custody wallet, with a notice about backup and separate funds",
+          "Pantalla de canales de ZEUS: capacidad de envío y de recepción, y la lista de canales con su saldo": "ZEUS channels screen: send and receive capacity, and the channel list with balances",
+          "Pantalla de inicio de LaWallet: saldo en sats, botones para recibir y enviar, y la address fierillo@lawallet.io": "LaWallet home screen: sats balance, receive and send buttons, and the address fierillo@lawallet.io",
+          "Pantalla de inicio de la app de Strike: saldo en bitcoin, botones para comprar y vender, y accesos para recibir y enviar": "Strike app home screen: bitcoin balance, buy and sell buttons, and receive/send shortcuts",
+          "Para elegir la tuya": "To choose yours",
+          "Para pagar rápido y barato, el sistema tradicional usa una capa 2: Visa, Mastercard.": "To pay fast and cheap, the traditional system uses a layer 2: Visa, Mastercard.",
+          "Para probar con poco, cualquiera. Para guardar, autocustodial.": "To try with a little, any wallet works. To store value, go self-custodial.",
+          "Para usar Lightning hace una conversión entre redes. Dependés de ese servicio y el costo puede subir cuando la red Bitcoin está congestionada.": "To use Lightning it converts between networks. You depend on that service and the cost can rise when Bitcoin is congested.",
+          "Permite manejar bitcoin en Liquid y pagar comprobantes Lightning mediante una conversión.": "It lets you hold bitcoin on Liquid and pay Lightning invoices through a conversion.",
+          "Pide verificar tu identidad. No tenés una frase para recuperar los fondos por tu cuenta: dependés del acceso a tu cuenta y de la empresa.": "It asks you to verify your identity. You have no phrase to recover funds on your own: you depend on account access and the company.",
+          "Podés configurar más de una address en la misma cuenta.": "You can set up more than one address in the same account.",
+          "Podés elegir cómo guardar tus fondos entre los modos disponibles, sin abrir canales Lightning.": "You can choose how to hold your funds among the available modes, without opening Lightning channels.",
+          "Podés empezar con Cashu y después pasar a canales propios. Abrir canales tiene costos; en LDK necesitás la frase de recuperación y el respaldo de canales.": "You can start with Cashu and later move to your own channels. Opening channels has costs; on LDK you need the recovery phrase and channel backups.",
+          "Podés recibir con una factura Lightning y compartirla como texto o QR. No tener una dirección no significa que la wallet no use Lightning.": "You can receive with a Lightning invoice and share it as text or a QR. Not having an address doesn't mean the wallet doesn't use Lightning.",
+          "Podés usar un nodo en el teléfono o conectar uno propio. En esos modos tenés control de tus claves y canales.": "You can use a phone node or connect your own. In those modes you control your keys and channels.",
+          "Rayo real en cámara lenta: las ramas tantean hacia abajo, una toca el suelo y ese camino se ilumina de golpe.": "Real lightning in slow motion: branches probe downward, one touches the ground, and that path lights up at once.",
+          "Recibís pagos con una dirección parecida a un email, sin montar un nodo. Podés conectar tu propia wallet más adelante.": "You receive payments with an email-like address, without running a node. You can connect your own wallet later.",
+          "Red Lightning": "Lightning Network",
+          "Registrás tu nombre mediante Lightning Box; según la FAQ oficial, en Android con modo persistente": "You register your name via Lightning Box; per the official FAQ, on Android with persistent mode",
+          "Repetir pago de ejemplo": "Repeat sample payment",
+          "Requiere más aprendizaje, batería y cuidados. Tenés que entender cómo respaldar y recuperar tus canales.": "It needs more learning, battery, and care. You must understand how to back up and recover your channels.",
+          "Requiere sincronización · Liquidez y costos de canales · Más responsabilidad por los respaldos": "Needs syncing · Channel liquidity and costs · More responsibility for backups",
+          "Retrato de Fierillo": "Portrait of Fierillo",
+          "Revisá Tu configuración seleccionada, tocá Crear billetera y esperá la sincronización del nodo y la inicialización de la billetera ecash.": "Review Your selected configuration, tap Create wallet, and wait for node sync and ecash wallet initialization.",
+          "Reúne bitcoin, pagos Lightning vía Spark, dólares digitales y oro tokenizado en una app, sin gestionar canales propios.": "It brings together bitcoin, Lightning payments via Spark, digital dollars, and tokenized gold in one app, without managing your own channels.",
+          "Ruta 1 · Cashu — custodial. Cómo configurarlo": "Route 1 · Cashu — custodial. How to set it up",
+          "Ruta 2 · Canales propios — autocustodial. Tu nodo en el teléfono, con tus claves y canales. Podés abrir un canal al recibir un pago (JIT), comprar capacidad por adelantado o financiarlo con bitcoin on-chain.": "Route 2 · Your own channels — self-custodial. Your node on the phone, with your keys and channels. You can open a channel when receiving a payment (JIT), buy capacity ahead of time, or fund it with on-chain bitcoin.",
+          "Salida a Bitcoin": "Exit to Bitcoin",
+          "Seleccioná “Create a New Wallet”": "Select “Create a New Wallet”",
+          "Seleccioná “Open Self Custody Wallet”": "Select “Open Self Custody Wallet”",
+          "Señoras y señores: esta es la red Lightning de Bitcoin.": "Ladies and gentlemen: this is Bitcoin's Lightning Network.",
+          "Simplemente, a Bitcoin.": "Simply, to Bitcoin.",
+          "Sin LN Address": "No LN Address",
+          "Sin LN Address propia": "No LN Address of its own",
+          "Sin frase de recuperación: tu cuenta es tu acceso.": "No recovery phrase: your account is your access.",
+          "Sitio oficial de Wallet of Satoshi con enlaces para descargar la app desde App Store y Google Play": "Official Wallet of Satoshi site with links to download the app from App Store and Google Play",
+          "Sitio oficial · elegí App Store o Google Play.": "Official site · choose App Store or Google Play.",
+          "Sitio oficial ↗": "Official site ↗",
+          "Sobre mí": "About me",
+          "Soy Fierillo, el oso de La Crypta.": "I'm Fierillo, La Crypta's bear.",
+          "Spark no es Lightning ni una blockchain nueva. Es un protocolo que transfiere el control de bitcoin fuera de la cadena principal mediante firmas compartidas entre usuarios y operadores.": "Spark is neither Lightning nor a new blockchain. It is a protocol that transfers control of bitcoin off the main chain through shared signatures between users and operators.",
+          "Sí, pero en la capa 1.": "Yes, but on layer 1.",
+          "Símbolo de Bitcoin": "Bitcoin symbol",
+          "Símbolo de Bitcoin en neón naranja sobre la chimenea de La Crypta": "Orange neon Bitcoin symbol over La Crypta's fireplace",
+          "Taller": "Workshop",
+          "Te permite aprender a usar tu propio nodo y tus canales, con opciones para automatizar parte del trabajo.": "It lets you learn to run your own node and channels, with options to automate some of the work.",
+          "Te piden tus datos · Si la empresa te bloquea, no tenés tus sats": "They ask for your data · If the company locks you out, you don't have your sats",
+          "Te registrás, verificás tu identidad y ya podés mandar y recibir por Lightning.": "You sign up, verify your identity, and you can send and receive over Lightning.",
+          "Tocá Empezar y después Repase el cuestionario para elegir tu configuración.": "Tap Start and then Review the questionnaire to choose your setup.",
+          "Tocá el llavero de arriba para abrir Backup Wallet. Leé el aviso y seguí las indicaciones: anotá las 12 palabras en papel, en orden, y completá la verificación. Sin fotos ni capturas. Después, probá con pocos sats.": "Tap the keychain at the top to open Backup Wallet. Read the notice and follow the steps: write the 12 words on paper, in order, and finish verification. No photos or screenshots. Then try with a few sats.",
+          "Tocá el llavero resaltado junto al nombre para abrir Backup Wallet.": "Tap the highlighted keychain next to the name to open Backup Wallet.",
+          "Transferís a otra persona": "You transfer to someone else",
+          "Tu pago prueba rutas por la red. Si un canal no tiene saldo, vuelve y prueba otra.": "Your payment tries routes across the network. If a channel lacks balance, it backs up and tries another.",
+          "Tus claves, tu respaldo: firma en el dispositivo. Podés guardar las 12 palabras o usar un respaldo cifrado en la nube.": "Your keys, your backup: signing happens on-device. You can save the 12 words or use an encrypted cloud backup.",
+          "Tus claves, tus canales: para pagar necesitás saldo de salida; para recibir, capacidad de entrada.": "Your keys, your channels: to pay you need outbound balance; to receive, inbound capacity.",
+          "Un bloque sale cada ~10 minutos en promedio. Para pagar un café, eso es eterno.": "A block lands about every ~10 minutes on average. To pay for a coffee, that forever.",
+          "Un nodo en tu teléfono: usa LND y Neutrino para manejar bitcoin y canales Lightning.": "A node on your phone: uses LND and Neutrino to handle bitcoin and Lightning channels.",
+          "Un pago busca caminos por la red de canales, descarta dos y llega al café: vos pasás de 50 a 40 y el café de 50 a 60.": "A payment searches paths across the channel network, drops two, and reaches the café: you go from 50 to 40 and the café from 50 to 60.",
+          "Un proveedor conecta Spark con Lightning; no abrís tus propios canales.": "A provider connects Spark to Lightning; you don't open your own channels.",
+          "Un rayo": "A lightning bolt",
+          "Un rayo hace lo mismo: tantea caminos hacia el suelo y descarga solo por el que conecta.": "A lightning bolt does the same: it probes paths toward the ground and discharges only through the one that connects.",
+          "Una buena opción para manejar bitcoin en la red principal y conectar servicios adicionales.": "A solid option for holding bitcoin on the main network and connecting extra services.",
+          "Una dirección fácil de compartir para recibir sats por Lightning, como vos@wallet.example. Se parece a un email, pero no es un correo ni una dirección de Bitcoin on-chain.": "An easy address to share for receiving sats over Lightning, like you@wallet.example. It looks like email, but it isn't email or an on-chain Bitcoin address.",
+          "Una forma simple de empezar a pagar por Lightning, sin aprender a abrir canales.": "A simple way to start paying over Lightning without learning to open channels.",
+          "Una introducción clara a Lightning y una práctica guiada para crear, cuidar y usar tu primera wallet.": "A clear introduction to Lightning and a guided practice to create, care for, and use your first wallet.",
+          "Usa Blocktank para facilitar capacidad de recepción. Es un servicio del que dependés, aunque no guarde tus claves.": "It uses Blocktank to help with receive capacity. That is a service you depend on, even though it does not hold your keys.",
+          "Usa canales Lightning propios, pero la app los administra para que no tengas que hacerlo a mano.": "It uses its own Lightning channels, but the app manages them so you don't have to by hand.",
+          "Varias Lightning Address.": "Several Lightning Addresses.",
+          "Varios activos en una app · Claves propias · Alias tether.me para facilitar transferencias": "Several assets in one app · Your own keys · tether.me alias to make transfers easier",
+          "Video: MrNousia, CC BY 3.0, vía Wikimedia Commons · editado": "Video: MrNousia, CC BY 3.0, via Wikimedia Commons · edited",
+          "Volvés a on-chain. Tiene tiempos y costos de la red.": "You return on-chain. It has the network's times and costs.",
+          "Vos": "You",
+          "Wallet": "Wallet",
+          "Wallet Lightning · saldo y pagos.": "Lightning wallet · balance and payments.",
+          "Wallet of Satoshi con el llavero superior resaltado con un círculo y una flecha naranja: acceso al respaldo": "Wallet of Satoshi with the top keychain highlighted by an orange circle and arrow: backup access",
+          "Wallet of Satoshi con las opciones Create a New Wallet y Restore Existing Wallet": "Wallet of Satoshi with Create a New Wallet and Restore Existing Wallet options",
+          "Wallets": "Wallets",
+          "Wallets Bitcoin y Lightning para conocer": "Bitcoin and Lightning wallets to explore",
+          "Wallets con Lightning": "Wallets with Lightning",
+          "X ↗": "X ↗",
+          "lacrypta.ar ↗": "lacrypta.ar ↗",
+          "veintiuno.lat ↗": "veintiuno.lat ↗",
+          "¡Ya estás casi listo! No te olvides de guardar tus 12 palabras.": "You're almost ready! Don't forget to save your 12 words.",
+          "¿Cómo funciona Spark?": "How does Spark work?",
+          "¿Dijiste Spark? ¿Que es eso?": "Did you say Spark? What is that?",
+          "¿El código es abierto?": "Is the code open?",
+          "¿El código es abierto? La app es cerrada aunque su kit de desarrollo WDK sea abierto. El badge enlaza a las condiciones oficiales.": "Is the code open? The app is closed even though its WDK development kit is open. The badge links to the official terms.",
+          "¿El código es abierto? No se publica el código completo de la app. El badge enlaza a las condiciones del servicio.": "Is the code open? The full app code is not published. The badge links to the service terms.",
+          "¿El código es abierto? No se publica el código completo de la app. El badge enlaza al análisis de WalletScrutiny.": "Is the code open? The full app code is not published. The badge links to the WalletScrutiny analysis.",
+          "¿El código es abierto? Sí, el badge enlaza al código de Blixt.": "Is the code open? Yes, the badge links to Blixt's code.",
+          "¿El código es abierto? Sí, el badge enlaza al código oficial de Phoenix.": "Is the code open? Yes, the badge links to Phoenix's official code.",
+          "¿El código es abierto? Sí, el badge enlaza al repositorio de AQUA.": "Is the code open? Yes, the badge links to the AQUA repo.",
+          "¿El código es abierto? Sí, el badge enlaza al repositorio de BlueWallet.": "Is the code open? Yes, the badge links to the BlueWallet repo.",
+          "¿El código es abierto? Sí, el badge enlaza al repositorio de la app.": "Is the code open? Yes, the badge links to the app repo.",
+          "¿El código es abierto? Sí, el badge enlaza al repositorio oficial de Bitkit.": "Is the code open? Yes, the badge links to Bitkit's official repo.",
+          "¿El código es abierto? Sí, el badge enlaza al repositorio oficial de ZEUS.": "Is the code open? Yes, the badge links to ZEUS's official repo.",
+          "¿El código es abierto? Sí, el código de LaWallet se publica con licencia MIT. El badge enlaza al repositorio; no garantiza que la wallet conectada también sea abierta.": "Is the code open? Yes, LaWallet's code is published under the MIT license. The badge links to the repo; it does not guarantee the connected wallet is also open.",
+          "¿El código es abierto? Sí, la app publica su código. El badge enlaza al repositorio oficial.": "Is the code open? Yes, the app publishes its code. The badge links to the official repo.",
+          "¿Quién tiene las claves?": "Who holds the keys?",
+          "¿Quién tiene las claves? Bitcoin: vos. Lightning: depende del servicio que conectes. El badge mixto resume esas opciones, no garantiza autocustodia en cualquier conexión.": "Who holds the keys? Bitcoin: you. Lightning: depends on the service you connect. The mixed badge summarizes those options; it does not guarantee self-custody on every connection.",
+          "¿Quién tiene las claves? Depende de la wallet que conectes. La de cortesía la administra un tercero; podés conectar una propia mediante NWC.": "Who holds the keys? It depends on the wallet you connect. The courtesy one is run by a third party; you can connect your own via NWC.",
+          "¿Quién tiene las claves? La empresa guarda los fondos por vos. No tenés una frase de recuperación: dependés del acceso a tu cuenta.": "Who holds the keys? The company holds the funds for you. You have no recovery phrase: you depend on access to your account.",
+          "¿Quién tiene las claves? Vos en modo Spark; la empresa en modo custodial, donde esté disponible. Los saldos y respaldos de cada modo son distintos.": "Who holds the keys? You in Spark mode; the company in custodial mode, where available. Balances and backups differ by mode.",
+          "¿Quién tiene las claves? Vos en modo Spark; la empresa en modo custodial, según la región. Con claves propias, las transferencias siguen dependiendo de operadores.": "Who holds the keys? You in Spark mode; the company in custodial mode, depending on the region. With your own keys, transfers still depend on operators.",
+          "¿Quién tiene las claves? Vos en modo nodo. En Cashu, el emisor guarda el bitcoin que respalda tus fichas. Una conexión remota depende del nodo o wallet conectada.": "Who holds the keys? You in node mode. In Cashu, the issuer holds the bitcoin backing your tokens. A remote connection depends on the connected node or wallet.",
+          "¿Quién tiene las claves? Vos, con su sistema de recuperación propio. El Emergency Kit y el código de recuperación son importantes; no usa el respaldo habitual de 12 palabras.": "Who holds the keys? You, with its own recovery system. The Emergency Kit and recovery code matter; it does not use the usual 12-word backup.",
+          "¿Quién tiene las claves? Vos, con tu frase de recuperación y los respaldos correspondientes. Blocktank facilita canales y liquidez, no la custodia de tus claves.": "Who holds the keys? You, with your recovery phrase and related backups. Blocktank helps with channels and liquidity, not custody of your keys.",
+          "¿Quién tiene las claves? Vos, con tu frase de recuperación. ACINQ administra la conexión a Lightning y facilita liquidez, pero no guarda tus claves.": "Who holds the keys? You, with your recovery phrase. ACINQ manages the Lightning connection and helps with liquidity, but does not hold your keys.",
+          "¿Quién tiene las claves? Vos, con tu frase de recuperación. Liquid es una red distinta de Bitcoin y tiene sus propias dependencias; los pagos Lightning usan servicios de conversión.": "Who holds the keys? You, with your recovery phrase. Liquid is a different network from Bitcoin with its own dependencies; Lightning payments use conversion services.",
+          "¿Quién tiene las claves? Vos, con una frase de 12 palabras. Ofrece respaldo cifrado opcional en la nube. La autocustodia no elimina el riesgo de los emisores de tokens.": "Who holds the keys? You, with a 12-word phrase. It offers optional encrypted cloud backup. Self-custody does not remove token-issuer risk.",
+          "¿Quién tiene las claves? Vos: el nodo Lightning funciona en tu teléfono. Tenés que respaldar la semilla y los canales, y cuidar su liquidez.": "Who holds the keys? You: the Lightning node runs on your phone. You must back up the seed and channels, and mind their liquidity.",
+          "¿Son ciertas?": "Are they true?",
+          "¿Tiene LN Address?": "Does it have an LN Address?",
+          "¿Tiene LN Address? Al iniciar sesión con una cuenta JAN3, recibís un nombre asignado @aqua.net. La personalización es opcional y paga. Los pagos entrantes se convierten en L-BTC en Liquid mediante swaps; no necesitás canales propios.": "Does it have an LN Address? When you sign in with a JAN3 account, you get an assigned @aqua.net name. Customization is optional and paid. Incoming payments convert to L-BTC on Liquid via swaps; you don't need your own channels.",
+          "¿Tiene LN Address? Elegís tu alias en el dominio de la comunidad. LaWallet ofrece la dirección; LNcurl o NWC conecta la wallet receptora.": "Does it have an LN Address? You choose your alias on the community domain. LaWallet provides the address; LNcurl or NWC connects the receiving wallet.",
+          "¿Tiene LN Address? Elegís tu nombre tether.me al crear la wallet. Permite recibir bitcoin desde wallets Lightning compatibles; no significa que esas wallets puedan enviar todos los demás tokens.": "Does it have an LN Address? You choose your tether.me name when creating the wallet. It can receive bitcoin from compatible Lightning wallets; that does not mean those wallets can send every other token.",
+          "¿Tiene LN Address? Elegís tu usuario y recibís en usuario@blink.sv. La dirección puede mantenerse al cambiar entre los modos disponibles.": "Does it have an LN Address? You choose your username and receive at user@blink.sv. The address can stay when switching among available modes.",
+          "¿Tiene LN Address? La app no ofrece una propia. Un servicio conectado puede proveerla por separado; el badge describe la app, no todos los proveedores posibles.": "Does it have an LN Address? The app does not offer its own. A connected service may provide one separately; the badge describes the app, not every possible provider.",
+          "¿Tiene LN Address? No ofrece una dirección nativa tipo usuario@dominio. Sí puede recibir por factura Lightning con la capacidad de entrada necesaria.": "Does it have an LN Address? It does not offer a native user@domain address. It can receive via Lightning invoice when it has the inbound capacity needed.",
+          "¿Tiene LN Address? No ofrece una dirección propia reutilizable tipo usuario@dominio. Puede recibir por factura Lightning; no confundas esa factura con una LN Address.": "Does it have an LN Address? It does not offer its own reusable user@domain address. It can receive via Lightning invoice; don't confuse that invoice with an LN Address.",
+          "¿Tiene LN Address? Puede asignarte una dirección phoenixwallet.me mediante BIP353 y BOLT12. No es una dirección LNURL: quien paga necesita una wallet compatible con esos protocolos.": "Does it have an LN Address? It can assign a phoenixwallet.me address via BIP353 and BOLT12. It is not an LNURL address: the payer needs a wallet compatible with those protocols.",
+          "¿Tiene LN Address? Recibís una dirección aleatoria en ambos modos. Para personalizarla, WoS exige respaldo y actividad en la wallet; no necesariamente una suscripción.": "Does it have an LN Address? You get a random address in both modes. To customize it, WoS requires backup and wallet activity; not necessarily a subscription.",
+          "¿Tiene LN Address? Registrás tu nombre mediante Lightning Box. Según la FAQ oficial, requiere Android y modo persistente; no se asigna automáticamente al instalar.": "Does it have an LN Address? You register your name via Lightning Box. Per the official FAQ, it needs Android and persistent mode; it is not assigned automatically on install.",
+          "¿Tiene LN Address? Tu usuario elegido al registrarte forma usuario@strike.me. Elegís el nombre, no el dominio.": "Does it have an LN Address? The username you pick at signup becomes user@strike.me. You choose the name, not the domain.",
+          "¿Tiene LN Address? ZEUS Pay ofrece un nombre asignado al configurarlo. Con Cashu no hay cargo por la dirección; personalizar el nombre mediante Pay+ requiere una suscripción. El modo de recepción puede ser Cashu, Zaplocker o NWC.": "Does it have an LN Address? ZEUS Pay offers an assigned name when you set it up. With Cashu there is no charge for the address; customizing the name via Pay+ needs a subscription. Receive mode can be Cashu, Zaplocker, or NWC.",
+          "¿Tiene LN Address? ¿Quién tiene las claves? ¿El código es abierto? Compará los badges y abrí cada wallet para conocer sus condiciones, ventajas y límites.": "Does it have an LN Address? Who holds the keys? Is the code open? Compare the badges and open each wallet to see its terms, upsides, and limits.",
+          "¿Tiene Lightning Address?": "Does it have a Lightning Address?",
+          "Ábacos conectados.": "Connected abacuses.",
+          "Ícono de comunidad": "Community icon",
+          "“Bitcoin es caro y lento.”": "“Bitcoin is expensive and slow.”",
+          "↓ 1. Depositás BTC en Spark": "↓ 1. You deposit BTC into Spark",
+          "↓ 3. Podés salir o pagar en otra red": "↓ 3. You can exit or pay on another network"
+        };
+        const htmlPhrases = {
+          "Bitcoin no es caro, ni lento, y te lo voy a demostrar": "Bitcoin isn't expensive or slow, <em>and I'll prove it to you</em>",
+          "Bitcoin on-chain y Lightning vía Spark: permite enviar y recibir con facturas Lightning y LNURL, sin gestionar canales propios.": "<strong>On-chain bitcoin and Lightning via Spark:</strong> send and receive with Lightning invoices and LNURL, without managing your own channels.",
+          "Bitcoin se entiende mejor cuando lo usás.": "Bitcoin makes more sense <em>when you use it.</em>",
+          "Elegí tu wallet.": "Choose your <em>wallet.</em>",
+          "Más control, más cuidado: entendé la recuperación y los respaldos de canales antes de cargar fondos. Empezá con pocos sats.": "<strong>More control, more care:</strong> understand recovery and channel backups before loading funds. Start with a few sats.",
+          "Más que bitcoin: también maneja dólares digitales (USD₮ y USA₮) y oro tokenizado (XAU₮). Son activos distintos, con riesgos distintos.": "<strong>More than bitcoin:</strong> it also handles digital dollars (USD₮ and USA₮) and tokenized gold (XAU₮). Different assets, different risks.",
+          "Señoras y señores: esta es la red Lightning de Bitcoin.": "Ladies and gentlemen: this is Bitcoin's <em>Lightning Network.</em>",
+          "Soy Fierillo, el oso de La Crypta.": "I'm <em>Fierillo</em>, La Crypta's bear.",
+          "Spark no es Lightning ni una blockchain nueva. Es un protocolo que transfiere el control de bitcoin fuera de la cadena principal mediante firmas compartidas entre usuarios y operadores.": "<strong>Spark is neither Lightning nor a new blockchain.</strong> It is a protocol that transfers control of bitcoin off the main chain through shared signatures between users and operators.",
+          "Tus claves, tu respaldo: firma en el dispositivo. Podés guardar las 12 palabras o usar un respaldo cifrado en la nube.": "<strong>Your keys, your backup:</strong> signing happens on-device. You can save the 12 words or use an encrypted cloud backup.",
+          "Tus claves, tus canales: para pagar necesitás saldo de salida; para recibir, capacidad de entrada.": "<strong>Your keys, your channels:</strong> to pay you need outbound balance; to receive, inbound capacity.",
+          "Un nodo en tu teléfono: usa LND y Neutrino para manejar bitcoin y canales Lightning.": "<strong>A node on your phone:</strong> uses LND and Neutrino to handle bitcoin and Lightning channels.",
+          "Una dirección fácil de compartir para recibir sats por Lightning, como vos@wallet.example. Se parece a un email, pero no es un correo ni una dirección de Bitcoin on-chain.": "An easy address to share for receiving sats over Lightning, like <strong>you@wallet.example</strong>. It looks like email, but it isn't email or an on-chain Bitcoin address.",
+          "Ábacos conectados.": "Connected <em>abacuses.</em>",
+          "“Bitcoin es caro y lento.”": "“Bitcoin is <em>expensive</em> and <em>slow</em>.”"
+        };
+        const messages = {
+          es: {
+          'abacus.send': "Enviar 10 sats",
+          'abacus.repeat': "Repetir pago de ejemplo",
+          'abacus.status.idle': "Cada pelotita representa 10 sats. Cada canal tiene sus propias pelotitas.",
+          'abacus.status.progress': "Pago en curso: vos → Jaqui → Lalo → Baba (el local).",
+          'abacus.status.done': "Solo cambian los saldos de Vos y el destino final, en este caso Baba. Los saldos totales de Jaqui y Lalo no cambian: reciben 10 sats por un canal y envían 10 por otro.",
+          'abacus.you': "Vos",
+          'lightbox.expandPrefix': "Ampliar: ",
+          'lightbox.iconPrefix': "Ícono de ",
+          'lightbox.image': "Imagen",
+          'zeus.intro': "Cashu ofrece LN Address sin cargo; ZEUS Pay+ permite personalizar el nombre con una suscripción opcional. ZEUS puede ejecutar un nodo en tu teléfono con LDK o LND integrado, o conectarse a un nodo o una wallet remota. Acá mostramos dos rutas partiendo de LDK:",
+          'zeus.route1.title': "Ruta 1 · Cashu — custodial.",
+          'zeus.route1.blurb': "Cómo configurarlo",
+          'zeus.route1.lead': "Pagás y recibís por Lightning usando los canales de una mint. No necesitás abrir canales propios; confiás en ella para canjear tus fichas.",
+          'zeus.route1.step1': "Tocá <strong>Empezar</strong> y después <strong>Repase el cuestionario</strong> para elegir tu configuración.",
+          'zeus.route1.step2': "Elegí <strong>Tarifas bajas</strong>. El tipo de billetera queda en <strong>Cashu ecash (bajas comisiones)</strong>: empezás sin abrir canales propios.",
+          'zeus.route1.step3': "En <strong>Implementación de nodos</strong>, elegí <strong>LDK Node (velocidad y fiabilidad)</strong>.",
+          'zeus.route1.step4': "En <strong>Fuente de recomendaciones de Mint</strong>, elegí <strong>Cuentas seguidas por ZEUS en Nostr</strong> y tocá <strong>Seleccionar</strong>. La lista del video incluye WesternBTC, Coinos y Minibits.",
+          'zeus.route1.step5': "Revisá <strong>Tu configuración seleccionada</strong>, tocá <strong>Crear billetera</strong> y esperá la sincronización del nodo y la inicialización de la billetera ecash.",
+          'zeus.route1.noteMint': "Entre las mints que aparecen, recomendamos <a href=\"https://minibits.cash/\" target=\"_blank\" rel=\"noreferrer\">Minibits</a> para probar con pocos sats, no para guardar ahorros. Su URL es <code>https://mint.minibits.cash/Bitcoin</code>; en este asistente no hace falta pegarla manualmente.",
+          'zeus.route1.noteRisk': "La mint es custodial, experimental y opera sin garantías: si falla o no canjea tus fichas, podés perder el saldo. Antes de cargar fondos, guardá tus respaldos siguiendo las indicaciones de ZEUS.",
+          'zeus.route1.noteVideo': "El video muestra la configuración y la inicialización, no un pago ni el respaldo. Los menús pueden variar según la versión. <a href=\"https://docs.zeusln.app/cashu\" target=\"_blank\" rel=\"noreferrer\">Documentación de Cashu en ZEUS ↗</a>",
+          'zeus.route2.title': "Ruta 2 · Canales propios — autocustodial.",
+          'zeus.route2.blurb': "Nodo en el teléfono",
+          'zeus.route2.lead': "Tu nodo en el teléfono, con tus claves y canales. Podés abrir un canal al recibir un pago (JIT), comprar capacidad por adelantado o financiarlo con bitcoin on-chain.",
+          'zeus.after': "Podés empezar con Cashu y después pasar a canales propios. Abrir canales tiene costos; en LDK necesitás la frase de recuperación y el respaldo de canales.",
+          'wos.step1.title': "Instalá WoS",
+          'wos.step2.title': "Seleccioná “Open Self Custody Wallet”",
+          'wos.step3.title': "Seleccioná “Create a New Wallet”",
+          'wos.step4.title': "¡Ya estás casi listo! No te olvides de guardar tus 12 palabras.",
+          'nav.inicio': "Inicio",
+          'nav.speaker': "Sobre mí",
+          'nav.lacrypta': "La Crypta",
+          'nav.mito': "El mito",
+          'nav.capas': "¿Son ciertas?",
+          'nav.abaco': "El ábaco",
+          'nav.rutas': "Las rutas",
+          'nav.mapa': "La red Lightning",
+          'nav.conceptos': "Conceptos",
+          'nav.llaves': "Las claves",
+          'nav.address': "Lightning Address",
+          'nav.strike': "Strike",
+          'nav.tether': "Tether Wallet",
+          'nav.spark': "Spark",
+          'nav.sparkHow': "Cómo funciona Spark",
+          'nav.blixt': "Blixt Wallet",
+          'nav.taller': "Taller",
+          'nav.wos': "Wallet of Satoshi",
+          'nav.zeus': "ZEUS",
+          'nav.lawallet': "LaWallet",
+          'nav.lawalletMap': "LaWallet map",
+          'nav.tabla': "Comparar wallets",
+          'nav.creditos': "Créditos",
+          'hero.cta': "Empezar el recorrido",
+          'speaker.link': "Más sobre mí en fierillo.world",
+          'meta.title': "Wallets Lightning",
+          'meta.description': "Una práctica guiada para entender Bitcoin Lightning y usar tu primera wallet.",
+          'tether.note': "Autocustodia no elimina la confianza en el emisor de los tokens. Revisá siempre el activo y la red antes de enviar. <a href=\"https://wallet.tether.io/\" target=\"_blank\" rel=\"noreferrer\">Sitio oficial ↗</a>",
+          'spark.trustCaption': "Modelo de confianza: al menos un operador honesto durante cada transferencia (o el umbral configurado). No es lo mismo que tener canales Lightning propios. <a href=\"https://docs.spark.money/learn/trust-model\" target=\"_blank\" rel=\"noreferrer\">Fuente ↗</a>",
+          'blixt.note': "LN Address mediante Lightning Box: según la FAQ oficial, requiere Android y modo persistente. El servicio puede ser del proyecto o una instancia propia; revisá sus condiciones y costos. Abrir canales automáticamente no elimina los costos ni la necesidad de liquidez. <a href=\"https://blixtwallet.github.io/faq#blixt-lnaddress\" target=\"_blank\" rel=\"noreferrer\">FAQ oficial ↗</a>",
+          'tabla.col.address': "¿Tiene LN Address?",
+          'tabla.col.keys': "¿Quién tiene las claves?",
+          'tabla.col.code': "¿El código es abierto?",
+          'rutas.credit': "Video: <a href=\"https://commons.wikimedia.org/wiki/File:Lightning_strikes_in_slow_motion_(240fps)_in_Muurame,_Finland.webm\" target=\"_blank\" rel=\"noreferrer\">MrNousia</a>, <a href=\"https://creativecommons.org/licenses/by/3.0/deed.es\" target=\"_blank\" rel=\"noreferrer\">CC BY 3.0</a>, vía Wikimedia Commons · editado",
+          },
+          en: {
+          'abacus.send': "Send 10 sats",
+          'abacus.repeat': "Repeat sample payment",
+          'abacus.status.idle': "Each bead is 10 sats. Each channel has its own beads.",
+          'abacus.status.progress': "Payment in progress: you → Jaqui → Lalo → Baba (the shop).",
+          'abacus.status.done': "Only your balance and the final destination — here, Baba — change. Jaqui and Lalo keep the same totals: they receive 10 sats on one channel and send 10 on another.",
+          'abacus.you': "You",
+          'lightbox.expandPrefix': "Enlarge: ",
+          'lightbox.iconPrefix': "Icon of ",
+          'lightbox.image': "Image",
+          'zeus.intro': "Cashu offers an LN Address at no charge; ZEUS Pay+ lets you customize the name with an optional subscription. ZEUS can run a node on your phone with built-in LDK or LND, or connect to a remote node or wallet. Here we show two paths starting from LDK:",
+          'zeus.route1.title': "Route 1 · Cashu — custodial.",
+          'zeus.route1.blurb': "How to set it up",
+          'zeus.route1.lead': "You pay and receive over Lightning using a mint's channels. You don't need your own channels; you trust it to redeem your tokens.",
+          'zeus.route1.step1': "Tap <strong>Start</strong> and then <strong>Review the questionnaire</strong> to choose your setup.",
+          'zeus.route1.step2': "Choose <strong>Low fees</strong>. The wallet type stays on <strong>Cashu ecash (low fees)</strong>: you start without opening your own channels.",
+          'zeus.route1.step3': "Under <strong>Node implementation</strong>, choose <strong>LDK Node (speed and reliability)</strong>.",
+          'zeus.route1.step4': "Under <strong>Mint recommendation source</strong>, choose <strong>Accounts followed by ZEUS on Nostr</strong> and tap <strong>Select</strong>. The video list includes WesternBTC, Coinos, and Minibits.",
+          'zeus.route1.step5': "Review <strong>Your selected configuration</strong>, tap <strong>Create wallet</strong>, and wait for node sync and ecash wallet initialization.",
+          'zeus.route1.noteMint': "Among the mints shown, we recommend <a href=\"https://minibits.cash/\" target=\"_blank\" rel=\"noreferrer\">Minibits</a> to try with a few sats, not to store savings. Its URL is <code>https://mint.minibits.cash/Bitcoin</code>; in this wizard you don't need to paste it manually.",
+          'zeus.route1.noteRisk': "The mint is custodial, experimental, and offers no guarantees: if it fails or won't redeem your tokens, you can lose the balance. Before loading funds, save your backups following ZEUS's instructions.",
+          'zeus.route1.noteVideo': "The video shows setup and initialization, not a payment or the backup. Menus may vary by version. <a href=\"https://docs.zeusln.app/cashu\" target=\"_blank\" rel=\"noreferrer\">Cashu docs in ZEUS ↗</a>",
+          'zeus.route2.title': "Route 2 · Your own channels — self-custodial.",
+          'zeus.route2.blurb': "Node on your phone",
+          'zeus.route2.lead': "Your node on the phone, with your keys and channels. You can open a channel when receiving a payment (JIT), buy capacity ahead of time, or fund it with on-chain bitcoin.",
+          'zeus.after': "You can start with Cashu and later move to your own channels. Opening channels has costs; on LDK you need the recovery phrase and channel backups.",
+          'wos.step1.title': "Install WoS",
+          'wos.step2.title': "Select “Open Self Custody Wallet”",
+          'wos.step3.title': "Select “Create a New Wallet”",
+          'wos.step4.title': "You're almost ready! Don't forget to save your 12 words.",
+          'nav.inicio': "Home",
+          'nav.speaker': "About me",
+          'nav.lacrypta': "La Crypta",
+          'nav.mito': "The myth",
+          'nav.capas': "Are they true?",
+          'nav.abaco': "The abacus",
+          'nav.rutas': "The routes",
+          'nav.mapa': "The Lightning Network",
+          'nav.conceptos': "Concepts",
+          'nav.llaves': "The keys",
+          'nav.address': "Lightning Address",
+          'nav.strike': "Strike",
+          'nav.tether': "Tether Wallet",
+          'nav.spark': "Spark",
+          'nav.sparkHow': "How Spark works",
+          'nav.blixt': "Blixt Wallet",
+          'nav.taller': "Workshop",
+          'nav.wos': "Wallet of Satoshi",
+          'nav.zeus': "ZEUS",
+          'nav.lawallet': "LaWallet",
+          'nav.lawalletMap': "LaWallet map",
+          'nav.tabla': "Compare wallets",
+          'nav.creditos': "Credits",
+          'hero.cta': "Start the tour",
+          'speaker.link': "More about me at fierillo.world",
+          'meta.title': "Lightning Wallets",
+          'meta.description': "A guided practice to understand Bitcoin Lightning and use your first wallet.",
+          'tether.note': "Self-custody does not remove trust in the token issuer. Always check the asset and network before sending. <a href=\"https://wallet.tether.io/\" target=\"_blank\" rel=\"noreferrer\">Official site ↗</a>",
+          'spark.trustCaption': "Trust model: at least one honest operator during each transfer (or the configured threshold). Not the same as having your own Lightning channels. <a href=\"https://docs.spark.money/learn/trust-model\" target=\"_blank\" rel=\"noreferrer\">Source ↗</a>",
+          'blixt.note': "LN Address via Lightning Box: per the official FAQ, it needs Android and persistent mode. The service may be the project's or your own instance; check its terms and costs. Opening channels automatically does not remove costs or the need for liquidity. <a href=\"https://blixtwallet.github.io/faq#blixt-lnaddress\" target=\"_blank\" rel=\"noreferrer\">Official FAQ ↗</a>",
+          'tabla.col.address': "Does it have an LN Address?",
+          'tabla.col.keys': "Who holds the keys?",
+          'tabla.col.code': "Is the code open?",
+          'rutas.credit': "Video: <a href=\"https://commons.wikimedia.org/wiki/File:Lightning_strikes_in_slow_motion_(240fps)_in_Muurame,_Finland.webm\" target=\"_blank\" rel=\"noreferrer\">MrNousia</a>, <a href=\"https://creativecommons.org/licenses/by/3.0/deed.en\" target=\"_blank\" rel=\"noreferrer\">CC BY 3.0</a>, via Wikimedia Commons · edited",
+          }
+        };
+
+        let current = "es";
+        const ATTRS = ["aria-label", "alt", "title", "content", "data-caption", "data-alt", "data-caption-next", "data-alt-next"];
+
+        function norm(s) {
+          return String(s || "").replace(/\s+/g, " ").trim();
+        }
+
+        function t(key) {
+          const table = messages[current] || messages.es;
+          return (table && table[key]) || (messages.es && messages.es[key]) || key;
+        }
+
+        function captureSource(el) {
+          if (!el || !el.dataset) return;
+          if (!el.dataset.i18nSrcHtml) el.dataset.i18nSrcHtml = el.innerHTML;
+          if (!el.dataset.i18nSrcText) el.dataset.i18nSrcText = norm(el.textContent);
+        }
+
+        function applyStrongPrefix(el, key) {
+          const elKids = [...el.children];
+          if (elKids.length !== 1 || elKids[0].tagName !== "STRONG") return false;
+          const strong = elKids[0];
+          captureSource(strong);
+          const labelKey = strong.dataset.i18nSrcText;
+          const labelEn = phrases[labelKey];
+          const fullEn = phrases[key];
+          if (!labelEn || !fullEn || !fullEn.startsWith(labelEn)) return false;
+          const restEn = fullEn.slice(labelEn.length);
+          strong.textContent = labelEn;
+          for (const node of [...el.childNodes]) {
+            if (node.nodeType === 3) node.remove();
+          }
+          el.appendChild(document.createTextNode(restEn.startsWith(" ") ? restEn : " " + restEn.trimStart()));
+          return true;
+        }
+
+        function translateElement(el) {
+          if (el.closest("svg")) return;
+          if (el.dataset && el.dataset.lang) return;
+          if (el.closest(".chapter-nav") && el.tagName === "A") return;
+          if (el.classList && (el.classList.contains("drum-name") || el.classList.contains("visually-hidden") || el.classList.contains("wallet-option-name") || el.classList.contains("lang-switch"))) return;
+          if (el.id === "header-section-title") return;
+          if (el.classList && el.classList.contains("chapter-index")) return;
+          if (el.classList && el.classList.contains("claim-tag") && el.classList.contains("is-mixed")) return;
+
+          captureSource(el);
+          const key = el.dataset.i18nSrcText;
+          if (!key) return;
+
+          if (current === "es") {
+            el.innerHTML = el.dataset.i18nSrcHtml;
+            return;
+          }
+          if (htmlPhrases[key]) {
+            el.innerHTML = htmlPhrases[key];
+            return;
+          }
+          if (!phrases[key]) return;
+
+          const hidden = [...el.children].filter((c) => c.getAttribute("aria-hidden") === "true");
+          if (hidden.length) {
+            const texts = [...el.childNodes].filter((n) => n.nodeType === 3 && norm(n.nodeValue));
+            if (texts.length === 1) {
+              texts[0].nodeValue = " " + phrases[key] + " ";
+              return;
+            }
+          }
+          if (el.children.length === 0) {
+            el.textContent = phrases[key];
+            return;
+          }
+          if (applyStrongPrefix(el, key)) return;
+          // Do not flatten other markup (nav clipped spans, links, etc.).
+        }
+
+        function translateAttrs(el) {
+          for (const attr of ATTRS) {
+            if (!el.hasAttribute(attr)) continue;
+            const srcName = "i18nSrcAttr_" + attr.replace(/-/g, "_");
+            if (!el.dataset[srcName]) el.dataset[srcName] = el.getAttribute(attr) || "";
+            const src = el.dataset[srcName];
+            if (current === "es") {
+              el.setAttribute(attr, src);
+              continue;
+            }
+            const key = norm(src);
+            if (phrases[key]) el.setAttribute(attr, phrases[key]);
+          }
+        }
+
+        function walk(root) {
+          const nodes = [...root.querySelectorAll("h1,h2,h3,p,li,figcaption,button,a,small,strong,title,span.eyebrow,span.micro-label,span.pc-label,span.claim-tag,span.ln-label,span.ln-text,span.ln-credit,span.wos-step-description,span.is-action,main .chapter-index > span,.wallet-showcase-foot,.speaker-values-line,.comparison-note,.punch,.lead,.eyebrow")];
+          // Capture Spanish sources before any mutation so parent keys stay stable.
+          nodes.forEach(captureSource);
+          // deepest-ish: reverse so nested leaves can update after parents captured.
+          [...nodes].reverse().forEach(translateElement);
+          root.querySelectorAll("[aria-label],[alt],[title],[data-caption],[data-alt],[data-caption-next],[data-alt-next]").forEach(translateAttrs);
+          const desc = root.querySelector('meta[name="description"]');
+          if (desc) translateAttrs(desc);
+          const title = root.querySelector("title");
+          if (title) translateElement(title);
+        }
+
+        // also honor explicit data-i18n* for already-marked nodes (nav etc.) using phrases via text restore path
+        function applyKeyed(root) {
+          root.querySelectorAll("[data-i18n]").forEach((el) => {
+            const key = el.dataset.i18n;
+            if (!key || !messages.es || messages.es[key] == null) return;
+            if (el.tagName === "META" && el.hasAttribute("content")) {
+              el.setAttribute("content", t(key));
+              return;
+            }
+            el.textContent = t(key);
+          });
+          root.querySelectorAll("[data-i18n-html]").forEach((el) => {
+            const key = el.dataset.i18nHtml;
+            if (!key || !messages.es || messages.es[key] == null) return;
+            el.innerHTML = t(key);
+          });
+          root.querySelectorAll("[data-i18n-aria-label]").forEach((el) => translateAttrs(el));
+          root.querySelectorAll("[data-i18n-alt]").forEach((el) => translateAttrs(el));
+        }
+
+        function apply() {
+          document.documentElement.lang = current;
+          walk(document);
+          applyKeyed(document);
+          document.querySelectorAll(".lang-switch button[data-lang]").forEach((button) => {
+            button.setAttribute("aria-pressed", String(button.dataset.lang === current));
+          });
+          // refresh live WoS caption if present
+          const wosImg = document.getElementById("wos-step-image");
+          const active = document.querySelector(".wos-steps button[aria-pressed='true']");
+          if (wosImg && active) {
+            const cap = wosImg.closest("figure")?.querySelector("figcaption");
+            if (cap && active.getAttribute("data-caption")) cap.textContent = active.getAttribute("data-caption");
+            if (active.getAttribute("data-alt")) wosImg.setAttribute("alt", active.getAttribute("data-alt"));
+          }
+          document.dispatchEvent(new CustomEvent("workshopillo:langchange", { detail: { lang: current } }));
+        }
+
+        function setLang(lang) {
+          if (lang !== "es" && lang !== "en") return;
+          current = lang;
+          try { localStorage.setItem(STORAGE_KEY, lang); } catch (_) {}
+          apply();
+        }
+
+        function init() {
+          let saved = null;
+          try { saved = localStorage.getItem(STORAGE_KEY); } catch (_) {}
+          if (saved === "es" || saved === "en") current = saved;
+          document.querySelectorAll(".lang-switch button[data-lang]").forEach((button) => {
+            button.addEventListener("click", () => setLang(button.dataset.lang));
+          });
+          apply();
+        }
+
+        window.WorkshopilloI18n = { t, setLang, get lang() { return current; }, phrases, messages };
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+        else init();
+      })();
+    </script>
+
+
+    <script>
+      (() => {
+        const labels = document.querySelectorAll(".comparison-head span, .wallet-option summary .claim-tag");
+        function fitLabels() {
+          labels.forEach(label => label.style.fontSize = "");
+          labels.forEach(label => {
+            const box = label.getBoundingClientRect();
+            if (!box.width) return;
+            const style = getComputedStyle(label);
+            const available = box.width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) - parseFloat(style.borderLeftWidth) - parseFloat(style.borderRightWidth);
+            const range = document.createRange();
+            range.selectNodeContents(label);
+            const textWidth = range.getBoundingClientRect().width;
+            if (textWidth > available + .01) {
+              label.style.fontSize = Math.max(1, parseFloat(style.fontSize) * available / textWidth - .05) + "px";
+            }
+          });
+        }
+        fitLabels();
+        document.fonts.ready.then(fitLabels);
+        window.addEventListener("resize", () => requestAnimationFrame(fitLabels));
+      })();
+
       document.querySelectorAll(".wallet-option").forEach(wallet => {
         wallet.addEventListener("click", event => {
           if (event.target.closest("summary, a, button, input, select, textarea")) return;
@@ -3347,7 +3984,7 @@
         navigation.querySelectorAll("button").forEach(button => button.addEventListener("click", () => {
           shotIndex = 1 - shotIndex;
           [image.src, image.alt, image.width, image.height, gallery.querySelector("figcaption").textContent] = shots[shotIndex];
-          image.setAttribute("aria-label", "Ampliar: " + image.alt);
+          image.setAttribute("aria-label", window.WorkshopilloI18n.t("lightbox.expandPrefix") + image.alt);
           navigation.querySelector("span").textContent = (shotIndex + 1) + " / 2";
         }));
       })();
@@ -3384,6 +4021,23 @@
         const button = document.getElementById("ab-send");
         const status = document.getElementById("ab-status");
         const motion = matchMedia("(prefers-reduced-motion: reduce)");
+        let abacusPhase = "idle"; // idle | progress | done
+        function syncAbacusCopy() {
+          if (!window.WorkshopilloI18n) return;
+          const t = window.WorkshopilloI18n.t;
+          if (abacusPhase === "progress") status.textContent = t("abacus.status.progress");
+          else if (abacusPhase === "done") {
+            status.textContent = t("abacus.status.done");
+            button.textContent = t("abacus.repeat");
+          } else {
+            status.textContent = t("abacus.status.idle");
+            button.textContent = t("abacus.send");
+          }
+          const you = document.querySelector('#ab-network text[data-i18n="abacus.you"]');
+          if (you) you.textContent = t("abacus.you");
+        }
+        document.addEventListener("workshopillo:langchange", syncAbacusCopy);
+        syncAbacusCopy();
         const ports = [[114, 326], [394, 606], [674, 886]];
         const beads = channels.map((channel, index) => {
           let moving;
@@ -3407,7 +4061,8 @@
           balances.forEach((balance, index) => balance.textContent = [30, 60, 60, 30][index] + " sats");
           beads.forEach((bead, index) => bead.setAttribute("cx", ports[index][0] + 32));
           channels.forEach(channel => channel.classList.remove("is-route"));
-          status.textContent = "Pago en curso: vos → Jaqui → Lalo → Baba (el local).";
+          abacusPhase = "progress";
+          status.textContent = window.WorkshopilloI18n.t("abacus.status.progress");
           let start;
 
           function frame(time) {
@@ -3429,8 +4084,9 @@
             if (progress < 3) {
               requestAnimationFrame(frame);
             } else {
-              status.textContent = "Solo cambian los saldos de Vos y el destino final, en este caso Baba. Los saldos totales de Jaqui y Lalo no cambian: reciben 10 sats por un canal y envían 10 por otro.";
-              button.textContent = "Repetir pago de ejemplo";
+              abacusPhase = "done";
+              status.textContent = window.WorkshopilloI18n.t("abacus.status.done");
+              button.textContent = window.WorkshopilloI18n.t("abacus.repeat");
               button.disabled = false;
             }
           }
@@ -3472,7 +4128,7 @@
           const suffix = current === 0 ? "" : "Next";
           image.src = active.dataset["image" + suffix];
           image.alt = active.dataset["alt" + suffix];
-          image.setAttribute("aria-label", "Ampliar: " + image.alt);
+          image.setAttribute("aria-label", window.WorkshopilloI18n.t("lightbox.expandPrefix") + image.alt);
           caption.textContent = active.dataset["caption" + suffix];
           navigation.hidden = !active.dataset.imageNext;
           navigation.querySelector("span").textContent = (current + 1) + " / 2";
@@ -3585,8 +4241,8 @@
 
     <script>
       (() => {
-        const sticky = document.getElementById("section-sticky");
-        const label = sticky && sticky.querySelector(".chapter-index");
+        const sticky = document.querySelector(".site-header");
+        const label = document.getElementById("header-section-title");
         if (!sticky || !label) return;
 
         const chapters = [...document.querySelectorAll("main > .chapter")].map((el) => {
@@ -3596,7 +4252,7 @@
             el,
             id: el.id,
             html: idx ? idx.innerHTML.trim() : (heading ? heading.textContent.trim() : ""),
-            indexEl: idx || heading,
+            indexEl: idx || heading
           };
         });
 
@@ -3614,13 +4270,22 @@
         function inflowIndexVisible(indexEl) {
           if (!indexEl) return false;
           const rect = indexEl.getBoundingClientRect();
-          // Visible = still overlaps the content area below the site header.
+          // Still "in view" below the real header band (not merely off-screen below).
           return rect.bottom > headerBand() && rect.top < window.innerHeight;
         }
 
-        function hideSticky() {
-          sticky.hidden = true;
-          sticky.setAttribute("aria-hidden", "true");
+        function setHeaderTitleIdle(idle) {
+          label.classList.toggle("is-idle", idle);
+          label.setAttribute("aria-hidden", idle ? "true" : "true");
+          // Title is decorative relative to in-flow headings; keep aria-hidden either way.
+        }
+
+        function hideSticky(clear) {
+          setHeaderTitleIdle(true);
+          if (clear) {
+            label.innerHTML = "";
+            delete label.dataset.chapter;
+          }
         }
 
         function syncSticky() {
@@ -3634,25 +4299,24 @@
 
           if (!active || !active.html || active.id === "inicio") {
             currentId = null;
-            hideSticky();
+            hideSticky(true);
             return;
           }
 
-          if (currentId !== active.id) {
+          // Keep header copy in sync with the active section (and language).
+          if (currentId !== active.id || label.dataset.chapter !== active.id || label.innerHTML !== active.html) {
             currentId = active.id;
             label.innerHTML = active.html;
             label.dataset.chapter = active.id;
           }
 
-          // No duplicar: solo mostrar la barra fija cuando el chapter-index
-          // in-flow del capítulo activo ya salió por arriba del header.
+          // Show only after the in-flow index of THIS section has scrolled above the header.
           if (inflowIndexVisible(active.indexEl)) {
-            hideSticky();
+            hideSticky(false);
             return;
           }
 
-          sticky.hidden = false;
-          sticky.setAttribute("aria-hidden", "true");
+          setHeaderTitleIdle(false);
         }
 
         addEventListener(
@@ -3664,6 +4328,18 @@
           },
           { passive: true },
         );
+
+        document.addEventListener("workshopillo:langchange", () => {
+          for (const ch of chapters) {
+            const idx = ch.el.querySelector(".chapter-index");
+            const heading = ch.el.querySelector("h2");
+            ch.html = idx ? idx.innerHTML.trim() : (heading ? heading.textContent.trim() : "");
+            ch.indexEl = idx || heading;
+          }
+          currentId = null;
+          syncSticky();
+        });
+
         addEventListener("resize", syncSticky);
         syncSticky();
       })();
@@ -3675,7 +4351,7 @@
         // ---------- Shared timeline ----------
         const NODES = {
           vos: [62, 230], A: [178, 104], B: [172, 350], C: [300, 228], D: [312, 396],
-          E: [318, 66], F: [436, 138], G: [444, 326], cafe: [540, 230],
+          E: [318, 66], F: [436, 138], G: [444, 326], cafe: [540, 230]
         };
         const EDGES = [
           ["vos", "A"], ["vos", "B"], ["A", "E"], ["A", "C"], ["B", "C"], ["B", "D"], ["E", "C"],
@@ -3908,7 +4584,7 @@
           if (img.classList.contains("ln-stage")) return img.getAttribute("aria-label");
           const hidden = img.closest(".drum-face, .drum-card")?.querySelector(".visually-hidden");
           const name = hidden ? hidden.textContent.trim() : "";
-          return name ? "Ícono de " + name : "Imagen";
+          return name ? window.WorkshopilloI18n.t("lightbox.iconPrefix") + name : window.WorkshopilloI18n.t("lightbox.image");
         }
 
         function openLightbox(trigger) {
@@ -3941,7 +4617,7 @@
           img.setAttribute("tabindex", "0");
           const hint = labelFor(img);
           if (!img.getAttribute("aria-label")) {
-            img.setAttribute("aria-label", "Ampliar: " + hint);
+            img.setAttribute("aria-label", window.WorkshopilloI18n.t("lightbox.expandPrefix") + hint);
           }
           img.addEventListener("click", (event) => {
             event.preventDefault();

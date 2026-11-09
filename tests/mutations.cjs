@@ -51,8 +51,8 @@ const mutations = {
   },
   'cashu-abierto-de-entrada': {
     test: 'Cashu se despliega',
-    from: '<details class="cashu-route">',
-    to: '<details class="cashu-route" open>',
+    from: '<details class="zeus-route cashu-route">',
+    to: '<details class="zeus-route cashu-route" open>',
   },
   'contenido-oculto-en-movil': {
     test: 'todas las páginas se navegan',
