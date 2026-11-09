@@ -3,7 +3,7 @@
   "scripts": {
     "test": "npm run test:py && npm run test:node",
     "test:py": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests",
-    "test:node": "node --test tests/i18n.test.cjs",
+    "test:node": "node --test tests/i18n.test.cjs tests/css.test.cjs",
     "test:browser": "node --test tests/browser.test.cjs",
     "test:mutations": "node tests/mutations.cjs"
   },

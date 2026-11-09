@@ -61,8 +61,8 @@ const mutations = {
   },
   'codigo-abierto-rojo': {
     test: 'los badges distinguen custodia',
-    from: 'color: #86d993;',
-    to: 'color: #f28b82;',
+    from: 'color: var(--green);',
+    to: 'color: var(--red);',
   },
   'demo-cashu-sigue-reproduciendo-oculta': {
     test: 'abrir Cashu reemplaza la captura',

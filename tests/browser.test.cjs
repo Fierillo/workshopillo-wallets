@@ -551,7 +551,7 @@ test('el ábaco mueve fichas independientes sin atravesar nodos y actualiza cada
     assert(beadRows.every(row => row.length > 1 && row.every(bead => bead.y === row[0].y)));
     assert.equal(initial.reduce((a, b) => a + b), beadRows.flat().length * 10);
     const status = await page.locator('#ab-status').textContent();
-    const moving = page.locator('.ab-channel circle[fill="#ff762e"]');
+    const moving = page.locator('.ab-channel circle.is-moving');
     const positions = () => moving.evaluateAll(elements => elements.map(el => ({ x: el.cx.baseVal.value, y: el.cy.baseVal.value, radius: el.r.baseVal.value })));
     const original = await positions();
     const channelEnds = await page.locator('.ab-channel path').evaluateAll(paths => paths.map(path => path.getPointAtLength(path.getTotalLength()).x));
