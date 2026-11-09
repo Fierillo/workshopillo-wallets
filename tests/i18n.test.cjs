@@ -10,21 +10,28 @@ async function loadPage(t, options) {
   return page;
 }
 
-const TRANSLATABLE_ATTRS = ['aria-label', 'alt', 'title', 'content', 'data-caption', 'data-alt', 'data-caption-next', 'data-alt-next'];
+const TRANSLATABLE_ATTRS = ['aria-label', 'alt', 'title', 'content'];
 
 // Nombres propios y préstamos que el inglés usa igual.
 const PROPER_NAMES = /La Crypta|Veintiuno(\.lat)?|Belgrano|café/g;
 const SPANISH = /[ñ¿¡áéíóú]|\b(el|la|los|las|del|que|con|para|por|una|tu|tus|sus|sin|más|pero|como|esta|este|hay|vos|según|cuando|desde|y|de|en|es|se|al|lo|su|mi)\b/i;
 
 function attrSpec(el) {
-  return el.dataset.i18nAttr.split(';').filter(Boolean).map((pair) => pair.split(':').map((s) => s.trim()));
+  return el.dataset.i18nAttr.split(';').filter(Boolean).map((pair) => {
+    const colon = pair.indexOf(':');
+    return [pair.slice(0, colon), pair.slice(colon + 1)];
+  });
 }
 
-function keysUsedInHtml(document) {
-  const keys = new Set();
-  document.querySelectorAll('[data-i18n]').forEach((el) => keys.add(el.dataset.i18n));
-  document.querySelectorAll('[data-i18n-html]').forEach((el) => keys.add(el.dataset.i18nHtml));
-  document.querySelectorAll('[data-i18n-attr]').forEach((el) => attrSpec(el).forEach(([, key]) => keys.add(key)));
+// Una especificación es "clave", "clave+clave" o lleva literales "=texto" sin traducir.
+function addSpec(keys, spec) {
+  spec.split('+').filter((part) => !part.startsWith('=')).forEach((key) => keys.add(key));
+}
+
+function keysUsedInDom(document, keys = new Set()) {
+  document.querySelectorAll('[data-i18n]').forEach((el) => addSpec(keys, el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => addSpec(keys, el.dataset.i18nHtml));
+  document.querySelectorAll('[data-i18n-attr]').forEach((el) => attrSpec(el).forEach(([, spec]) => addSpec(keys, spec)));
   return keys;
 }
 
@@ -69,15 +76,18 @@ test('toda clave usada existe en es y en; no hay claves huérfanas', async (ctx)
   const page = await loadPage(ctx);
   const { t, keys } = page.window.WorkshopilloI18n;
   const source = scriptSource(page.document);
-  const used = keysUsedInHtml(page.document);
-  for (const match of source.matchAll(/\bt\("([\w.-]+)"/g)) used.add(match[1]);
+  // Las claves que el JS pone al interactuar también quedan en el DOM.
+  const used = keysUsedInDom(page.document);
+  await exerciseGeneratedText(page);
+  keysUsedInDom(page.document, used);
   // Copias locales: los arrays de jsdom vienen de otro realm.
   const es = [...keys().es];
   const en = [...keys().en];
   assert.deepEqual([...used].filter((k) => !es.includes(k)), [], 'faltan en es');
   assert.deepEqual([...used].filter((k) => !en.includes(k)), [], 'faltan en en');
   assert.deepEqual(es.filter((k) => !en.includes(k)), [], 'es sin en');
-  const referenced = (k) => used.has(k) || source.includes(`"${k}"`);
+  const escape = (k) => k.replace(/[.]/g, '\\.');
+  const referenced = (k) => used.has(k) || new RegExp(`(^|[^\\w.-])${escape(k)}([^\\w.-]|$)`).test(source);
   assert.deepEqual(en.filter((k) => !referenced(k)), [], 'claves huérfanas');
   for (const key of used) {
     assert.ok(t(key, 'es') && t(key, 'es') !== key, `es vacía: ${key}`);
@@ -137,4 +147,65 @@ test('el idioma persiste en localStorage y se rechaza un valor inválido', async
   const invalid = await loadPage(ctx, { storedLang: 'fr' });
   assert.equal(invalid.window.WorkshopilloI18n.lang, 'es');
   assert.equal(invalid.document.documentElement.lang, 'es');
+});
+
+// Ejercita todo lo que el JS genera o cambia: galería de Blixt, ábaco, pasos de WoS y ampliación.
+async function exerciseGeneratedText(page) {
+  const { document, window } = page;
+  document.querySelector('#wallets-blixt .app-image-nav button').click();
+  document.getElementById('ab-send').click();
+  await new Promise((resolve) => window.setTimeout(resolve, 100));
+  const steps = document.querySelectorAll('#wallets-wos .wos-steps button');
+  steps[steps.length - 1].click();
+  document.querySelector('#wallets-wos .wos-image-nav button').click();
+  document.querySelector('#wallets-blixt .app-shot img').click();
+  document.querySelector('#lightbox .lightbox-close').click();
+}
+
+test('el texto que genera el JS sigue al idioma: ES→EN→ES sin restos', async (ctx) => {
+  const page = await loadPage(ctx, { reducedMotion: true });
+  const { document, window } = page;
+  await exerciseGeneratedText(page);
+  assert.equal(document.getElementById('ab-send').textContent.trim(), 'Repetir pago de ejemplo', 'el ábaco terminó');
+  assert.match(document.getElementById('lightbox').getAttribute('aria-label'), /^Vista ampliada: /);
+  const es = document.documentElement.outerHTML;
+  window.WorkshopilloI18n.setLang('en');
+  assert.deepEqual(spanishResidue(document), []);
+  assert.equal(document.getElementById('ab-send').textContent.trim(), 'Repeat sample payment');
+  assert.match(document.getElementById('lightbox').getAttribute('aria-label'), /^Enlarged view: /);
+  window.WorkshopilloI18n.setLang('es');
+  assert.equal(document.documentElement.outerHTML, es);
+});
+
+test('ningún bloque escucha el cambio de idioma solo para reponer texto', async (ctx) => {
+  const types = [];
+  const page = await loadPage(ctx, {
+    onWindow(window) {
+      const add = window.EventTarget.prototype.addEventListener;
+      window.EventTarget.prototype.addEventListener = function (type, ...rest) {
+        types.push(type);
+        return add.call(this, type, ...rest);
+      };
+    },
+  });
+  await exerciseGeneratedText(page);
+  assert.deepEqual(types.filter((type) => type === 'workshopillo:langchange'), []);
+});
+
+
+test('la galería de WoS copia la captura del paso activo sin tocar las de cada paso', async (ctx) => {
+  const page = await loadPage(ctx);
+  const { document } = page;
+  const tutorial = document.getElementById('wallets-wos');
+  const stepCaptions = () => [...tutorial.querySelectorAll('.wos-step-shot figcaption')].map((c) => c.textContent);
+  const before = stepCaptions();
+  const steps = tutorial.querySelectorAll('.wos-steps button');
+  steps[steps.length - 1].click();
+  tutorial.querySelector('.wos-image-nav button').click();
+  page.window.WorkshopilloI18n.setLang('en');
+  page.window.WorkshopilloI18n.setLang('es');
+  assert.deepEqual(stepCaptions(), before, 'las capturas de cada paso no cambian');
+  const shots = steps[steps.length - 1].closest('li').querySelectorAll('.wos-step-shot');
+  assert.equal(tutorial.querySelector('.app-shot figcaption').textContent, shots[1].querySelector('figcaption').textContent);
+  assert.equal(tutorial.querySelector('.app-shot img').alt, shots[1].querySelector('img').alt);
 });
